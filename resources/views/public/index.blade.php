@@ -13,9 +13,9 @@
         <a class="btn btn-info" href="https://jq.qq.com/?_wv=1027&k=5ax4j23" target="_blank" role="button">加入交流QQ群：887304185</a>
       </p>
       <div class="alert alert-warning md-0" role="alert">
-        客户端将不再被官方支持，但是仍然接受社区维护，预计于4月10日左右将无法正常签到。
+        客户端将不再被官方支持，但是仍然接受社区维护，存在无法签到的情况请耐心等待社区维护。
         <br />
-        欢迎向客户端<a href="https://github.com/jokin1999/tcapps-checkin" target="_blank">仓库</a>提交PR，每次审核通过的PR可以获得100积分奖励，不计上限。
+        欢迎向客户端<a href="https://github.com/jokin1999/tcapps-checkin" target="_blank">仓库</a>提交PR，每次审核通过的PR可以获得500积分奖励，不计上限。
         <br />
         资料：<a href="https://github.com/jokin1999/tcapps-checkin/wiki/APIv1" target="_blank">API-v1协议</a>
         |
@@ -30,15 +30,13 @@
     <div class="alert alert-primary" role="alert">
       <h4 class="alert-heading">活动公告</h4>
       <p>
-        <strong>2019年4月7日：</strong>签到可获得2倍-10倍积分。
-        <br />
         <strong>2019年4月8日：</strong>用户中心、积分兑换中心开通与神秘积分兑换活动开启。
       </p>
       <hr>
       <p class="mb-0">活动以具体情况为准。</p>
     </div>
     <div class="alert alert-success" role="alert">
-      排行榜实时更新，显示前100名。
+      排行榜目前实时更新，显示前100名。
     </div>
 
     <!-- 排行榜 -->
@@ -64,6 +62,9 @@
               </th>
               <th scope="row">
                 {{ $chart->username }}
+                @if(in_array($chart->uid, $nc_badge) )
+                <span class="badge badge-dark">内测</span>
+                @endif
               </th>
               <th scope="row">
                 {{ $chart->allWorth }}

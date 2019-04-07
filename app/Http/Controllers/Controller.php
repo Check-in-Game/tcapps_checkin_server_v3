@@ -17,6 +17,13 @@ class Controller extends BaseController
       return $password;
     }
 
+    // 生成Auth令牌
+    public function generate_auth(string $password, string $uid, string $status) {
+      // 中间件CheckAuth/APICheckAuth中有重复轮子
+      return md5($password.$uid.$status.'2*4&%1^@HSIW}>./;2');
+    }
+
+    // 生成返回JSON
     public function JSON($errno, $error, $body) {
       return [
         'errno'     => $errno,

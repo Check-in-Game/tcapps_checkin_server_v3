@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Support\Facades\DB;
+
+class CheckAuth
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next) {
+        // 检查登录状态
+        $uid = $request->cookie('uid');
+        $auth = $request->cookie('auth');
+        if (!$uid || !$auth) {
+          return redirect('login');
+        }
+        // 检查匹配
+        // 获取用户名密码
+        $user = DB::table('user_accounts')->where('uid', $uid)->first();
+        // Controller/APICheckAuth中有重复轮子
+        if (!$user || $auth !== md5($user->password.$user->uid.$user->status.'2*4&%1^@HSIW}>./;2')) {
+          return redirect('alert/签权错误/您的用户签权已经失效了，请重新登录！');
+        }
+        return $next($request);
+    }
+}

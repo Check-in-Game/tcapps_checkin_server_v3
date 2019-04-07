@@ -14,25 +14,26 @@
     <!-- 导航条 -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand" href="{{ action('PublicController@index') }}">
+        <a class="navbar-brand" href="{{ action('UserController@user') }}">
           <img src="{{ asset('favicon.ico') }}" width="30" height="30" class="d-inline-block align-top" alt="">
-          Check-in Game
+          User Center
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav">
+          <ul class="navbar-nav mr-auto">
             <li class="nav-item">
               <a class="nav-link" href="{{ action('PublicController@index') }}">首页</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ action('PublicController@register') }}">注册账户</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" href="{{ action('UserController@user') }}">用户中心</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ action('AdminController@index') }}">管理中心</a>
+            </li>
           </ul>
+          <button class="btn btn-sm btn-outline-light" type="button" onclick="javascript:logout();">退出 / logout</button>
         </div>
       </div>
     </nav>
@@ -41,8 +42,31 @@
 
     <div class="container">
 
+      <div class="alert alert-danger mt-4" role="alert">
+        您正处于管理模式，请谨慎操作！
+      </div>
+
+      <div class="row text-center">
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-info btn-block" onclick="javascript:location.href='{{ action('AdminController@compensate') }}';">增加补偿</button>
+        </div>
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-info btn-block" onclick="javascript:location.href='{{ action('AdminController@activity') }}';">管理活动</button>
+        </div>
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-info btn-block" onclick="javascript:location.href='{{ action('AdminController@goods') }}';">管理商品</button>
+        </div>
+      </div>
+
       @yield('container')
 
     </div>
+    <script type="text/javascript">
+      function logout() {
+        $.getJSON('/api/logout', function(){
+          location.href = '/home';
+        });
+      }
+    </script>
   </body>
 </html>

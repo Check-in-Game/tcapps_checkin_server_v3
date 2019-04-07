@@ -40,6 +40,7 @@ class Kernel extends HttpKernel
         'api' => [
             'throttle:60,1',
             'bindings',
+            \App\Http\Middleware\EncryptCookies::class,
         ],
     ];
 
@@ -60,6 +61,10 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'check.auth' => \App\Http\Middleware\CheckAuth::class,
+        'apicheck.auth' => \App\Http\Middleware\APICheckAuth::class,
+        'apicheck.admin.auth' => \App\Http\Middleware\APIAdminCheckAuth::class,
+        'check.admin.auth' => \App\Http\Middleware\AdminCheckAuth::class,
     ];
 
     /**

@@ -9,14 +9,26 @@ class PublicController extends Controller {
 
     public function index() {
       $db_prefix = env('DB_PREFIX');
-      $db = DB::table('lists_v2')
+      $charts = DB::table('lists_v2')
               ->join('user_accounts', 'lists_v2.uid', '=', 'user_accounts.uid')
               ->select(DB::raw("{$db_prefix}user_accounts.uid,{$db_prefix}user_accounts.username,sum({$db_prefix}lists_v2.worth) as allWorth"))
               ->groupBy('user_accounts.username')
               ->orderBy('allWorth', 'desc')
               ->limit(100)
               ->get();
-      return view('public.index', ['charts' => $db]);
+      // 拥有内测勋章的UID
+      $nc_badge = [];
+      foreach ($charts as $key => $value) {
+        $db = DB::table('purchase_records')->where('uid', $value->uid)->where('gid', 1)->first();
+        if ($db) {
+          $nc_badge[] = $value->uid;
+        }
+      }
+      $data = [
+        'charts'    => $charts,
+        'nc_badge'  => $nc_badge,
+      ];
+      return view('public.index', $data);
     }
 
     public function register() {
@@ -95,6 +107,16 @@ class PublicController extends Controller {
     // 在线签到器
     public function webCheckin() {
       return view('public.webCheckin');
+    }
+
+    // 在线签到器
+    public function login() {
+      return view('public.login');
+    }
+
+    // 告警页面
+    public function alert($error, $content) {
+      return view('public.alert', ['error' => $error, 'content' => $content]);
     }
 
 }

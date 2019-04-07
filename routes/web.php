@@ -11,8 +11,23 @@
 |
 */
 
+// 首页
 Route::redirect('/', '/home');
+Route::redirect('/index', '/home');
 Route::get('/home', 'PublicController@index');
-Route::get('/index', 'PublicController@index');
+// 签到器
 Route::get('/webCheckin', 'PublicController@webCheckin');
-Route::match(['get', 'post'], '/register', 'PublicController@register');
+// 登录
+Route::get('/login', 'PublicController@login');
+// 登录
+Route::get('/alert/{error}/{content}', 'PublicController@alert');
+// 注册
+Route::get('/register', 'PublicController@register');
+// 用户中心
+Route::get('/user', 'UserController@user')->middleware('check.auth');
+Route::get('/shop', 'UserController@shop')->middleware('check.auth');
+// 管理中心
+Route::get('/admin', 'AdminController@index')->middleware('check.auth')->middleware('check.admin.auth');
+Route::get('/admin/compensate', 'AdminController@compensate')->middleware('check.auth')->middleware('check.admin.auth');
+Route::get('/admin/activity', 'AdminController@activity')->middleware('check.auth')->middleware('check.admin.auth');
+Route::get('/admin/goods', 'AdminController@goods')->middleware('check.auth')->middleware('check.admin.auth');
