@@ -63,7 +63,7 @@
               <th scope="row">
                 {{ $chart->username }}
                 @if(in_array($chart->uid, $nc_badge) )
-                <span class="badge badge-dark">内测</span>
+                <span class="badge badge-dark" style="color: #ffdf54;">内测</span>
                 @endif
               </th>
               <th scope="row">

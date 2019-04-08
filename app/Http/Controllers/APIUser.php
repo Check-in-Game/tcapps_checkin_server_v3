@@ -189,4 +189,59 @@ class APIUser extends Controller {
         }
       }
     }
+
+    // 修改密码
+    public function security_change_password() {
+      // 判断提交方式是否安全
+      if(!Request()->isMethod('post')){
+        $json = $this->JSON(2701, 'Invaild method.', null);
+        return response($json);
+      }
+      // 获取用户uid
+      $uid = request()->cookie('uid');
+      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      // 顺便验证签权状态
+      if (!$user) {
+        $json = $this->JSON(2702, 'Invaild user.', null);
+        return response($json);
+      }
+      $old_password = Request()->post('old_password');
+      $new_password = Request()->post('new_password');
+      $comfirm_password = Request()->post('comfirm_password');
+      // 解析密码
+      $old_password = base64_decode($old_password);
+      $new_password = base64_decode($new_password);
+      $comfirm_password = base64_decode($comfirm_password);
+      // 判断密码长度与一致性
+      if (mb_strlen($old_password) < 8 || mb_strlen($old_password) > 16
+        || mb_strlen($new_password) < 8 || mb_strlen($new_password) > 16
+        || mb_strlen($comfirm_password) < 8 || mb_strlen($comfirm_password) > 16
+        || $new_password !== $comfirm_password
+      ){
+        $json = $this->JSON(2703, 'Invaild password.', null);
+        return response($json);
+      }
+      // 判断原密码是否正确
+      if ($this->generate_password($old_password) !== $user->password) {
+        $json = $this->JSON(2704, 'Bad auth.', null);
+        return response($json);
+      }
+      // 修改密码
+      $password = $this->generate_password($new_password);
+      $data = [
+        'password'  => $password
+      ];
+      $res = DB::table('user_accounts')
+                ->where('uid', $user->uid)
+                ->update($data);
+      if ($res) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+        return response($json)
+        ->withCookie(cookie()->forget('uid'))
+        ->withCookie(cookie()->forget('auth'));
+      }else{
+        $json = $this->JSON(2705, 'Failed to change password.', null);
+        return response($json);
+      }
+    }
 }

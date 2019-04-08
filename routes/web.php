@@ -26,6 +26,7 @@ Route::get('/register', 'PublicController@register');
 // 用户中心
 Route::get('/user', 'UserController@user')->middleware('check.auth');
 Route::get('/shop', 'UserController@shop')->middleware('check.auth');
+Route::get('/user/security/password', 'UserController@security_change_password')->middleware('check.auth');
 // 管理中心
 Route::get('/admin', 'AdminController@index')->middleware('check.auth')->middleware('check.admin.auth');
 Route::get('/admin/compensate', 'AdminController@compensate')->middleware('check.auth')->middleware('check.admin.auth');

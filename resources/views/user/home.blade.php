@@ -20,6 +20,8 @@
     </div>
   </div>
   <div class="row">
+
+    <!-- 账户评级 -->
     <div class="col-md-4 col-sm-12 mb-3 text-center">
       <div class="card border-dark mb-3">
         <div class="card-header">
@@ -40,6 +42,20 @@
         </div>
       </div>
     </div>
+
+    <div class="col-md-4 col-sm-12 mb-3 text-center">
+      <!-- 账户评级 -->
+      <div class="card border-dark mb-3">
+        <div class="card-header">
+          账户安全
+        </div>
+        <div class="card-body text-dark">
+          <a class="btn btn-danger btn-block" href="{{ action('UserController@security_change_password') }}">修改密码</a>
+        </div>
+      </div>
+    </div>
+
   </div>
+
 </div>
 @endsection

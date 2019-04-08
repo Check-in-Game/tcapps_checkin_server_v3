@@ -34,6 +34,7 @@ class UserController extends Controller {
     public function shop() {
       $uid = request()->cookie('uid');
       $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      // 顺便验证签权状态
       if (!$user) {
         return redirect('alert/签权错误/您的用户签权已经失效了，请重新登录！');
       }
@@ -80,5 +81,28 @@ class UserController extends Controller {
         'admin_level'     => $admin_level
       ];
       return view('user.shop', $data);
+    }
+
+    // 修改密码
+    public function security_change_password() {
+      $uid = request()->cookie('uid');
+      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      // 顺便验证签权状态
+      if (!$user) {
+        return redirect('alert/签权错误/您的用户签权已经失效了，请重新登录！');
+      }
+      $admin = DB::table('admin_level')
+              ->where('uid', $user->uid)
+              ->first();
+      if ($admin) {
+        $admin_level = $admin->level;
+      }else{
+        $admin_level = 0;
+      }
+      $data = [
+        'username'        => $user->username,
+        'admin_level'     => $admin_level
+      ];
+      return view('user.security_change_password', $data);
     }
 }

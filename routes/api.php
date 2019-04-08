@@ -24,6 +24,10 @@ Route::get('/login/{username}/{b64password}', 'APIUser@login');
 Route::get('/logout', 'APIUser@logout')
       ->middleware('apicheck.auth');
 
+// Password
+Route::post('/user/security/password', 'APIUser@security_change_password')
+      ->middleware('apicheck.auth');
+
 // Purchase
 Route::get('/purchase/{gid}', 'APIUser@purchase')
       ->middleware('apicheck.auth');
