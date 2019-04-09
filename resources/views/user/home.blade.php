@@ -25,20 +25,12 @@
     <div class="col-md-4 col-sm-12 mb-3 text-center">
       <div class="card border-dark mb-3">
         <div class="card-header">
-          账户评级
+          基本信息
         </div>
         <div class="card-body text-dark">
-          <h5 class="card-title">
-            @if($uid <= 100)
-            骨灰
-            @elseif($uid > 100 && $uid < 500)
-            元老
-            @else
-            萌新
-            @endif
-            级
-          </h5>
-          <p class="card-text">您的UID为 {{$uid}}，评级仅供娱乐。</p>
+          <p class="card-text">UID： <span class="badge badge-primary">{{ $uid }}</span></p>
+          <p class="card-text">签到积分： <span class="badge badge-primary">{{ $all_worth }}</span></p>
+          <p class="card-text">可用积分： <span class="badge badge-primary">{{ $all_worth - $cost }}</span></p>
         </div>
       </div>
     </div>

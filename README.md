@@ -60,7 +60,7 @@ create table tcapps_checkin_user_accounts(
   username varchar(16) unique not null comment "用户名",
   password varchar(32) not null comment "密码",
   status tinyint not null default 1 comment "状态"
-)comment="用户信息",engine=MyISAM default character set utf8 collate utf8_general_ci;
+)comment="用户信息",engine=InnoDB default character set utf8 collate utf8_general_ci;
 #insert into tcapps_checkin_user_accounts set username='jokin',password='74e133f544b908be8e30e9cb64e8a536';
 
 #签到Token列表v2
@@ -68,7 +68,7 @@ create table tcapps_checkin_tokens_v2(
   uid int unsigned primary key not null comment "用户ID",
   token varchar(49) default "" comment "Token",
   status tinyint not null default -1 comment "状态"
-)comment="签到Token列表",engine=MyISAM default character set utf8 collate utf8_general_ci;
+)comment="签到Token列表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #签到信息v2
 #类型0:普通加值
@@ -84,7 +84,7 @@ create table tcapps_checkin_lists_v2(
   cost int unsigned not null default 0 comment "消耗",
   check_time datetime not null comment "签到时间",
   status tinyint not null default 1 comment "状态"
-)comment="签到信息",engine=MyISAM default character set utf8 collate utf8_general_ci;
+)comment="签到信息",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #活动设计
 create table tcapps_checkin_activity(
@@ -94,7 +94,7 @@ create table tcapps_checkin_activity(
   min_worth int unsigned not null default 1 comment "最小价值",
   max_worth int unsigned not null default 1 comment "最大价值",
   status tinyint not null default 1 comment "状态"
-)comment="活动设计表",engine=MyISAM default character set utf8 collate utf8_general_ci;
+)comment="活动设计表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #商店设计
 #商品类型
@@ -114,7 +114,7 @@ create table tcapps_checkin_shop(
   rebuy int unsigned not null default 1 comment "最多购买数量",
   description text not null comment "商品描述",
   status tinyint not null default 1 comment "状态"
-)comment="商店",engine=MyISAM default character set utf8 collate utf8_general_ci;
+)comment="商店",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #INSERT INTO `tcapps_checkin_shop` (`gid`, `gname`, `cost`, `starttime`, `endtime`, `tid`, `sid`, `all_count`, `image`, `rebuy`, `description`, `status`) VALUES (NULL, '内测勋章', '2000', '2019-04-08 12:00:00', '1970-01-01 00:00:00', '1', '2', '10', '', '1', '内测勋章没有预览图（因为没来急做），共发行10枚。勋章后期会随更新外观，目前就先凑合一下。', '1');
 
@@ -126,7 +126,7 @@ create table tcapps_checkin_purchase_records(
   cost int unsigned not null default 0 comment "花费",
   purchase_time datetime not null comment "购买时间",
   status tinyint not null default 1 comment "状态"
-)comment="购买记录",engine=MyISAM default character set utf8 collate utf8_general_ci;
+)comment="购买记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #积分支出记录
 create table tcapps_checkin_point_records(
@@ -136,7 +136,7 @@ create table tcapps_checkin_point_records(
   cost int unsigned not null default 0 comment "花费数量",
   spent_time datetime not null comment "消耗时间",
   status tinyint not null default 1 comment "状态"
-)comment="积分支出记录",engine=MyISAM default character set utf8 collate utf8_general_ci;
+)comment="积分支出记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #管理员等级表
 create table tcapps_checkin_admin_level(
@@ -144,23 +144,5 @@ create table tcapps_checkin_admin_level(
   level tinyint unsigned not null comment "管理等级",
   update_time datetime not null comment "更新时间",
   status tinyint not null default 1 comment "状态"
-)comment="管理员等级表",engine=MyISAM default character set utf8 collate utf8_general_ci;
-```
-
-## 抛弃设计
-```
-#签到信息
-create table tcapps_checkin_lists(
-  cid int unsigned auto_increment primary key not null comment "签到ID",
-  username varchar(16) not null comment "用户名",
-  check_time datetime not null comment "签到时间"
-)comment="签到信息",engine=MyISAM default character set utf8 collate utf8_general_ci;
-
-#签到Token列表
-create table tcapps_checkin_tokens(
-  username varchar(16) primary key not null comment "用户名",
-  token varchar(49) default "" comment "Token",
-  status tinyint not null default -1 comment "状态"
-)comment="签到Token列表",engine=MyISAM default character set utf8 collate utf8_general_ci;
-#insert into tcapps_checkin_tokens set username='jokin';
+)comment="管理员等级表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 ```

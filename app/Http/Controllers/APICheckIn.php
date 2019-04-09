@@ -95,14 +95,18 @@ class APICheckIn extends Controller {
         $json = $this->JSON(2206, 'Incorrect username or token.', null);
         return response($json);
       }
-      // 查询活动
       $worth = 1;
+      // 默认最低分
+      $min = 1;
+      // 默认最高分
+      $max = 10;
+      // 查询活动
       $db = DB::table('activity')->where('starttime', '<=', time())->where('endtime', '>=', time())->where('status', 1)->first();
       if ($db) {
         $min = $db->min_worth;
         $max = $db->max_worth;
-        $worth = mt_rand($min, $max);
       }
+      $worth = mt_rand($min, $max);
       $data = array(
         'uid'     => $user->uid,
         'tid'     => 0,       // 日常签到

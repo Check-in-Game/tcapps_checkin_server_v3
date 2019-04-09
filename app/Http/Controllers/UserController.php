@@ -14,6 +14,15 @@ class UserController extends Controller {
         return redirect('alert/签权错误/您的用户签权已经失效了，请重新登录！');
       }
       $username = $user->username;
+      // 查询积分
+      $db_prefix = env('DB_PREFIX');
+      $all_worth = DB::table('lists_v2')
+              ->where('uid', $user->uid)
+              ->sum('worth');
+      $cost = DB::table('lists_v2')
+              ->where('uid', $user->uid)
+              ->sum('cost');
+      // 获取管理员权限
       $admin = DB::table('admin_level')
               ->where('uid', $user->uid)
               ->first();
@@ -26,6 +35,8 @@ class UserController extends Controller {
         'uid'          => $uid,
         'username'     => $username,
         'admin_level'  => $admin_level,
+        'all_worth'    => $all_worth,
+        'cost'         => $cost,
       ];
       return view('user.home', $data);
     }

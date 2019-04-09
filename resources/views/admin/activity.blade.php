@@ -26,7 +26,7 @@
   <div class="input-group-prepend">
     <span class="input-group-text">最大数量</span>
   </div>
-  <input type="number" class="form-control" placeholder="Maximum" id="max" value="2">
+  <input type="number" class="form-control" placeholder="Maximum" id="max" value="10">
 </div>
 
 <p class="clearfix">

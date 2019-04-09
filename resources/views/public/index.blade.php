@@ -8,8 +8,8 @@
       <hr class="my-4">
       <p class="lead">
         <a class="btn btn-success" href="{{ action('PublicController@register') }}" target="_blank" role="button">注册账户</a>
-        <a class="btn btn-primary" href="{{ action('PublicController@webCheckin') }}" target="_self" role="button">【推荐】在线端</a>
-        <a class="btn btn-primary" href="https://appsmirror.twocola.com/checkin.exe" target="_blank" role="button">客户端</a>
+        <a class="btn btn-primary" href="{{ action('PublicController@webCheckin') }}" target="_self" role="button">在线端</a>
+        <a class="btn btn-secondary" href="https://github.com/jokin1999/tcapps-checkin" target="_blank" role="button">Python客户端</a>
         <a class="btn btn-info" href="https://jq.qq.com/?_wv=1027&k=5ax4j23" target="_blank" role="button">加入交流QQ群：887304185</a>
       </p>
       <div class="alert alert-warning md-0" role="alert">
@@ -26,15 +26,21 @@
   <div class="container">
 @endsection
 @section('container')
+
+    <!-- 公告 -->
+    <div class="alert alert-danger" role="alert">
+      <h4 class="alert-heading">模式更改公告</h4>
+        即日起，为照顾新同学，非活动期间每次签到由固定1分调整为随机1至10分，活动期间以活动通告为准！
+    </div>
     <!-- 活动 -->
-    <div class="alert alert-primary" role="alert">
+    <!-- <div class="alert alert-primary" role="alert">
       <h4 class="alert-heading">活动公告</h4>
       <p>
         <strong>2019年4月8日：</strong>用户中心、积分兑换中心开通与神秘积分兑换活动开启。
       </p>
       <hr>
       <p class="mb-0">活动以具体情况为准。</p>
-    </div>
+    </div> -->
     <div class="alert alert-success" role="alert">
       排行榜目前实时更新，显示前100名。
     </div>
@@ -88,15 +94,6 @@
       <hr />
       <p class="mb-0">感谢以上同学对本项目的支持！</p>
     </div>
-
-    <div class="alert alert-warning" role="alert">
-      <h4 class="alert-heading">提交建议 / 加入开发</h4>
-      <p>这款游戏是开发者Jokin在闲暇时间开发的，因为上线匆忙，没有考虑游戏的可玩性，后期需要的开发工作可能较大，所以如果您有兴趣可以进行开发投稿或者加入开发组。</p>
-      <p>联系方式：jokin@twocola.com</p>
-      <hr />
-      <p class="mb-0">期待您的加入！</p>
-    </div>
-
 
     <div class="alert alert-info" role="alert">
       <h4 class="alert-heading">联系我们</h4>
