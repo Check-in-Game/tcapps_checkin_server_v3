@@ -1,11 +1,12 @@
 @extends('user/master')
 @section('before_nav')
-<div class="alert alert-primary mt-4" role="alert">
-  欢迎回来，{{ $username }} ！
-</div>
 @endsection
 
 @section('container')
+  <div class="alert alert-primary mt-4" role="alert">
+    欢迎回来，{{ $username }} ！
+  </div>
+
   <h2>修改密码 / Change Password</h2>
 
   <div class="input-group mb-3">

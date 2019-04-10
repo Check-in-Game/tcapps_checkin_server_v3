@@ -58,7 +58,7 @@
           <button type="button" class="btn btn-success btn-block" onclick="javascript:location.href='{{ action('UserController@bill') }}';">积分账单</button>
         </div>
         <div class="col-sm mb-3">
-          <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('UserController@shop') }}';">活动中心</button>
+          <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('UserController@activity') }}';">活动中心</button>
         </div>
       </div>
 

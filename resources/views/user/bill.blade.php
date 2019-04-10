@@ -1,11 +1,12 @@
 @extends('user/master')
 @section('before_nav')
-<div class="alert alert-warning mt-4 text-center" role="alert">
-  部分情况下可能会出现未结清的情况，系统会在稍后自动清算。未清算的记录可能会影响您后续的购买操作，刷新页面后如仍然存在未清算情况，请加群联系管理员。
-</div>
 @endsection
 
 @section('container')
+<div class="alert alert-warning mt-4 text-center" role="alert">
+  部分情况下可能会出现未结清的情况，系统会在稍后自动清算。未清算的记录可能会影响您后续的购买操作，刷新页面后如仍然存在未清算情况，请加群联系管理员。
+</div>
+
 <div class="row">
 
   <table class="table table-striped table-hover text-center">

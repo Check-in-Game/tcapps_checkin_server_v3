@@ -119,4 +119,16 @@ class UserController extends Controller {
       ];
       return view('user.bill', $data);
     }
+
+    // 活动一览
+    public function activity() {
+      $charts = DB::table('activity')
+          ->where('endtime', '>=', date('Y-m-d H:i:s', strtotime('-7 day')))
+          ->where('status', 1)
+          ->paginate(25);
+      $data = [
+        'charts'  => $charts
+      ];
+      return view('user.activity', $data);
+    }
 }

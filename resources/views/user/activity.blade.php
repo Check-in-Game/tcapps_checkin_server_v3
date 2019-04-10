@@ -4,7 +4,7 @@
 
 @section('container')
 <div class="alert alert-primary mt-4 text-center" role="alert">
-  目前记录可查询最多 {{ $limit }} @if( $unit === 'day' ) 天 @elseif( $unit === 'week' ) 周 @elseif( $unit === 'month' ) 个月 @elseif( $unit === 'year' ) 年 @endif
+  结算时，活动只能同时参加1个，两个活动冲突时，默认参与活动ID靠前的一个。
 </div>
 
 <div class="row">
@@ -12,9 +12,10 @@
   <table class="table table-striped table-hover text-center">
     <thead>
       <tr>
-        <th scope="col">签到ID</th>
-        <th scope="col">签到时间</th>
-        <th scope="col">签到积分</th>
+        <th scope="col">活动ID</th>
+        <th scope="col">开始时间</th>
+        <th scope="col">结束时间</th>
+        <th scope="col">最大-小值</th>
         <th scope="col">状态</th>
       </tr>
     </thead>
@@ -22,19 +23,24 @@
         @foreach ($charts as $key => $chart)
           <tr>
             <th scope="row">
-              #{{ $chart->cid }}
+              #{{ $chart->aid }}
             </th>
             <th scope="row">
-              {{ $chart->check_time }}
+              {{ $chart->starttime }}
             </th>
             <th scope="row">
-              {{ $chart->worth }}
+              {{ $chart->endtime }}
             </th>
             <th scope="row">
-              @if( $chart->status === 1 )
-              <span class="badge badge-success">正常</span>
+              {{ $chart->min_worth }} - {{ $chart->max_worth }}
+            </th>
+            <th scope="row">
+              @if( strtotime($chart->starttime) <= time() && strtotime($chart->endtime) >= time() )
+              <span class="badge badge-success">正在进行</span>
+              @elseif(strtotime($chart->endtime) >= time())
+              <span class="badge badge-primary">即将开始</span>
               @else
-              <span class="badge badge-danger">异常</span>
+              <span class="badge badge-secondary">已经结束</span>
               @endif
             </th>
           </tr>

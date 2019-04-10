@@ -1,11 +1,12 @@
 @extends('user/master')
 @section('before_nav')
-<div class="alert alert-primary mt-4" role="alert">
-  欢迎回来，{{ $username }} ！
-</div>
 @endsection
 
 @section('container')
+<div class="alert alert-primary mt-4" role="alert">
+  欢迎回来，{{ $username }} ！
+</div>
+
 <div class="row">
 
   <!-- 账户评级 -->

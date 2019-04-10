@@ -1,11 +1,11 @@
 @extends('user/master')
 @section('before_nav')
-<div class="alert alert-primary mt-4" role="alert">
-  兑换中心欢迎您，{{ $username }} ！您的可用积分为：{{ $balance }}。
-</div>
 @endsection
 
 @section('container')
+<div class="alert alert-primary mt-4" role="alert">
+  兑换中心欢迎您，{{ $username }} ！您的可用积分为：{{ $balance }}。
+</div>
 <div class="row">
   @if($goods)
     @foreach($goods as $key => $value)
