@@ -145,4 +145,15 @@ create table tcapps_checkin_admin_level(
   update_time datetime not null comment "更新时间",
   status tinyint not null default 1 comment "状态"
 )comment="管理员等级表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#系统设置表
+create table tcapps_checkin_system(
+  skey varchar(255) primary key not null comment "设置键",
+  svalue varchar(2048) not null comment "设置值",
+  description varchar(2048) not null comment "解释"
+)comment="系统设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+#INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('register_available', 'true', '是否开通注册通道');
+#INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit', 7, '签到历史记录极限查询时间');
+#INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit_unit', 'day', '签到历史记录极限查询时间单位,day/week/month');
+
 ```

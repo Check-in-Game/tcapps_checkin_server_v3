@@ -61,7 +61,7 @@
           @foreach ($charts as $key => $chart)
             <tr>
               <th scope="row">
-                {{ $key+1 }}
+                # {{ $key+1 }}
               </th>
               <th scope="row">
                 {{ $chart->uid }}

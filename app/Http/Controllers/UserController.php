@@ -10,9 +10,6 @@ class UserController extends Controller {
     public function user() {
       $uid = request()->cookie('uid');
       $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      if (!$user) {
-        return redirect('alert/签权错误/您的用户签权已经失效了，请重新登录！');
-      }
       $username = $user->username;
       // 查询积分
       $db_prefix = env('DB_PREFIX');
@@ -22,19 +19,9 @@ class UserController extends Controller {
       $cost = DB::table('lists_v2')
               ->where('uid', $user->uid)
               ->sum('cost');
-      // 获取管理员权限
-      $admin = DB::table('admin_level')
-              ->where('uid', $user->uid)
-              ->first();
-      if ($admin) {
-        $admin_level = $admin->level;
-      }else{
-        $admin_level = 0;
-      }
       $data = [
         'uid'          => $uid,
         'username'     => $username,
-        'admin_level'  => $admin_level,
         'all_worth'    => $all_worth,
         'cost'         => $cost,
       ];
@@ -45,10 +32,6 @@ class UserController extends Controller {
     public function shop() {
       $uid = request()->cookie('uid');
       $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      // 顺便验证签权状态
-      if (!$user) {
-        return redirect('alert/签权错误/您的用户签权已经失效了，请重新登录！');
-      }
       $username = $user->username;
       $db_prefix = env('DB_PREFIX');
       $shop = DB::table('shop')
@@ -76,20 +59,11 @@ class UserController extends Controller {
                 ->where('uid', $user->uid)
                 ->select(DB::raw("SUM(worth)-SUM(cost) as balance"))
                 ->first();
-      $admin = DB::table('admin_level')
-              ->where('uid', $user->uid)
-              ->first();
-      if ($admin) {
-        $admin_level = $admin->level;
-      }else{
-        $admin_level = 0;
-      }
       $data = [
         'uid'             => $uid,
         'username'        => $username,
         'goods'           => $shop,
-        'balance'         => $balance->balance,
-        'admin_level'     => $admin_level
+        'balance'         => $balance->balance
       ];
       return view('user.shop', $data);
     }
@@ -98,22 +72,34 @@ class UserController extends Controller {
     public function security_change_password() {
       $uid = request()->cookie('uid');
       $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      // 顺便验证签权状态
-      if (!$user) {
-        return redirect('alert/签权错误/您的用户签权已经失效了，请重新登录！');
-      }
-      $admin = DB::table('admin_level')
-              ->where('uid', $user->uid)
-              ->first();
-      if ($admin) {
-        $admin_level = $admin->level;
-      }else{
-        $admin_level = 0;
-      }
       $data = [
-        'username'        => $user->username,
-        'admin_level'     => $admin_level
+        'username'        => $user->username
       ];
       return view('user.security_change_password', $data);
+    }
+
+    // 签到历史查询
+    public function history_checkin() {
+      $uid = request()->cookie('uid');
+      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      // 读取系统设置
+      $limit = DB::table('system')
+                ->where('skey', 'checkin_history_limit')
+                ->first();
+      $unit = DB::table('system')
+                ->where('skey', 'checkin_history_limit_unit')
+                ->first();
+      $earliest = date('Y-m-d 00:00:00', strtotime("-{$limit->svalue} {$unit->svalue}"));
+      $charts = DB::table('lists_v2')
+              ->where('uid', $user->uid)
+              ->where('check_time', '>', $earliest)
+              ->orderBy('check_time', 'desc')
+              ->paginate(25);
+      $data = [
+        'limit'   => $limit->svalue,
+        'unit'    => $unit->svalue,
+        'charts'  => $charts
+      ];
+      return view('user.history_checkin', $data);
     }
 }

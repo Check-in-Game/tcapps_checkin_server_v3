@@ -29,11 +29,9 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ action('UserController@user') }}">用户中心</a>
             </li>
-            @if ($admin_level !== 0)
             <li class="nav-item">
               <a class="nav-link" href="{{ action('AdminController@index') }}">管理中心</a>
             </li>
-            @endif
           </ul>
           <button class="btn btn-sm btn-outline-light" type="button" onclick="javascript:logout();">退出 / logout</button>
         </div>

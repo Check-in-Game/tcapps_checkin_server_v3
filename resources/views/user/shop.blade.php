@@ -7,7 +7,7 @@
 <div>
   <div class="row text-center">
     <div class="col-sm mb-3">
-      <button type="button" class="btn btn-primary btn-block" disabled>签到记录（建设中）</button>
+      <button type="button" class="btn btn-primary btn-block"  onclick="javascript:location.href='{{ action('UserController@history_checkin') }}';">签到记录</button>
     </div>
     <div class="col-sm mb-3">
       <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('UserController@shop') }}';">兑换中心</button>
@@ -19,6 +19,7 @@
       <button type="button" class="btn btn-primary btn-block" disabled>活动中心（建设中）</button>
     </div>
   </div>
+
   <div class="row">
     @if($goods)
       @foreach($goods as $key => $value)
