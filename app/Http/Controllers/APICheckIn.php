@@ -101,7 +101,11 @@ class APICheckIn extends Controller {
       // 默认最高分
       $max = 10;
       // 查询活动
-      $db = DB::table('activity')->where('starttime', '<=', time())->where('endtime', '>=', time())->where('status', 1)->first();
+      $db = DB::table('activity')
+          ->where('starttime', '<=', date('Y-m-d H:i:s'))
+          ->where('endtime', '>=', date('Y-m-d H:i:s'))
+          ->where('status', 1)
+          ->first();
       if ($db) {
         $min = $db->min_worth;
         $max = $db->max_worth;
