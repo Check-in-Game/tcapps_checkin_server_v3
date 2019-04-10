@@ -26,6 +26,7 @@
     <table class="table table-striped table-hover text-center">
       <thead>
         <tr>
+          <th scope="col">签到ID</th>
           <th scope="col">签到时间</th>
           <th scope="col">签到积分</th>
           <th scope="col">状态</th>
@@ -34,6 +35,9 @@
       <tbody>
           @foreach ($charts as $key => $chart)
             <tr>
+              <th scope="row">
+                #{{ $chart->cid }}
+              </th>
               <th scope="row">
                 {{ $chart->check_time }}
               </th>
