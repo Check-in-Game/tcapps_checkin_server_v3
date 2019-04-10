@@ -15,7 +15,7 @@
         <th scope="col">活动ID</th>
         <th scope="col">开始时间</th>
         <th scope="col">结束时间</th>
-        <th scope="col">最大-小值</th>
+        <th scope="col">积分区间</th>
         <th scope="col">状态</th>
       </tr>
     </thead>
