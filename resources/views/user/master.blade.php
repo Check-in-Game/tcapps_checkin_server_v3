@@ -42,6 +42,26 @@
 
     <div class="container">
 
+      @yield('before_nav')
+
+      <div class="row text-center my-4">
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('UserController@user') }}';">用户中心</button>
+        </div>
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-success btn-block" onclick="javascript:location.href='{{ action('UserController@history_checkin') }}';">签到记录</button>
+        </div>
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('UserController@shop') }}';">兑换中心</button>
+        </div>
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-success btn-block" onclick="javascript:location.href='{{ action('UserController@bill') }}';">积分账单</button>
+        </div>
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('UserController@shop') }}';">活动中心</button>
+        </div>
+      </div>
+
       @yield('container')
 
     </div>

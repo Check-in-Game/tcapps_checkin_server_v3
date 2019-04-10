@@ -70,12 +70,15 @@ class APIUser extends Controller {
         return response($json);
       }
       // 查询用户余额
-      $balance = DB::table('lists_v2')
+      $all_worth = DB::table('lists_v2')
                 ->where('uid', $user->uid)
-                ->select(DB::raw("SUM(worth)-SUM(cost) as balance"))
-                ->first();
+                ->sum('worth');
+      $cost = DB::table('purchase_records')
+            ->where('uid', $user->uid)
+            ->sum('cost');
+      $balance = $all_worth - $cost;
       // 余额不足
-      if ($good->cost > $balance->balance) {
+      if ($good->cost > $balance) {
         $json = $this->JSON(2503, 'Insuffcient funds.', null);
         return response($json);
       }
@@ -116,77 +119,15 @@ class APIUser extends Controller {
         'gid'           => $good->gid,
         'cost'          => $good->cost,
         'purchase_time' => date('Y-m-d H:i:s'),
-        'status'        => 0    // 购买中
+        'status'        => 1
       ];
       $pid = DB::table('purchase_records')->insertGetId($data);
-      // 写入购买记录
-      $count = 0;
-      $all   = $good->cost;
-      while ($count < $all) {
-        // 读取最早有余额的记录
-        $rec = DB::table('lists_v2')
-              ->whereRaw('cost < worth')
-              ->where('worth' ,'>', 0)
-              ->where('status', 1)
-              ->where('uid', $user->uid)
-              ->first();
-        // 最大扣款数
-        $most = $rec->worth - $rec->cost;
-        // 最大需要扣款数
-        $need = $all - $count;
-        $pay = 0;
-        if ($need > $most || $need === $most) {
-          // 全扣
-          $pay = $most;
-        }else{
-          // 半扣
-          $pay = $most - $need;
-        }
-        $data = [
-          'cost'  => $rec->cost + $pay
-        ];
-        // 更新lists记录
-        $lists = DB::table('lists_v2')
-                ->where('cid', $rec->cid)
-                ->update($data);
-        if (!$lists) {
-          $json = $this->JSON(2507.1, 'Unknown error.', null);
-          return response($json);
-        }
-        $data = [
-          'uid'         => $user->uid,
-          'cid'         => $rec->cid,
-          'cost'        => $pay,
-          'spent_time'  => date('Y-m-d H:i:s'),
-          'status'      => 1
-        ];
-        // 写入point消费记录
-        $pointRec = DB::table('point_records')->insert($data);
-        if (!$pointRec) {
-          $json = $this->JSON(2507.2, 'Unknown error.', null);
-          return response($json);
-        }
-        // 更新计数
-        $count += $pay;
-        // 判断购买完成
-        if ($count >= $all) {
-          // 更新购买记录
-          $data = [
-            'uid'           => $user->uid,
-            'gid'           => $good->gid,
-            'cost'          => $count,
-            'purchase_time' => date('Y-m-d H:i:s'),
-            'status'        => 1
-          ];
-          $r = DB::table('purchase_records')->where('pid', $pid)->update($data);
-          if (!$r) {
-            $json = $this->JSON(2507.3, 'Unknown error.', null);
-            return response($json);
-          }else{
-            $json = $this->JSON(0, null, ['msg' => 'Success!']);
-            return response($json);
-          }
-        }
+      if (!$pid) {
+        $json = $this->JSON(2507, 'Unknown error.', null);
+        return response($json);
+      }else{
+        $json = $this->JSON(0, null, ['msg' => 'Success!']);
+        return response($json);
       }
     }
 

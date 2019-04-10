@@ -81,7 +81,6 @@ create table tcapps_checkin_lists_v2(
   uid int unsigned not null comment "用户ID",
   tid tinyint unsigned not null default 0 comment "签到类型",
   worth int unsigned not null default 1 comment "价值",
-  cost int unsigned not null default 0 comment "消耗",
   check_time datetime not null comment "签到时间",
   status tinyint not null default 1 comment "状态"
 )comment="签到信息",engine=InnoDB default character set utf8 collate utf8_general_ci;
@@ -127,16 +126,6 @@ create table tcapps_checkin_purchase_records(
   purchase_time datetime not null comment "购买时间",
   status tinyint not null default 1 comment "状态"
 )comment="购买记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
-
-#积分支出记录
-create table tcapps_checkin_point_records(
-  prid int unsigned auto_increment primary key not null comment "记录ID",
-  uid int unsigned not null comment "用户ID",
-  cid int unsigned not null comment "积分ID",
-  cost int unsigned not null default 0 comment "花费数量",
-  spent_time datetime not null comment "消耗时间",
-  status tinyint not null default 1 comment "状态"
-)comment="积分支出记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #管理员等级表
 create table tcapps_checkin_admin_level(

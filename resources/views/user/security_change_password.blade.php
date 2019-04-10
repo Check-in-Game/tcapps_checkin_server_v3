@@ -1,25 +1,11 @@
 @extends('user/master')
-@section('container')
+@section('before_nav')
 <div class="alert alert-primary mt-4" role="alert">
   欢迎回来，{{ $username }} ！
 </div>
+@endsection
 
-<div>
-  <div class="row text-center">
-    <div class="col-sm mb-3">
-      <button type="button" class="btn btn-primary btn-block"  onclick="javascript:location.href='{{ action('UserController@history_checkin') }}';">签到记录</button>
-    </div>
-    <div class="col-sm mb-3">
-      <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('UserController@shop') }}';">兑换中心</button>
-    </div>
-    <div class="col-sm mb-3">
-      <button type="button" class="btn btn-primary btn-block" disabled>积分账单（建设中）</button>
-    </div>
-    <div class="col-sm mb-3">
-      <button type="button" class="btn btn-primary btn-block" disabled>活动中心（建设中）</button>
-    </div>
-  </div>
-
+@section('container')
   <h2>修改密码 / Change Password</h2>
 
   <div class="input-group mb-3">
@@ -50,8 +36,6 @@
   <div class="alert alert-danger mt-4" role="alert">
     如果您需要申诉，请移步首页加入QQ群后寻找管理帮助！
   </div>
-
-</div>
 @endsection
 <script src="{{ asset('js/base64.js') }}" charset="utf-8"></script>
 <script type="text/javascript">

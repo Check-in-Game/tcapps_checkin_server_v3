@@ -16,9 +16,9 @@ class UserController extends Controller {
       $all_worth = DB::table('lists_v2')
               ->where('uid', $user->uid)
               ->sum('worth');
-      $cost = DB::table('lists_v2')
-              ->where('uid', $user->uid)
-              ->sum('cost');
+      $cost = DB::table('purchase_records')
+            ->where('uid', $user->uid)
+            ->sum('cost');
       $data = [
         'uid'          => $uid,
         'username'     => $username,
@@ -34,6 +34,7 @@ class UserController extends Controller {
       $user = DB::table('user_accounts')->where('uid', $uid)->first();
       $username = $user->username;
       $db_prefix = env('DB_PREFIX');
+      // 读取商品
       $shop = DB::table('shop')
               ->where('starttime' ,'<=', date('Y-m-d H:i:s'))
               ->where('endtime' ,'>=', date('Y-m-d H:i:s'))
@@ -55,15 +56,17 @@ class UserController extends Controller {
         $shop[$key]['all_bought'] = $all;
         $shop[$key]['user_bought'] = $userR;
       }
-      $balance = DB::table('lists_v2')
+      $all_worth = DB::table('lists_v2')
                 ->where('uid', $user->uid)
-                ->select(DB::raw("SUM(worth)-SUM(cost) as balance"))
-                ->first();
+                ->sum('worth');
+      $cost = DB::table('purchase_records')
+            ->where('uid', $user->uid)
+            ->sum('cost');
       $data = [
         'uid'             => $uid,
         'username'        => $username,
         'goods'           => $shop,
-        'balance'         => $balance->balance
+        'balance'         => $all_worth - $cost
       ];
       return view('user.shop', $data);
     }
@@ -101,5 +104,19 @@ class UserController extends Controller {
         'charts'  => $charts
       ];
       return view('user.history_checkin', $data);
+    }
+
+    // 积分账单
+    public function bill() {
+      $uid = request()->cookie('uid');
+      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      $charts = DB::table('purchase_records')
+              ->where('uid', $user->uid)
+              ->orderBy('purchase_time', 'desc')
+              ->paginate(25);
+      $data = [
+        'charts'  => $charts
+      ];
+      return view('user.bill', $data);
     }
 }
