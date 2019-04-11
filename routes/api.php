@@ -47,3 +47,8 @@ Route::get('/admin/activity/add/{starttime}/{endtime}/{min}/{max}', 'APIAdmin@ac
 Route::get('/admin/goods/add/{name}/{cost}/{starttime}/{endtime}/{tid}/{sid}/{rebuy}/{all_count}/{description}/{image}', 'APIAdmin@goods_add')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth');
+
+// Optmize
+Route::get('/admin/optimize/{project}', 'APIAdminOptmize@optmize')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth');

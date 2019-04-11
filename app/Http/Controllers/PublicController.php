@@ -34,11 +34,13 @@ class PublicController extends Controller {
 
     public function register() {
       if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['comfirm'])
-        && !empty($_POST['username'] && !empty($_POST['password']) && !empty($_POST['comfirm']))){
+        && !empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['comfirm'])
+        && isset($_POST['vf']) && !empty($_POST['vf']) ){
         // 进入注册流程
         $username = $_POST['username'];
         $password = $_POST['password'];
         $comfirm = $_POST['comfirm'];
+        $vf = $_POST['vf'];
         // 判断合法性
         if (mb_strlen($username) > 16 || mb_strlen($username) < 5 || mb_strlen($password) > 16 || mb_strlen($password) < 8) {
           return view('public.register',[
@@ -59,6 +61,13 @@ class PublicController extends Controller {
           return view('public.register',[
             'reg_status' => false,
             'reg_error' => '注册失败！用户名中不能包含特殊字符。'
+          ]);
+        }
+        // 检查vf
+        if ($vf !== md5($username.$password.'!d@v#d[$s%^sda&3f*20)19*')) {
+          return view('public.register',[
+            'reg_status' => false,
+            'reg_error' => '您可能是机器人，注册被终止。'
           ]);
         }
         // 检查用户是否存在
@@ -83,27 +92,13 @@ class PublicController extends Controller {
             'reg_status' => false,
             'reg_error' => '注册失败！未知原因。'
           ]);
-        }
-        // 注册Token权限
-        $data = array(
-          'uid'       => $uid,
-          'token'     => '',
-          'status'    => -1   // 未初始化
-        );
-        $db = DB::table('tokens_v2')->insert($data);
-        if ($db) {
+        }else{
           $auth = $this->generate_auth($password, $uid, 1);
           Cookie::queue('uid', $uid);
           Cookie::queue('auth', $auth);
           return redirect('user');
-        }else{
-          return view('public.register',[
-                    'reg_status' => false,
-                    'reg_error' => '注册失败！未知原因。'
-                  ]);
         }
       }else{
-        // 显示注册页面
         return view('public.register');
       }
     }

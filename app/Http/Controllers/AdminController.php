@@ -25,4 +25,9 @@ class AdminController extends Controller {
     public function goods() {
       return view('admin.goods');
     }
+
+    // 优化页
+    public function optimize() {
+      return view('admin.optimize');
+    }
 }

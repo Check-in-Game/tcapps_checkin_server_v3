@@ -35,3 +35,4 @@ Route::get('/admin', 'AdminController@index')->middleware('check.auth')->middlew
 Route::get('/admin/compensate', 'AdminController@compensate')->middleware('check.auth')->middleware('check.admin.auth');
 Route::get('/admin/activity', 'AdminController@activity')->middleware('check.auth')->middleware('check.admin.auth');
 Route::get('/admin/goods', 'AdminController@goods')->middleware('check.auth')->middleware('check.admin.auth');
+Route::get('/admin/optimize', 'AdminController@optimize')->middleware('check.auth')->middleware('check.admin.auth');

@@ -33,12 +33,22 @@ class APICheckIn extends Controller {
       // 查询Token
       $db = DB::table('tokens_v2')->where('uid', $user->uid)->first();
       if (!$db) {
-        // 用户信息在Token表中不存在
-        $json = $this->JSON(2104, 'Incorrect user infomation.', ['token' => null]);
-        return response($json);
-      }
-      // 查询Token是否需要更新
-      if ($db->status !== 1) {
+        $time = time();
+        $token = md5($time . $password).'@'.$username;
+        $data = array(
+          'uid'     => $user->uid,
+          'token'   => $token,
+          'status'  => 1
+        );
+        $db = DB::table('tokens_v2')->insert($data);
+        if (!$db) {
+          $json = $this->JSON(2105, 'Failed to generate token.', ['token' => null]);
+          return response($json);
+        }else{
+          $json = $this->JSON(0, null, ['token' => $token]);
+          return response($json);
+        }
+      }else if ($db->status !== 1) {
         // 需要更新
         $time = time();
         $token = md5($time . $password).'@'.$username;

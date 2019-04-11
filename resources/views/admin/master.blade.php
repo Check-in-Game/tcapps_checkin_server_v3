@@ -56,6 +56,9 @@
         <div class="col-sm mb-3">
           <button type="button" class="btn btn-info btn-block" onclick="javascript:location.href='{{ action('AdminController@goods') }}';">管理商品</button>
         </div>
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-danger btn-block" onclick="javascript:location.href='{{ action('AdminController@optimize') }}';">系统优化</button>
+        </div>
       </div>
 
       @yield('container')
