@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -91,12 +92,15 @@ class PublicController extends Controller {
         );
         $db = DB::table('tokens_v2')->insert($data);
         if ($db) {
-          return redirect('home');
+          $auth = $this->generate_auth($password, $uid, 1);
+          Cookie::queue('uid', $uid);
+          Cookie::queue('auth', $auth);
+          return redirect('user');
         }else{
           return view('public.register',[
-            'reg_status' => false,
-            'reg_error' => '注册失败！未知原因。'
-          ]);
+                    'reg_status' => false,
+                    'reg_error' => '注册失败！未知原因。'
+                  ]);
         }
       }else{
         // 显示注册页面

@@ -19,7 +19,7 @@ Route::get('/home', 'PublicController@index');
 Route::get('/webCheckin', 'PublicController@webCheckin');
 // 登录
 Route::get('/login', 'PublicController@login');
-// 登录
+// 错误提示
 Route::get('/alert/{error}/{content}', 'PublicController@alert');
 // 注册
 Route::match(['get', 'post'], '/register', 'PublicController@register');
