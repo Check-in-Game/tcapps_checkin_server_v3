@@ -6,8 +6,8 @@
         <h1 class="display-4">Check-in Game 在线签到器</h1>
         <p class="lead">签到排行榜实时更新，签到每隔5分钟即可进行一次，只需简单注册账户即可开始游戏！</p>
         <p class="lead">
-          <a class="btn btn-primary" href="./index.php" target="_self" role="button">首页</a>
-          <a class="btn btn-success" href="./register.html" target="_blank" role="button">注册账户</a>
+          <a class="btn btn-primary" href="{{ action('PublicController@index') }}">首页</a>
+          <a class="btn btn-success" href="{{ action('PublicController@register') }}">注册账户</a>
         </p>
       </div>
     </div>

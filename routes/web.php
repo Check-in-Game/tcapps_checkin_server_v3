@@ -22,7 +22,7 @@ Route::get('/login', 'PublicController@login');
 // 登录
 Route::get('/alert/{error}/{content}', 'PublicController@alert');
 // 注册
-Route::get('/register', 'PublicController@register');
+Route::match(['get', 'post'], '/register', 'PublicController@register');
 // 用户中心
 Route::get('/user', 'UserController@user')->middleware('check.auth');
 Route::get('/shop', 'UserController@shop')->middleware('check.auth');

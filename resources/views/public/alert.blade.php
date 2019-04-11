@@ -49,7 +49,11 @@
     <body>
         <div class="flex-center position-ref full-height">
             <div class="code">{{ $error }}</div>
-            <div class="message" style="padding: 10px;">{{ $content }}</div>
+            <div class="message" style="padding: 10px;">
+              {{ $content }}
+              <br />
+              <a href="{{ action('PublicController@index') }}">返回首页</a>
+            </div>
         </div>
     </body>
 </html>
