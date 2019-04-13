@@ -3,6 +3,16 @@
 @endsection
 
 @section('container')
+<!-- 公告-6 -->
+@foreach($_notices as $notice)
+<div class="alert alert-{{ $notice['color'] }}" role="alert">
+  @if (!empty($notice['title']))
+  <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+  @endif
+  {{ $notice['content'] }}
+</div>
+@endforeach
+
 <div class="alert alert-primary mt-4" role="alert">
   兑换中心欢迎您，{{ $username }} ！您的可用积分为：{{ $balance }}。
 </div>

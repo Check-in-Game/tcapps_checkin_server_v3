@@ -1,5 +1,15 @@
 @extends('admin/master')
 @section('container')
+<!-- 公告-15 -->
+@foreach($_notices as $notice)
+<div class="alert alert-{{ $notice['color'] }}" role="alert">
+  @if (!empty($notice['title']))
+  <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+  @endif
+  {{ $notice['content'] }}
+</div>
+@endforeach
+
 <div class="row text-center">
   <div class="col-sm mb-4">
     <button type="button" class="btn btn-warning btn-block" onclick="javascript:optimize('users');">删除冗余用户</button>

@@ -121,11 +121,12 @@ class APICheckIn extends Controller {
         $max = $db->max_worth;
       }
       $worth = mt_rand($min, $max);
+      $check_time = date('Y-m-d H:i:s');
       $data = array(
         'uid'     => $user->uid,
         'tid'     => 0,       // 日常签到
         'worth'   => $worth,
-        'check_time'  => date('Y-m-d H:i:s')
+        'check_time'  => $check_time
       );
       $db = DB::table('lists_v2')->insert($data);
       if (!$db) {
@@ -136,8 +137,13 @@ class APICheckIn extends Controller {
         $data = array(
           'status'  => 0
         );
+        $return = [
+          'msg'         => 'Success!',
+          'worth'       => $worth,
+          'check_time'  => $check_time
+        ];
         DB::table('tokens_v2')->where('uid', $user->uid)->update($data);
-        $json =  $this->JSON(0, null, ['msg'  => 'Success!']);
+        $json =  $this->JSON(0, null, $return);
         return response($json);
       }
     }

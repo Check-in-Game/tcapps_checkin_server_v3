@@ -66,6 +66,7 @@ class Kernel extends HttpKernel
         'apicheck.auth' => \App\Http\Middleware\APICheckAuth::class,
         'apicheck.admin.auth' => \App\Http\Middleware\APIAdminCheckAuth::class,
         'check.admin.auth' => \App\Http\Middleware\AdminCheckAuth::class,
+        'notice' => \App\Http\Middleware\Notice::class,
     ];
 
     /**

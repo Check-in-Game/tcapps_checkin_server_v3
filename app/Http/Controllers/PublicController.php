@@ -45,14 +45,14 @@ class PublicController extends Controller {
         if (mb_strlen($username) > 16 || mb_strlen($username) < 5 || mb_strlen($password) > 16 || mb_strlen($password) < 8) {
           return view('public.register',[
             'reg_status' => false,
-            'reg_error' => '注册失败！用户名长度不得超过16位，不得低于5位；密码长度不得超过16位，不得低于8位。'
+            'reg_error' => '注册失败！用户名长度不得超过16位，不得低于5位；密码长度不得超过16位，不得低于8位。',
           ]);
         }
         // 检查一致性
         if ($password !== $comfirm) {
           return view('public.register',[
             'reg_status' => false,
-            'reg_error' => '注册失败！两次密码不一致。'
+            'reg_error' => '注册失败！两次密码不一致。',
           ]);
         }
         $pattern = "/^[a-zA-Z0-9_]+$/";
@@ -60,14 +60,14 @@ class PublicController extends Controller {
         if (!$preg) {
           return view('public.register',[
             'reg_status' => false,
-            'reg_error' => '注册失败！用户名中不能包含特殊字符。'
+            'reg_error' => '注册失败！用户名中不能包含特殊字符。',
           ]);
         }
         // 检查vf
         if ($vf !== md5($username.$password.'!d@v#d[$s%^sda&3f*20)19*')) {
           return view('public.register',[
             'reg_status' => false,
-            'reg_error' => '您可能是机器人，注册被终止。'
+            'reg_error' => '您可能是机器人，注册被终止。',
           ]);
         }
         // 检查用户是否存在
@@ -76,7 +76,7 @@ class PublicController extends Controller {
           // 用户已经存在
           return view('public.register',[
             'reg_status' => false,
-            'reg_error' => '注册失败！该用户名可能已经存在。'
+            'reg_error' => '注册失败！该用户名可能已经存在。',
           ]);
         }
         $password = $this->generate_password($password);
@@ -90,7 +90,7 @@ class PublicController extends Controller {
         if (!$uid) {
           return view('public.register',[
             'reg_status' => false,
-            'reg_error' => '注册失败！未知原因。'
+            'reg_error' => '注册失败！未知原因。',
           ]);
         }else{
           $auth = $this->generate_auth($password, $uid, 1);

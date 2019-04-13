@@ -146,4 +146,17 @@ create table tcapps_checkin_system(
 #INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit', 7, '签到历史记录极限查询时间');
 #INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit_unit', 'day', '签到历史记录极限查询时间单位,day/week/month');
 
+#公告设置表
+create table tcapps_checkin_notices(
+  nid int unsigned auto_increment primary key not null comment "公告ID",
+  place_id int unsigned not null comment "位置ID",
+  title varchar(255) not null comment "标题",
+  content text not null comment "内容",
+  color varchar(64) not null comment "颜色class",
+  starttime datetime not null comment "开始时间",
+  endtime datetime not null comment "结束时间",
+  priority tinyint not null default 1 comment "权重顺序",
+  status tinyint not null default 1 comment "状态"
+)comment="公告设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+#INSERT INTO `tcapps_checkin_notices` (`place_id`, `title`, `content`, `color`, `starttime`, `endtime`, `priority`, `status`) VALUES ('1', '净化行动公告', '为保证平台正常运行，所有用户名涉及广告的用户将收到系统提示更改用户名。不进行更改的用户将被暂停签到，暂停期间造成的签到损失不予补偿。', 'warning', '2019-04-13 00:00:00', '1970-01-01 00:00:00', 1, 1);
 ```

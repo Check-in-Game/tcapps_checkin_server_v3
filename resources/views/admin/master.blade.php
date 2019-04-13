@@ -46,16 +46,42 @@
         您正处于管理模式，请谨慎操作！
       </div>
 
+      <h3>积分</h3>
       <div class="row text-center">
         <div class="col-sm mb-3">
           <button type="button" class="btn btn-info btn-block" onclick="javascript:location.href='{{ action('AdminController@compensate') }}';">增加补偿</button>
         </div>
+      </div>
+
+      <hr />
+
+      <h3>活动</h3>
+      <div class="row text-center">
         <div class="col-sm mb-3">
           <button type="button" class="btn btn-info btn-block" onclick="javascript:location.href='{{ action('AdminController@activity') }}';">管理活动</button>
         </div>
+      </div>
+
+      <hr />
+
+      <h3>商店</h3>
+      <div class="row text-center">
         <div class="col-sm mb-3">
-          <button type="button" class="btn btn-info btn-block" onclick="javascript:location.href='{{ action('AdminController@goods') }}';">管理商品</button>
+          <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@goods') }}';">管理商品</button>
         </div>
+      </div>
+
+      <hr />
+
+      <h3>系统</h3>
+
+      <div class="row text-center">
+        <div class="col-sm mb-3">
+          <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@notices') }}';" disabled>公告管理</button>
+        </div>
+      </div>
+
+      <div class="row text-center">
         <div class="col-sm mb-3">
           <button type="button" class="btn btn-danger btn-block" onclick="javascript:location.href='{{ action('AdminController@optimize') }}';">系统优化</button>
         </div>

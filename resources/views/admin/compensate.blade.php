@@ -1,5 +1,15 @@
 @extends('admin/master')
 @section('container')
+<!-- 公告-12 -->
+@foreach($_notices as $notice)
+<div class="alert alert-{{ $notice['color'] }}" role="alert">
+  @if (!empty($notice['title']))
+  <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+  @endif
+  {{ $notice['content'] }}
+</div>
+@endforeach
+
 <h2>补偿 / Compensate</h2>
 <div class="input-group mb-3">
   <div class="input-group-prepend">

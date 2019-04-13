@@ -8,15 +8,26 @@
         <p class="lead">
           <a class="btn btn-primary" href="{{ action('PublicController@index') }}">首页</a>
           <a class="btn btn-success" href="{{ action('PublicController@register') }}">注册账户</a>
+          <a class="btn btn-info" href="https://jq.qq.com/?_wv=1027&k=5ax4j23" target="_blank" role="button">加入交流QQ群：887304185</a>
         </p>
       </div>
     </div>
   <div class="container">
 @endsection
 @section('container')
-<div class="alert alert-success" role="alert">
-    <h4 class="alert-heading">签到器说明</h4>
-    <p>使用签到器签到请将您的浏览器加入后台常驻白名单，否则被进程杀死后将不能进行签到。</p>
+
+  <!-- 公告-3 -->
+  @foreach($_notices as $notice)
+  <div class="alert alert-{{ $notice['color'] }}" role="alert">
+    @if (!empty($notice['title']))
+    <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+    @endif
+    {{ $notice['content'] }}
+  </div>
+  @endforeach
+
+  <div class="alert alert-success" role="alert">
+    <p class="mb-0">使用签到器签到请将您的浏览器加入后台常驻白名单，否则被进程杀死后将不能进行签到。</p>
   </div>
 
   <!-- 排行榜 -->
@@ -43,21 +54,24 @@
 
   <hr />
 
-  <div class="alert alert-dark" role="alert">
+  <div class="alert alert-success" role="alert">
     <h4 class="alert-heading">签到技巧</h4>
     <p>这款游戏会根据开发者的心情开放活动，经常关注官网能尽早的获取活动预告以提前准备。</p>
     <p>签到运行时，请确保网络环境稳定，签到程序在签到失败后会再重试3次，全部失败后程序将不再重试，需要玩家手动再次点击启动。</p>
-    <p>充分了解游戏运行机制会帮助您更快的获得签到次数。</p>
+    <p><strong>加入官方QQ交流群</strong>充分了解游戏运行机制会帮助您更快的获得签到次数。</p>
     <hr />
     <p class="mb-0">最后，祝您游戏愉快！</p>
   </div>
 
-  <div class="alert alert-warning" role="alert">
-    <h4 class="alert-heading">提交建议 / 加入开发</h4>
-    <p>这款游戏是开发者Jokin在闲暇时间开发的，因为上线匆忙，没有考虑游戏的可玩性，后期需要的开发工作可能较大，所以如果您有兴趣可以进行开发投稿或者加入开发组。</p>
-    <p>联系方式：jokin@twocola.com</p>
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">联系我们</h4>
+    <p>
+      官方QQ群：887304185
+      <br />
+      意见或建议提交：jokin@twocola.com
+    </p>
     <hr />
-    <p class="mb-0">期待您的来信！</p>
+    <p class="mb-0">感谢支持！</p>
   </div>
 @endsection
 <script src="{{ asset('js/base64.js') }}" charset="utf-8"></script>
@@ -118,7 +132,7 @@
     let url = './api/checkIn/' + username + '/' + token;
     $.getJSON(url, function(data){
       if (data.errno == 0){
-        status('签到成功！');
+        status('签到成功！获得' + data.body.worth + '积分！');
       }else{
         status('签到失败，延迟5分钟！');
       }

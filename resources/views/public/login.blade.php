@@ -14,9 +14,19 @@
   <div class="container">
 @endsection
 @section('container')
+  <!-- 公告-4 -->
+  @foreach($_notices as $notice)
+  <div class="alert alert-{{ $notice['color'] }}" role="alert">
+    @if (!empty($notice['title']))
+    <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+    @endif
+    {{ $notice['content'] }}
+  </div>
+  @endforeach
+
   <div class="alert alert-success" role="alert">
     <h4 class="alert-heading">登录</h4>
-    <p>登录后将开放更多有趣、便捷的功能。</p>
+    <p class="mb-0">登录后将开放更多有趣、便捷的功能。</p>
   </div>
 
   <!-- 登录 -->
@@ -41,7 +51,7 @@
 
   <div class="alert alert-warning" role="alert">
     <h4 class="alert-heading">安全提示</h4>
-    <p>管理员不会向您索要您帐号的密码，请勿将密码透露给任何人！</p>
+    <p class="mb-0">管理员不会向您索要您帐号的密码，请勿将密码透露给任何人！</p>
   </div>
 
 @endsection

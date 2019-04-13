@@ -3,6 +3,16 @@
 @endsection
 
 @section('container')
+<!-- 公告-8 -->
+@foreach($_notices as $notice)
+<div class="alert alert-{{ $notice['color'] }}" role="alert">
+  @if (!empty($notice['title']))
+  <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+  @endif
+  {{ $notice['content'] }}
+</div>
+@endforeach
+
 <div class="alert alert-primary mt-4 text-center" role="alert">
   目前记录可查询最多 {{ $limit }} @if( $unit === 'day' ) 天 @elseif( $unit === 'week' ) 周 @elseif( $unit === 'month' ) 个月 @elseif( $unit === 'year' ) 年 @endif
 </div>

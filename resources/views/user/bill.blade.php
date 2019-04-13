@@ -3,9 +3,15 @@
 @endsection
 
 @section('container')
-<div class="alert alert-warning mt-4 text-center" role="alert">
-  部分情况下可能会出现未结清的情况，系统会在稍后自动清算。未清算的记录可能会影响您后续的购买操作，刷新页面后如仍然存在未清算情况，请加群联系管理员。
+<!-- 公告-9 -->
+@foreach($_notices as $notice)
+<div class="alert alert-{{ $notice['color'] }}" role="alert">
+  @if (!empty($notice['title']))
+  <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+  @endif
+  {{ $notice['content'] }}
 </div>
+@endforeach
 
 <div class="row">
 

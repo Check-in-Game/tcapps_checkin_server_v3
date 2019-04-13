@@ -3,9 +3,16 @@
 @endsection
 
 @section('container')
-  <div class="alert alert-primary mt-4" role="alert">
-    欢迎回来，{{ $username }} ！
+  <!-- 公告-7 -->
+  @foreach($_notices as $notice)
+  <div class="alert alert-{{ $notice['color'] }}" role="alert">
+    @if (!empty($notice['title']))
+    <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+    @endif
+    {{ $notice['content'] }}
   </div>
+  @endforeach
+
 
   <h2>修改密码 / Change Password</h2>
 

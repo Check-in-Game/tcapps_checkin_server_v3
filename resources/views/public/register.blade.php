@@ -1,5 +1,16 @@
 @extends('public.master')
 @section('container')
+
+  <!-- 公告-2 -->
+  @foreach($_notices as $notice)
+  <div class="alert alert-{{ $notice['color'] }}" role="alert">
+    @if (!empty($notice['title']))
+    <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+    @endif
+    {{ $notice['content'] }}
+  </div>
+  @endforeach
+
   <div class="alert alert-success mt-4" role="alert">
     中文名称不能直接注册，可以使用签到累计的积分向管理员提交改名申请。
   </div>
