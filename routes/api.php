@@ -52,3 +52,17 @@ Route::get('/admin/goods/add/{name}/{cost}/{starttime}/{endtime}/{tid}/{sid}/{re
 Route::get('/admin/optimize/{project}', 'APIAdminOptmize@optmize')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth');
+
+// Notices
+Route::get('/admin/notices/search/{nid}', 'APIAdmin@notices_search')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth');
+Route::post('/admin/notices/add', 'APIAdmin@notices_add')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth');
+Route::post('/admin/notices/update', 'APIAdmin@notices_update')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth');
+Route::post('/admin/notices/delete', 'APIAdmin@notices_delete')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth');

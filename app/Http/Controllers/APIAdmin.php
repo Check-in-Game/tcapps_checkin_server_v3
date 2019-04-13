@@ -119,4 +119,113 @@ class APIAdmin extends Controller {
           return response($json);
         }
     }
+
+    // 搜索公告
+    public function notices_search(int $nid) {
+      $notice = DB::table('notices')
+              ->where('nid', $nid)
+              ->first();
+      if (!$notice) {
+        $json = $this->JSON(2901, "Failed to find this NID.", null);
+        return response($json);
+      }else{
+        $json = $this->JSON(0, null, ['msg'=>'Success', 'data'=>$notice]);
+        return response($json);
+      }
+    }
+
+    // 添加公告
+    public function notices_add() {
+      if (!isset($_POST['place_id']) || empty($_POST['place_id'])
+        || !isset($_POST['title']) || empty($_POST['title'])
+        || !isset($_POST['content']) || empty($_POST['content'])
+        || !isset($_POST['color']) || empty($_POST['color'])
+        || !isset($_POST['priority']) || empty($_POST['priority'])
+        || !isset($_POST['starttime']) || empty($_POST['starttime'])
+        || !isset($_POST['endtime']) || empty($_POST['endtime'])
+        || !isset($_POST['status']) || empty($_POST['status'])
+      ){
+        $json = $this->JSON(2902, "Lost some infomation.", null);
+        return response($json);
+      }
+      $data['place_id']   = $_POST['place_id'];
+      $data['title']      = $_POST['title'];
+      $data['content']    = $_POST['content'];
+      $data['color']      = $_POST['color'];
+      $data['priority']   = $_POST['priority'];
+      $data['starttime']  = $_POST['starttime'];
+      $data['endtime']    = $_POST['endtime'];
+      $data['status']     = $_POST['status'];
+      $notice = DB::table('notices')->insert($data);
+      if ($notice) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(2903, "Failed to add notice.", null);
+        return response($json);
+      }
+    }
+
+    // 修改公告
+    public function notices_update() {
+      if (!isset($_POST['nid']) || empty($_POST['nid'])
+        || !isset($_POST['place_id']) || empty($_POST['place_id'])
+        || !isset($_POST['title']) || empty($_POST['title'])
+        || !isset($_POST['content']) || empty($_POST['content'])
+        || !isset($_POST['color']) || empty($_POST['color'])
+        || !isset($_POST['priority']) || empty($_POST['priority'])
+        || !isset($_POST['starttime']) || empty($_POST['starttime'])
+        || !isset($_POST['endtime']) || empty($_POST['endtime'])
+        || !isset($_POST['status']) || empty($_POST['status'])
+      ){
+        $json = $this->JSON(2904, "Lost some infomation.", null);
+        return response($json);
+      }
+      $nid                = $_POST['nid'];
+      // 查询该NID是否存在
+      $notice = DB::table('notices')->where('nid', $nid)->first();
+      if (!$notice) {
+        $json = $this->JSON(2905, "Failed to find this NID.", null);
+        return response($json);
+      }
+      $data['place_id']   = $_POST['place_id'];
+      $data['title']      = $_POST['title'];
+      $data['content']    = $_POST['content'];
+      $data['color']      = $_POST['color'];
+      $data['priority']   = $_POST['priority'];
+      $data['starttime']  = $_POST['starttime'];
+      $data['endtime']    = $_POST['endtime'];
+      $data['status']     = $_POST['status'];
+      $notice = DB::table('notices')->where('nid', $nid)->update($data);
+      if ($notice) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(2906, "Failed to update notice.", null);
+        return response($json);
+      }
+    }
+
+    // 删除公告
+    public function notices_delete() {
+      if (!isset($_POST['nid']) || empty($_POST['nid'])){
+        $json = $this->JSON(2907, "Lost some infomation.", null);
+        return response($json);
+      }
+      $nid                = $_POST['nid'];
+      // 查询该NID是否存在
+      $notice = DB::table('notices')->where('nid', $nid)->first();
+      if (!$notice) {
+        $json = $this->JSON(2908, "Failed to find this NID.", null);
+        return response($json);
+      }
+      $notice = DB::table('notices')->where('nid', $nid)->delete();
+      if ($notice) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(2909, "Failed to delete notice.", null);
+        return response($json);
+      }
+    }
 }

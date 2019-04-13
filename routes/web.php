@@ -36,3 +36,5 @@ Route::get('/admin/compensate', 'AdminController@compensate')->middleware('check
 Route::get('/admin/activity', 'AdminController@activity')->middleware('check.auth')->middleware('check.admin.auth', 'notice:13');
 Route::get('/admin/goods', 'AdminController@goods')->middleware('check.auth')->middleware('check.admin.auth', 'notice:14');
 Route::get('/admin/optimize', 'AdminController@optimize')->middleware('check.auth')->middleware('check.admin.auth', 'notice:15');
+Route::get('/admin/notices', 'AdminController@notices')->middleware('check.auth')->middleware('check.admin.auth', 'notice:16');
+Route::get('/admin/notices/manage', 'AdminController@notices_manage')->middleware('check.auth')->middleware('check.admin.auth', 'notice:17');

@@ -46,48 +46,58 @@
         您正处于管理模式，请谨慎操作！
       </div>
 
-      <h3>积分</h3>
-      <div class="row text-center">
-        <div class="col-sm mb-3">
-          <button type="button" class="btn btn-info btn-block" onclick="javascript:location.href='{{ action('AdminController@compensate') }}';">增加补偿</button>
+      <div class="row">
+
+        <!-- 侧边栏 -->
+        <div class="col-sm-12 col-md-2">
+          <h3>积分</h3>
+          <div class="row text-center">
+            <div class="col-sm mb-3">
+              <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@compensate') }}';">增加补偿</button>
+            </div>
+          </div>
+
+          <hr />
+
+          <h3>活动</h3>
+          <div class="row text-center">
+            <div class="col-sm mb-3">
+              <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@activity') }}';">管理活动</button>
+            </div>
+          </div>
+
+          <hr />
+
+          <h3>商店</h3>
+          <div class="row text-center">
+            <div class="col-sm mb-3">
+              <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@goods') }}';">管理商品</button>
+            </div>
+          </div>
+
+          <hr />
+
+          <h3>系统</h3>
+
+          <div class="row text-center">
+            <div class="col-sm col-sm-12 mb-3">
+              <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@notices_manage') }}';">公告管理</button>
+            </div>
+            <div class="col-sm col-sm-12 mb-3">
+              <button type="button" class="btn btn-success btn-block" onclick="javascript:location.href='{{ action('AdminController@notices') }}';">公告一览</button>
+            </div>
+            <div class="col-sm col-sm-12 mb-3">
+              <button type="button" class="btn btn-danger btn-block" onclick="javascript:location.href='{{ action('AdminController@optimize') }}';">系统优化</button>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <hr />
-
-      <h3>活动</h3>
-      <div class="row text-center">
-        <div class="col-sm mb-3">
-          <button type="button" class="btn btn-info btn-block" onclick="javascript:location.href='{{ action('AdminController@activity') }}';">管理活动</button>
+        <!-- 内容 -->
+        <div class="col-sm-12 col-md-10">
+          @yield('container')
         </div>
+
       </div>
-
-      <hr />
-
-      <h3>商店</h3>
-      <div class="row text-center">
-        <div class="col-sm mb-3">
-          <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@goods') }}';">管理商品</button>
-        </div>
-      </div>
-
-      <hr />
-
-      <h3>系统</h3>
-
-      <div class="row text-center">
-        <div class="col-sm mb-3">
-          <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@notices') }}';" disabled>公告管理</button>
-        </div>
-      </div>
-
-      <div class="row text-center">
-        <div class="col-sm mb-3">
-          <button type="button" class="btn btn-danger btn-block" onclick="javascript:location.href='{{ action('AdminController@optimize') }}';">系统优化</button>
-        </div>
-      </div>
-
-      @yield('container')
 
     </div>
     <script type="text/javascript">

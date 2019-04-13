@@ -30,4 +30,18 @@ class AdminController extends Controller {
     public function optimize() {
       return view('admin.optimize');
     }
+
+    // 公告一览页
+    public function notices() {
+      $notices = DB::table('notices')->paginate();
+      $data = [
+        'charts'  => $notices,
+      ];
+      return view('admin.notices', $data);
+    }
+
+    // 公告管理页
+    public function notices_manage() {
+      return view('admin.notices_manage');
+    }
 }

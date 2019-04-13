@@ -29,7 +29,7 @@ class Notice
                   ->where('place_id', $value)
                   ->where('starttime', '<=', $now)
                   ->where('status', 1)
-                  ->orderBy('priority', 'asc')
+                  ->orderBy('priority', 'desc')
                   ->get()
                   ->map(function($value){return (Array)$value;})
                   ->toArray();

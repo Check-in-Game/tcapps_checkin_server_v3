@@ -9,5 +9,7 @@
   {{ $notice['content'] }}
 </div>
 @endforeach
-
+<div class="alert alert-success">
+  请选择需要管理的区块！
+</div>
 @endsection
