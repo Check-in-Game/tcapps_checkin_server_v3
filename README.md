@@ -161,7 +161,7 @@ create table tcapps_checkin_admin_level(
 
 #管理员权限注册表
 create table tcapps_checkin_admin_register(
-  uid int unsigned primary key not null comment "用户ID",
+  uid int unsigned not null comment "用户ID",
   rid int unsigned not null comment "权限ID",
   status tinyint not null default 1 comment "状态"
 )comment="管理员权限表",engine=InnoDB default character set utf8 collate utf8_general_ci;
