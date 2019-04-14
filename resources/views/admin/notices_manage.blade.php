@@ -93,6 +93,7 @@
   <button class="btn btn-secondary float-right mr-2" id="btn" name="button" onclick="javascript:update();">修改</button>
 </p>
 @endsection
+@section('script')
 <script type="text/javascript">
 function search() {
   let nid = $('#nid').val();
@@ -140,8 +141,9 @@ function add() {
   let starttime = $('#starttime').val();
   let endtime   = $('#endtime').val();
   let status    = $('#status').val();
-  if (place_id == '' || title == '' || content == '' || color == '' || priority == '' || starttime == '' || endtime == '' || status == '') {
+  if (place_id == '' || title == '' || content == '' || color == '选择颜色Class' || priority == '' || starttime == '' || endtime == '' || status == '') {
     alert('请填写信息！');
+    return false;
   }
   $.ajax({
     url: '/api/admin/notices/add',
@@ -191,7 +193,7 @@ function update() {
   let starttime = $('#starttime').val();
   let endtime   = $('#endtime').val();
   let status    = $('#status').val();
-  if (nid == '' || place_id == '' || title == '' || content == '' || color == '' || priority == '' || starttime == '' || endtime == '' || status == '') {
+  if (nid == '' || place_id == '' || title == '' || content == '' || color == '选择颜色Class' || priority == '' || starttime == '' || endtime == '' || status == '') {
     alert('请填写信息！');
   }
   $.ajax({
@@ -238,6 +240,7 @@ function del() {
   let nid       = $('#nid').val();
   if (nid == '') {
     alert('请填写信息！');
+    return false;
   }
   $.ajax({
     url: '/api/admin/notices/delete',
@@ -272,3 +275,4 @@ function del() {
   });
 }
 </script>
+@endsection

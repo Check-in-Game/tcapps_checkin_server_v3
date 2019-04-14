@@ -85,6 +85,7 @@
   <button class="btn btn-success float-right" id="btn" name="button" onclick="javascript:add();">增加</button>
 </p>
 @endsection
+@section('script')
 <script type="text/javascript">
 function add() {
   let name        = $('#name').val();
@@ -99,6 +100,7 @@ function add() {
   let image       = $('#image').val();
   if (name == '' || cost == '' || starttime == '' || endtime == '' || tid == '' || sid == '' || rebuy == '' || all_count == '' || description == '') {
     alert('请填写信息！');
+    return false;
   }
   image = image == '' ? 'null' : image;
   // $('#btn').attr('disabled', 'disabled');
@@ -113,3 +115,4 @@ function add() {
   });
 }
 </script>
+@endsection

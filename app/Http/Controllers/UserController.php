@@ -124,6 +124,7 @@ class UserController extends Controller {
     public function activity() {
       $charts = DB::table('activity')
           ->where('endtime', '>=', date('Y-m-d H:i:s', strtotime('-7 day')))
+          ->where('starttime', '<=', date('Y-m-d H:i:s', strtotime('+7 day')))
           ->where('status', 1)
           ->paginate(25);
       $data = [

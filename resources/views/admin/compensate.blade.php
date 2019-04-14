@@ -29,12 +29,14 @@
   <button class="btn btn-success float-right" id="btn" name="button" onclick="javascript:conpensate();">增加</button>
 </p>
 @endsection
+@section('script')
 <script type="text/javascript">
 function conpensate() {
   let uid = $('#uid').val();
   let count = $('#count').val();
   if (uid == '' || count == '') {
     alert('请填写信息！');
+    return false;
   }
   $('#btn').attr('disabled', 'disabled');
   $.getJSON('/api/admin/conpensate/' + uid + '/' + count, function(data){
@@ -48,3 +50,4 @@ function conpensate() {
   });
 }
 </script>
+@endsection

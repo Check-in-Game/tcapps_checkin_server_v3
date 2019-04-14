@@ -52,7 +52,7 @@
         <div class="col-sm-12 col-md-2">
           <h3>积分</h3>
           <div class="row text-center">
-            <div class="col-sm mb-3">
+            <div class="col-sm col-sm-12 mb-3">
               <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@compensate') }}';">增加补偿</button>
             </div>
           </div>
@@ -61,8 +61,11 @@
 
           <h3>活动</h3>
           <div class="row text-center">
-            <div class="col-sm mb-3">
-              <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@activity') }}';">管理活动</button>
+            <div class="col-sm col-sm-12 mb-3">
+              <button type="button" class="btn btn-success btn-block" onclick="javascript:location.href='{{ action('AdminController@activity') }}';">活动一览</button>
+            </div>
+            <div class="col-sm col-sm-12 mb-3">
+              <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@activity_manage') }}';">管理活动</button>
             </div>
           </div>
 
@@ -70,8 +73,23 @@
 
           <h3>商店</h3>
           <div class="row text-center">
-            <div class="col-sm mb-3">
+            <div class="col-sm col-sm-12 mb-3">
               <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@goods') }}';">管理商品</button>
+            </div>
+          </div>
+
+          <hr />
+
+          <h3>用户</h3>
+          <div class="row text-center">
+            <div class="col-sm col-sm-12 mb-3">
+              <button type="button" class="btn btn-success btn-block" onclick="javascript:location.href='{{ action('AdminController@users_list') }}';">用户一览</button>
+            </div>
+            <div class="col-sm col-sm-12 mb-3">
+              <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@users_manage') }}';">用户管理</button>
+            </div>
+            <div class="col-sm col-sm-12 mb-3">
+              <button type="button" class="btn btn-warning btn-block" onclick="javascript:location.href='{{ action('AdminController@admins_manage') }}';">管理提权</button>
             </div>
           </div>
 
@@ -81,10 +99,10 @@
 
           <div class="row text-center">
             <div class="col-sm col-sm-12 mb-3">
-              <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@notices_manage') }}';">公告管理</button>
+              <button type="button" class="btn btn-success btn-block" onclick="javascript:location.href='{{ action('AdminController@notices') }}';">公告一览</button>
             </div>
             <div class="col-sm col-sm-12 mb-3">
-              <button type="button" class="btn btn-success btn-block" onclick="javascript:location.href='{{ action('AdminController@notices') }}';">公告一览</button>
+              <button type="button" class="btn btn-primary btn-block" onclick="javascript:location.href='{{ action('AdminController@notices_manage') }}';">公告管理</button>
             </div>
             <div class="col-sm col-sm-12 mb-3">
               <button type="button" class="btn btn-danger btn-block" onclick="javascript:location.href='{{ action('AdminController@optimize') }}';">系统优化</button>
@@ -107,5 +125,6 @@
         });
       }
     </script>
+    @yield('script')
   </body>
 </html>

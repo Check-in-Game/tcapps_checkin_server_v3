@@ -4,11 +4,6 @@
 
 ### 错误编码设计
 
-#### 第一位
-
-- `1`：web
-- `2`：api
-
 ### 错误码一览
 
 - `2101`: 获取Token时提交了错误的用户名或密码
@@ -43,24 +38,43 @@
 - `2604`: 管理员增加活动时最小价值数不合法
 - `2605`: 管理员增加活动时最大价值数小于最小价值数
 - `2606`: 管理员增加活动时写入数据库失败
+- `2617`: 管理员搜索活动时无法找到对应的aid
+- `2618`: 管理员增加活动时， 部分数据没有被提交
+- `2619`: 管理员修改活动时， 部分数据没有被提交
+- `2620`: 管理员修改活动时， 日期参数不合法
+- `2621`: 管理员修改活动时最小价值数不合法
+- `2622`: 管理员修改活动时最大价值数小于最小价值数
+- `2623`: 管理员修改活动时，写入数据库失败
+- `2624`: 管理员删除活动时，部分数据没有被提交
+- `2625`: 管理员删除活动时，无法找到对应活动AID
+- `2626`: 管理员删除活动时，无法删除数据库记录
 - `2607`: 管理员增加商品时日期参数不合法
 - `2608`: 管理员增加商品时存在小于0的值
-- `2609`: 管理员增加活动时写入数据库失败
-- `2701`: 修改密码时未使用POST方式提交数据
-- `2702`: 修改密码时该用户处于非正常状态或不存在
-- `2703`: 修改密码时3个密码长度与要求不符（8-16）或两个新密码不一致
-- `2704`: 修改密码时原密码与数据库不符
-- `2705`: 修改密码时更新数据库信息失败
-- `2801`: 优化操作时找不到优化方法
-- `2901`: 搜索公告ID时，无法从数据库找到
-- `2902`: 新增公告时，部分数据没有被提交
-- `2903`: 新增公告时，插入数据库失败
-- `2904`: 修改公告时，部分数据没有被提交
-- `2905`: 修改公告时，提交的NID无法被找到
-- `2906`: 修改公告时，无法更新数据库
-- `2907`: 删除公告时，部分数据没有被提交
-- `2908`: 删除公告时，提交的NID无法被找到
-- `2909`: 删除公告时，无法删除数据库数据
+- `2609`: 管理员增加商品时写入数据库失败
+- `2610`: 管理员无操作权限
+- `2701`: 管理员修改密码时未使用POST方式提交数据
+- `2702`: 管理员修改密码时该用户处于非正常状态或不存在
+- `2703`: 管理员修改密码时3个密码长度与要求不符（8-16）或两个新密码不一致
+- `2704`: 管理员修改密码时原密码与数据库不符
+- `2705`: 管理员修改密码时更新数据库信息失败
+- `2801`: 管理员优化操作时找不到优化方法
+- `2901`: 管理员搜索公告ID时，无法从数据库找到
+- `2902`: 管理员新增公告时，部分数据没有被提交
+- `2903`: 管理员新增公告时，插入数据库失败
+- `2904`: 管理员修改公告时，部分数据没有被提交
+- `2905`: 管理员修改公告时，提交的NID无法被找到
+- `2906`: 管理员修改公告时，无法更新数据库
+- `2907`: 管理员删除公告时，部分数据没有被提交
+- `2908`: 管理员删除公告时，提交的NID无法被找到
+- `2909`: 管理员删除公告时，无法删除数据库数据
+- `3001`: 管理员搜索用户时，UID不存在
+- `3002`: 管理员修改用户时，UID不存在
+- `3003`: 管理员修改用户时，无法更新数据库
+- `3004`: 管理员修改用户时，用户权限较高无法修改
+- `3101`: 给管理员提权时，部分数据没有被提交
+- `3102`: 给管理员提权时，无法查询对应权限信息
+- `3103`: 给管理员提权时，提权者权限不足
+- `3104`: 给管理员提权时，数据库写入失败
 
 ## 数据库设计
 ```
@@ -145,15 +159,45 @@ create table tcapps_checkin_admin_level(
   status tinyint not null default 1 comment "状态"
 )comment="管理员等级表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
+#管理员权限注册表
+create table tcapps_checkin_admin_register(
+  uid int unsigned primary key not null comment "用户ID",
+  rid int unsigned not null comment "权限ID",
+  status tinyint not null default 1 comment "状态"
+)comment="管理员权限表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#管理员权限表
+create table tcapps_checkin_admin_rights_list(
+  rid int unsigned auto_increment primary key not null comment "权限ID",
+  rname varchar(256) not null comment "权限ID",
+  level_need tinyint unsigned not null default 255 comment "提权最低等级",
+  description text not null comment "解释",
+  status tinyint not null default 1 comment "状态"
+)comment="管理员权限表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('site_owner', 255, '站长权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('site_optmize', 255, '系统管理权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('upgrade_user_to_admin', 255, '允许此管理提升其他用户为管理', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('upgrade_admin_to_activity_manage', 255, '允许赋予其他用户管理活动有关的所有内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('activity_search', 255, '搜索有关活动内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('activity_add', 255, '增加有关活动内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('activity_update', 255, '修改有关活动内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('activity_delete', 255, '删除有关活动内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('notices_search', 255, '搜索有关公告内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('notices_add', 255, '增加有关公告内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('notices_update', 255, '修改有公告内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('notices_delete', 255, '删除有公告内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('user_search', 255, '管理用户时搜索权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('user_manage', 255, '管理用户时更新用户信息权限', 1);
+
 #系统设置表
 create table tcapps_checkin_system(
   skey varchar(255) primary key not null comment "设置键",
   svalue varchar(2048) not null comment "设置值",
   description varchar(2048) not null comment "解释"
 )comment="系统设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
-#INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('register_available', 'true', '是否开通注册通道');
-#INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit', 7, '签到历史记录极限查询时间');
-#INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit_unit', 'day', '签到历史记录极限查询时间单位,day/week/month');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('register_available', 'true', '是否开通注册通道');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit', 7, '签到历史记录极限查询时间');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit_unit', 'day', '签到历史记录极限查询时间单位,day/week/month');
 
 #公告设置表
 create table tcapps_checkin_notices(
@@ -167,5 +211,5 @@ create table tcapps_checkin_notices(
   priority tinyint not null default 1 comment "权重顺序",
   status tinyint not null default 1 comment "状态"
 )comment="公告设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
-#INSERT INTO `tcapps_checkin_notices` (`place_id`, `title`, `content`, `color`, `starttime`, `endtime`, `priority`, `status`) VALUES ('1', '净化行动公告', '为保证平台正常运行，所有用户名涉及广告的用户将收到系统提示更改用户名。不进行更改的用户将被暂停签到，暂停期间造成的签到损失不予补偿。', 'warning', '2019-04-13 00:00:00', '1970-01-01 00:00:00', 1, 1);
+INSERT INTO `tcapps_checkin_notices` (`place_id`, `title`, `content`, `color`, `starttime`, `endtime`, `priority`, `status`) VALUES ('1', '净化行动公告', '为保证平台正常运行，所有用户名涉及广告的用户将收到系统提示更改用户名。不进行更改的用户将被暂停签到，暂停期间造成的签到损失不予补偿。', 'warning', '2019-04-13 00:00:00', '1970-01-01 00:00:00', 1, 1);
 ```

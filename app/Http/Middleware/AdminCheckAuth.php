@@ -22,6 +22,10 @@ class AdminCheckAuth
       if (!$admin || $admin->level <= 0) {
         return redirect('user');
       }
+      $data = [
+        '_admin'  => $admin
+      ];
+      $request->attributes->add($data);
       return $next($request);
     }
 }

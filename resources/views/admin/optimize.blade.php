@@ -19,6 +19,7 @@
   </div>
 </div>
 @endsection
+@section('script')
 <script type="text/javascript">
   function optimize(project) {
     $.getJSON('/api/admin/optimize/' + project, function(data){
@@ -30,3 +31,4 @@
     });
   }
 </script>
+@endsection
