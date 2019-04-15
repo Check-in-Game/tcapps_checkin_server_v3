@@ -74,6 +74,7 @@
     <p class="mb-0">感谢支持！</p>
   </div>
 @endsection
+@section('script')
 <script src="{{ asset('js/base64.js') }}" charset="utf-8"></script>
 <script type="text/javascript">
   let thread;
@@ -146,3 +147,4 @@
     $('#time').text(text);
   }
 </script>
+@endsection

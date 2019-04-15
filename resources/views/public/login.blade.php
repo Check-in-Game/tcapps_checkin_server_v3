@@ -55,6 +55,7 @@
   </div>
 
 @endsection
+@section('script')
 <script src="{{ asset('js/base64.js') }}" charset="utf-8"></script>
 <script type="text/javascript">
   function login() {
@@ -78,3 +79,4 @@
     });
   }
 </script>
+@endsection

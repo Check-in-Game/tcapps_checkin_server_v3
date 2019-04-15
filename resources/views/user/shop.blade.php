@@ -78,6 +78,7 @@
   @endif
 </div>
 @endsection
+@section('script')
 <script type="text/javascript">
   function purchase(gid) {
     $('#btn_g_' + gid).attr('disabled', 'disabled');
@@ -105,3 +106,4 @@
     });
   }
 </script>
+@endsection

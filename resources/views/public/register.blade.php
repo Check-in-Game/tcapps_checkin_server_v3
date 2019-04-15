@@ -53,6 +53,7 @@
     </p>
   </form>
 @endsection
+@section('script')
 <script src="{{ asset('js/jquery.md5.js') }}" charset="utf-8"></script>
 <script type="text/javascript">
   function register($reg) {
@@ -77,3 +78,4 @@
     form.submit();
   }
 </script>
+@endsection

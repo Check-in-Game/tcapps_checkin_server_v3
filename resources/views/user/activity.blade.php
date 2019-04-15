@@ -65,8 +65,10 @@
   {{ $charts->links() }}
 </nav>
 @endsection
+@section('script')
 <script type="text/javascript">
   window.onload = function(){
     $('.pagination').addClass('justify-content-center');
   }
 </script>
+@endsection

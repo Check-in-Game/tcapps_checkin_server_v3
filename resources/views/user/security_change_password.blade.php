@@ -45,6 +45,7 @@
     如果您需要申诉，请移步首页加入QQ群后寻找管理帮助！
   </div>
 @endsection
+@section('script')
 <script src="{{ asset('js/base64.js') }}" charset="utf-8"></script>
 <script type="text/javascript">
   function modify(){
@@ -96,3 +97,4 @@
     });
   }
 </script>
+@endsection
