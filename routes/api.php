@@ -36,7 +36,7 @@ Route::get('/purchase/{gid}', 'APIUser@purchase')
 // Conpensate
 Route::get('/admin/conpensate/{uid}/{count}', 'APIAdmin@conpensate')
       ->middleware('apicheck.auth')
-      ->middleware('apicheck.admin.auth:site_manage');
+      ->middleware('apicheck.admin.auth:conpensate_add');
 // Activity
   // search
 Route::get('/admin/activity/search/{aid}', 'APIAdmin@activity_search')
