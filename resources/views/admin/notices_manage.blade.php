@@ -195,6 +195,7 @@ function update() {
   let status    = $('#status').val();
   if (nid == '' || place_id == '' || title == '' || content == '' || color == '选择颜色Class' || priority == '' || starttime == '' || endtime == '' || status == '') {
     alert('请填写信息！');
+    return false;
   }
   $.ajax({
     url: '/api/admin/notices/update',

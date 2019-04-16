@@ -248,13 +248,15 @@ class APIAdmin extends Controller {
         $json = $this->JSON(2902, "Lost some infomation.", null);
         return response($json);
       }
+      $starttime = date('Y-m-d H:i:s', strtotime($starttime));
+      $endtime   = date('Y-m-d H:i:s', strtotime($endtime));
       $data['place_id']   = $_POST['place_id'];
       $data['title']      = $_POST['title'];
       $data['content']    = $_POST['content'];
       $data['color']      = $_POST['color'];
       $data['priority']   = $_POST['priority'];
-      $data['starttime']  = $_POST['starttime'];
-      $data['endtime']    = $_POST['endtime'];
+      $data['starttime']  = $starttime;
+      $data['endtime']    = $endtime;
       $data['status']     = $_POST['status'];
       $notice = DB::table('notices')->insert($data);
       if ($notice) {
@@ -288,13 +290,15 @@ class APIAdmin extends Controller {
         $json = $this->JSON(2905, "Failed to find this NID.", null);
         return response($json);
       }
+      $starttime = date('Y-m-d H:i:s', strtotime($starttime));
+      $endtime   = date('Y-m-d H:i:s', strtotime($endtime));
       $data['place_id']   = $_POST['place_id'];
       $data['title']      = $_POST['title'];
       $data['content']    = $_POST['content'];
       $data['color']      = $_POST['color'];
       $data['priority']   = $_POST['priority'];
-      $data['starttime']  = $_POST['starttime'];
-      $data['endtime']    = $_POST['endtime'];
+      $data['starttime']  = $starttime;
+      $data['endtime']    = $endtime;
       $data['status']     = $_POST['status'];
       $notice = DB::table('notices')->where('nid', $nid)->update($data);
       if ($notice) {
