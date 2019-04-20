@@ -35,14 +35,24 @@
     <div class="input-group-prepend">
       <span class="input-group-text">用户名</span>
     </div>
-    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" id="username">
+    <input type="text" class="form-control" placeholder="Username" aria-label="Username" id="username">
   </div>
 
   <div class="input-group mb-3">
     <div class="input-group-prepend">
       <span class="input-group-text">密码</span>
     </div>
-    <input type="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1" id="password">
+    <input type="password" class="form-control" placeholder="Password" aria-label="Password" id="password">
+  </div>
+
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">验证码</span>
+    </div>
+    <input type="text" class="form-control" placeholder="Captcha" id="captcha" maxlength="6">
+    <div class="input-group-append">
+      <img src="{{ captcha_src() }}" alt="captcha" onclick="this.src='{{ captcha_src() }}' + Math.random();" id="captcha_img">
+    </div>
   </div>
 
   <p class="clearfix">
@@ -61,6 +71,7 @@
   function login() {
     let username = $('#username').val();
     let password = $('#password').val();
+    let captcha  = $('#captcha').val();
     let b64password = new Base64().encode(password);
     if (username.length < 5 || username.length > 16) {
       alert('用户名或密码错误');
@@ -70,11 +81,38 @@
       alert('用户名或密码错误');
       return false;
     }
-    $.getJSON('/api/login/' + username + '/' + b64password, function(data){
-      if (data.errno === 0) {
-        location.href = '/user';
-      }else{
-        alert('登录失败，请检查您的用户名密码是否填写错误！')
+    if (captcha.length < 4 || captcha.length > 6) {
+      $('#captcha').val('');
+      alert('验证码错误');
+      return false;
+    }
+    $.ajax({
+      url: '/api/login',
+      type: 'post',
+      data: {
+        'username': username,
+        'password': b64password,
+        'captcha' : captcha
+      },
+      dataType: 'json',
+      timeout: 10000,
+      complete: function(XMLHttpRequest, status){
+        if (status == 'timeout') {
+          alert('连接超时！');
+        }
+      },
+      success: function(data){
+        if (data.errno === 0) {
+          location.href = '/user';
+        }else if(data.errno === 2307){
+          alert('服务器开小差辣~');
+        }else if(data.errno === 2305){
+          $('#captcha_img').click();
+          $('#captcha').val('');
+          alert('验证码错误');
+        }else{
+          alert('用户名或密码错误');
+        }
       }
     });
   }

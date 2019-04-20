@@ -19,7 +19,7 @@ Route::get('/getToken/{username}/{b64password}', 'APICheckIn@get_token');
 Route::get('/checkIn/{username}/{token}', 'APICheckIn@check_in');
 
 // Login
-Route::get('/login/{username}/{b64password}', 'APIUser@login');
+Route::post('/login', 'APIUser@login');
 // Logout
 Route::get('/logout', 'APIUser@logout')
       ->middleware('apicheck.auth');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Cookie;
+use Captcha;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -35,12 +36,12 @@ class PublicController extends Controller {
     public function register() {
       if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['comfirm'])
         && !empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['comfirm'])
-        && isset($_POST['vf']) && !empty($_POST['vf']) ){
+        && isset($_POST['captcha']) && !empty($_POST['captcha']) ){
         // 进入注册流程
         $username = $_POST['username'];
         $password = $_POST['password'];
         $comfirm = $_POST['comfirm'];
-        $vf = $_POST['vf'];
+        $captcha = $_POST['captcha'];
         // 判断合法性
         if (mb_strlen($username) > 16 || mb_strlen($username) < 5 || mb_strlen($password) > 16 || mb_strlen($password) < 8) {
           return view('public.register',[
@@ -63,11 +64,11 @@ class PublicController extends Controller {
             'reg_error' => '注册失败！用户名中不能包含特殊字符。',
           ]);
         }
-        // 检查vf
-        if ($vf !== md5($username.$password.'!d@v#d[$s%^sda&3f*20)19*')) {
+        // 检查验证码
+        if (!Captcha::check($captcha)) {
           return view('public.register',[
             'reg_status' => false,
-            'reg_error' => '您可能是机器人，注册被终止。',
+            'reg_error' => '验证码不正确。',
           ]);
         }
         // 检查用户是否存在

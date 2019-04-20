@@ -3,14 +3,27 @@
 namespace App\Http\Controllers;
 
 use Cookie;
+use Captcha;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class APIUser extends Controller {
 
     // 登录
-    public function login(string $username, string $b64password) {
-      $password = base64_decode($b64password);
+    public function login() {
+      $username    = request()->post('username');
+      $b64password = request()->post('password');
+      $captcha     = request()->post('captcha');
+      if (!$username || !$b64password || !$captcha) {
+        $json = $this->JSON(2307, 'Lost some infomation.', null);
+        return response($json);
+      }
+      // 匹配验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(2305, 'Bad captcha.', null);
+        return response($json);
+      }
+      $password    = base64_decode($b64password);
       if (mb_strlen($username) > 16 || mb_strlen($username) < 5 || mb_strlen($password) > 16 || mb_strlen($password) < 8) {
         $json = $this->JSON(2301, 'Incorrect username or password.', null);
         return response($json);
