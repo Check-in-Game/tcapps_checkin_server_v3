@@ -34,7 +34,7 @@ Route::get('/purchase/{gid}', 'APIUser@purchase')
 
 // =======ADMIN=======
 // Conpensate
-Route::get('/admin/conpensate/{uid}/{count}', 'APIAdmin@conpensate')
+Route::post('/admin/conpensate', 'APIAdmin@conpensate')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:conpensate_add');
 // Activity
@@ -56,7 +56,7 @@ Route::post('/admin/activity/delete', 'APIAdmin@activity_delete')
       ->middleware('apicheck.admin.auth:activity_delete');
 // Goods
   // add
-Route::get('/admin/goods/add/{name}/{cost}/{starttime}/{endtime}/{tid}/{sid}/{rebuy}/{all_count}/{description}/{image}', 'APIAdmin@goods_add')
+Route::post('/admin/goods/add', 'APIAdmin@goods_add')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:goods_add');
 
@@ -98,3 +98,21 @@ Route::post('/admin/users/update', 'APIAdmin@users_update')
 Route::post('/admin/rights/add', 'APIAdmin@admins_rights_add')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
+
+// Badges
+  // search
+Route::get('/admin/badges/search/{bid}', 'APIAdmin@badges_search')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:badges_search');
+  // add
+Route::post('/admin/badges/add', 'APIAdmin@badges_add')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:badges_add');
+  // update
+Route::post('/admin/badges/update', 'APIAdmin@badges_update')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:badges_update');
+  // delete
+Route::post('/admin/badges/delete', 'APIAdmin@badges_delete')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:badges_delete');

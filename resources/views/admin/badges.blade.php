@@ -1,6 +1,6 @@
 @extends('admin/master')
 @section('container')
-<!-- 公告-20 -->
+<!-- 公告-21 -->
 @foreach($_notices as $notice)
 <div class="alert alert-{{ $notice['color'] }}" role="alert">
   @if (!empty($notice['title']))
@@ -10,14 +10,13 @@
 </div>
 @endforeach
 
-<h2>活动一览 / Activities</h2>
+<h2>勋章一览 / Badges</h2>
 <table class="table table-striped table-hover text-center">
   <thead>
     <tr>
-      <th scope="col">活动ID</th>
-      <th scope="col">开始时间</th>
-      <th scope="col">结束时间</th>
-      <th scope="col">积分区间</th>
+      <th scope="col">勋章ID</th>
+      <th scope="col">名称</th>
+      <th scope="col">商品ID</th>
       <th scope="col">状态</th>
     </tr>
   </thead>
@@ -25,24 +24,19 @@
       @foreach ($charts as $key => $chart)
         <tr>
           <th scope="row">
-            #{{ $chart->aid }}
+            #{{ $chart->bid }}
           </th>
           <th scope="row">
-            {{ $chart->starttime }}
+            {{ $chart->bname }}
           </th>
           <th scope="row">
-            {{ $chart->endtime }}
+            {{ $chart->gid }}
           </th>
           <th scope="row">
-            {{ $chart->min_worth }} - {{ $chart->max_worth }}
-          </th>
-          <th scope="row">
-            @if( strtotime($chart->starttime) <= time() && strtotime($chart->endtime) >= time() )
-            <span class="badge badge-success">正在进行</span>
-            @elseif(strtotime($chart->endtime) >= time())
-            <span class="badge badge-primary">即将开始</span>
+            @if( $chart->status === 1 )
+            <span class="badge badge-success">正常</span>
             @else
-            <span class="badge badge-secondary">已经结束</span>
+            <span class="badge badge-warning">{{ $chart->status }}</span>
             @endif
           </th>
         </tr>

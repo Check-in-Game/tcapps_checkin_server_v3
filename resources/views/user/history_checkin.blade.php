@@ -23,9 +23,9 @@
     <thead>
       <tr>
         <th scope="col">签到ID</th>
-        <th scope="col">签到时间</th>
-        <th scope="col">签到积分</th>
-        <th scope="col">状态</th>
+        <th scope="col">时间</th>
+        <th scope="col">积分</th>
+        <th scope="col">类型</th>
       </tr>
     </thead>
     <tbody>
@@ -41,10 +41,16 @@
               {{ $chart->worth }}
             </th>
             <th scope="row">
-              @if( $chart->status === 1 )
-              <span class="badge badge-success">正常</span>
-              @else
-              <span class="badge badge-danger">异常</span>
+              @if( $chart->tid === 0 )
+              <span class="badge badge-success">签到</span>
+              @elseif( $chart->tid === 1 )
+              <span class="badge badge-warning">活动</span>
+              @elseif( $chart->tid === 2 )
+              <span class="badge badge-primary">系统</span>
+              @elseif( $chart->tid === 3 )
+              <span class="badge badge-secondary">补偿</span>
+              @elseif( $chart->tid === 4 )
+              <span class="badge badge-success">签补</span>
               @endif
             </th>
           </tr>

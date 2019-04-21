@@ -109,7 +109,7 @@ class PublicController extends Controller {
       return view('public.webCheckin');
     }
 
-    // 在线签到器
+    // 登录
     public function login() {
       return view('public.login');
     }

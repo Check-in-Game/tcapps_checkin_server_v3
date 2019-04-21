@@ -16,7 +16,7 @@ class AdminController extends Controller {
       return view('admin.compensate');
     }
 
-    // 管理活动
+    // 活动一览
     public function activity() {
       $activities = DB::table('activity')->orderBy('aid', 'desc')->paginate(25);
       $data = [
@@ -25,12 +25,12 @@ class AdminController extends Controller {
       return view('admin.activity', $data);
     }
 
-    // 管理活动
+    // 活动管理
     public function activity_manage() {
       return view('admin.activity_manage');
     }
 
-    // 管理商店
+    // 商店管理
     public function goods() {
       return view('admin.goods');
     }
@@ -75,5 +75,37 @@ class AdminController extends Controller {
         'rights'  => $rights,
       ];
       return view('admin.admins_manage', $data);
+    }
+
+    // 勋章一览
+    public function badges() {
+      $activities = DB::table('badges')->paginate(25);
+      $data = [
+        'charts'  => $activities,
+      ];
+      return view('admin.badges', $data);
+    }
+
+    // 勋章管理
+    public function badges_manage() {
+      return view('admin.badges_manage');
+    }
+
+    // 勋章一览
+    public function effects() {
+      $activities = DB::table('effects')->paginate(25);
+      $data = [
+        'charts'  => $activities,
+      ];
+      return view('admin.effects', $data);
+    }
+
+    // 勋章一览
+    public function effects_manage() {
+      $activities = DB::table('effects')->paginate(25);
+      $data = [
+        'charts'  => $activities,
+      ];
+      return view('admin.effects_manage', $data);
     }
 }

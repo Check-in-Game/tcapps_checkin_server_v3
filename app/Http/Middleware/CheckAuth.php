@@ -28,6 +28,9 @@ class CheckAuth
         if (!$user || $auth !== md5($user->password.$user->uid.$user->status.'2*4&%1^@HSIW}>./;2')) {
           return redirect('alert/签权错误/您的用户签权已经失效了，请重新登录！');
         }
+        // 获取管理权限
+        $admin = DB::table('admin_level')->where('uid', $uid)->where('status', '<>', -1)->first();
+        view()->share('_admin', $admin);
         return $next($request);
     }
 }

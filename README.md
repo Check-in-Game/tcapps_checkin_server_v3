@@ -38,6 +38,9 @@
 - `2508`: 购买时有其他商品也处于购买状态
 - `2601`: 管理员状态无效
 - `2602`: 管理员增加补偿时写入数据表失败
+- `2611`: 管理员增加补偿时，部分数据没有提交
+- `2612`: 管理员增加补偿时，提交的用户UID中含有不存在的用户
+- `2613`: 管理员增加补偿时，提交的验证码不正确
 - `2603`: 管理员增加活动时日期参数不合法
 - `2604`: 管理员增加活动时最小价值数不合法
 - `2605`: 管理员增加活动时最大价值数小于最小价值数
@@ -55,6 +58,7 @@
 - `2607`: 管理员增加商品时日期参数不合法
 - `2608`: 管理员增加商品时存在小于0的值
 - `2609`: 管理员增加商品时写入数据库失败
+- `2611`: 管理员增加商品时，提交的验证码不正确
 - `2610`: 管理员无操作权限
 - `2701`: 管理员修改密码时未使用POST方式提交数据
 - `2702`: 管理员修改密码时该用户处于非正常状态或不存在
@@ -79,6 +83,14 @@
 - `3102`: 给管理员提权时，无法查询对应权限信息
 - `3103`: 给管理员提权时，提权者权限不足
 - `3104`: 给管理员提权时，数据库写入失败
+- `3201`: 管理员搜索勋章时，勋章BID不存在
+- `3202`: 管理员新增勋章时，部分数据没有被提交
+- `3203`: 管理员新增勋章时，无法写入数据库
+- `3204`: 管理员修改勋章时，部分数据没有被提交
+- `3205`: 管理员修改勋章时，无法写入数据库
+- `3206`: 管理员删除勋章时，部分数据没有被提交
+- `3207`: 管理员删除勋章时，无法找到对应勋章
+- `3208`: 管理员删除勋章时，无法删除数据库数据
 
 ## 数据库设计
 ```
@@ -217,4 +229,24 @@ create table tcapps_checkin_notices(
   status tinyint not null default 1 comment "状态"
 )comment="公告设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 INSERT INTO `tcapps_checkin_notices` (`place_id`, `title`, `content`, `color`, `starttime`, `endtime`, `priority`, `status`) VALUES ('1', '净化行动公告', '为保证平台正常运行，所有用户名涉及广告的用户将收到系统提示更改用户名。不进行更改的用户将被暂停签到，暂停期间造成的签到损失不予补偿。', 'warning', '2019-04-13 00:00:00', '1970-01-01 00:00:00', 1, 1);
+
+#勋章系统
+create table tcapps_checkin_badges(
+  bid int unsigned auto_increment primary key not null comment "勋章ID",
+  bname varchar(255) unique not null comment "勋章名称",
+  image varchar(512) not null comment "图片链接",
+  bgcolor varchar(64) not null comment "背景颜色",
+  fgcolor varchar(64) not null comment "前景颜色",
+  gid int unsigned not null comment "商品ID",
+  eid int unsigned not null default 0 comment "效果ID",
+  status tinyint not null default 1 comment "状态"
+)comment="勋章系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#效果系统
+create table tcapps_checkin_effects(
+  eid int unsigned auto_increment primary key not null comment "效果ID",
+  times float unsigned not null comment "倍率",
+  description text not null comment "效果描述",
+  status tinyint not null default 1 comment "状态"
+)comment="效果系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
 ```

@@ -43,3 +43,7 @@ Route::get('/admin/notices/manage', 'AdminController@notices_manage')   ->middle
 Route::get('/admin/users', 'AdminController@users_list')                ->middleware('check.auth', 'check.admin.auth', 'notice:18');
 Route::get('/admin/users/manage', 'AdminController@users_manage')       ->middleware('check.auth', 'check.admin.auth', 'notice:19');
 Route::get('/admin/manage', 'AdminController@admins_manage')            ->middleware('check.auth', 'check.admin.auth', 'notice:20');
+Route::get('/admin/badges', 'AdminController@badges')                   ->middleware('check.auth', 'check.admin.auth', 'notice:21');
+Route::get('/admin/badges/manage', 'AdminController@badges_manage')     ->middleware('check.auth', 'check.admin.auth', 'notice:22');
+Route::get('/admin/effects', 'AdminController@effects')          ->middleware('check.auth', 'check.admin.auth', 'notice:23');
+Route::get('/admin/effects/manage', 'AdminController@effects_manage')   ->middleware('check.auth', 'check.admin.auth', 'notice:24');

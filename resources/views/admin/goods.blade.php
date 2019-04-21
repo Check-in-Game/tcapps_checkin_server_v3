@@ -15,14 +15,14 @@
   <div class="input-group-prepend">
     <span class="input-group-text">商品名称</span>
   </div>
-  <input type="text" class="form-control" placeholder="Goods' name" id="name">
+  <input type="text" class="form-control" placeholder="Good's name" id="name">
 </div>
 
 <div class="input-group mb-3">
   <div class="input-group-prepend">
     <span class="input-group-text">商品售价</span>
   </div>
-  <input type="number" class="form-control" placeholder="Goods' cost" id="cost">
+  <input type="number" class="form-control" placeholder="Good's cost" id="cost">
 </div>
 
 <div class="input-group mb-3">
@@ -41,9 +41,11 @@
 
 <div class="input-group mb-3">
   <div class="input-group-prepend">
-    <span class="input-group-text">商品类型编号</span>
+    <label class="input-group-text" for="tid">商品类型</label>
   </div>
-  <input type="number" class="form-control" placeholder="TID" id="tid" value='1'>
+  <select class="custom-select" id="tid">
+    <option value="1" selected>勋章</option>
+  </select>
 </div>
 
 <div class="input-group mb-3">
@@ -81,6 +83,16 @@
   <input type="text" class="form-control" placeholder="Image link" id="image">
 </div>
 
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text">验证码</span>
+  </div>
+  <input type="text" class="form-control" placeholder="Captcha" id="captcha" maxlength="6">
+  <div class="input-group-append">
+    <img src="{{ captcha_src() }}" alt="captcha" onclick="this.src='{{ captcha_src() }}' + Math.random();" id="captcha_img">
+  </div>
+</div>
+
 <p class="clearfix">
   <button class="btn btn-success float-right" id="btn" name="button" onclick="javascript:add();">增加</button>
 </p>
@@ -88,6 +100,7 @@
 @section('script')
 <script type="text/javascript">
 function add() {
+  $('#btn').attr('disabled', 'disabled');
   let name        = $('#name').val();
   let cost        = $('#cost').val();
   let starttime   = $('#starttime').val();
@@ -98,19 +111,46 @@ function add() {
   let all_count   = $('#all_count').val();
   let description = $('#description').val();
   let image       = $('#image').val();
-  if (name == '' || cost == '' || starttime == '' || endtime == '' || tid == '' || sid == '' || rebuy == '' || all_count == '' || description == '') {
+  let captcha     = $('#captcha').val();
+  if (name == '' || cost == '' || starttime == '' || endtime == '' || tid == '' || sid == '' || rebuy == '' || all_count == '' || description == '' || captcha == '') {
     alert('请填写信息！');
     return false;
   }
   image = image == '' ? 'null' : image;
   // $('#btn').attr('disabled', 'disabled');
-  $.getJSON('/api/admin/goods/add/' + name + '/' + cost + '/' + starttime + '/' + endtime + '/' + tid + '/' + sid + '/' + rebuy + '/' + all_count + '/' + description + '/' + image, function(data){
-    if (data.errno === 0) {
-      alert('增加成功！');
+  $.ajax({
+    url: '/api/admin/goods/add',
+    type: 'post',
+    data: {
+      'name': name,
+      'cost': cost,
+      'starttime': starttime,
+      'endtime': endtime,
+      'tid': tid,
+      'sid': sid,
+      'rebuy': rebuy,
+      'all_count': all_count,
+      'description': description,
+      'image': image,
+      'captcha': captcha
+    },
+    dataType: 'json',
+    timeout: 10000,
+    complete: function(XMLHttpRequest, status){
       $('#btn').removeAttr('disabled');
-    }else{
-      alert(data.body.msg);
-      $('#btn').removeAttr('disabled');
+      if (status == 'timeout') {
+        alert('请求超时，请稍候再试！');
+        return false;
+      }
+    },
+    success: function(data) {
+      if (data.errno === 0) {
+        alert('增加成功！');
+      }else{
+        $('#captcha_img').click();
+        $('#captcha').val('');
+        alert(data.error);
+      }
     }
   });
 }

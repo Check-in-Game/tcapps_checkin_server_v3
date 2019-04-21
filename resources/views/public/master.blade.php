@@ -7,6 +7,7 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <title>Check-in Game</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link href="https://cdn.bootcss.com/font-awesome/5.8.1/css/all.min.css" rel="stylesheet">
     <script src="{{ asset('js/app.js') }}" charset="utf-8"></script>
   </head>
   <body>
@@ -30,7 +31,7 @@
               <a class="nav-link" href="{{ action('PublicController@register') }}">注册账户</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ action('UserController@user') }}">用户中心</a>
+              <a class="nav-link" href="{{ action('UserController@user') }}"><i class="fa-fw fas fa-user-circle"></i> 用户中心</a>
             </li>
           </ul>
         </div>
