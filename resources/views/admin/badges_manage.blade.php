@@ -58,13 +58,6 @@
 
 <div class="input-group mb-3">
   <div class="input-group-prepend">
-    <span class="input-group-text">效果EID</span>
-  </div>
-  <input type="number" class="form-control" placeholder="EID" id="eid" value=1>
-</div>
-
-<div class="input-group mb-3">
-  <div class="input-group-prepend">
     <label class="input-group-text" for="eid">效果EID</label>
   </div>
   <select class="custom-select" id="eid">
