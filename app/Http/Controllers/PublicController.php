@@ -37,6 +37,14 @@ class PublicController extends Controller {
       if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['comfirm'])
         && !empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['comfirm'])
         && isset($_POST['captcha']) && !empty($_POST['captcha']) ){
+        // 查询系统是否允许注册
+        $reg = DB::table('system')->where('skey', 'register_available')->first();
+        if (!$reg || $reg->svalue === 'false') {
+          return view('public.register',[
+            'reg_status' => false,
+            'reg_error' => '非常抱歉！注册通道被临时关闭，请留意首页公告。',
+          ]);
+        }
         // 进入注册流程
         $username = $_POST['username'];
         $password = $_POST['password'];
