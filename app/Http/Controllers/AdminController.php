@@ -88,7 +88,11 @@ class AdminController extends Controller {
 
     // 勋章管理
     public function badges_manage() {
-      return view('admin.badges_manage');
+      $effects = DB::table('effects')->get();
+      $data = [
+        'effects'  => $effects,
+      ];
+      return view('admin.badges_manage', $data);
     }
 
     // 勋章一览

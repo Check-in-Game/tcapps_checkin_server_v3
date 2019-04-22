@@ -91,6 +91,22 @@
 - `3206`: 管理员删除勋章时，部分数据没有被提交
 - `3207`: 管理员删除勋章时，无法找到对应勋章
 - `3208`: 管理员删除勋章时，无法删除数据库数据
+- `3301`: 管理员搜索效果时，EID找不到
+- `3302`: 管理员增加效果时，部分数据没有被提交
+- `3303`: 管理员增加效果时，无法写入数据库
+- `3304`: 管理员修改效果时，部分数据没有被提交
+- `3305`: 管理员修改效果时，无法写入数据库
+- `3306`: 管理员删除效果时，部分数据没有被提交
+- `3307`: 管理员删除效果时，无法找到对应勋章
+- `3308`: 管理员删除效果时，无法删除数据库数据
+- `3401`: 用户佩戴勋章时，勋章所有权错误（订单状态不为1）
+- `3402`: 用户佩戴勋章时，写入数据库失败（新增）
+- `3403`: 用户佩戴勋章时，写入数据库失败（更新）（限制1）
+- `3404`: 用户佩戴勋章时，超出佩戴上限
+- `3404`: 用户佩戴勋章时，写入数据库失败
+- `3405`: 用户取消佩戴勋章时，无法查询相关数据库
+- `3406`: 用户取消佩戴勋章时，该勋章没有佩戴
+- `3407`: 用户取消佩戴勋章时，写入数据库失败
 
 ## 数据库设计
 ```
@@ -190,6 +206,7 @@ create table tcapps_checkin_admin_rights_list(
   description text not null comment "解释",
   status tinyint not null default 1 comment "状态"
 )comment="管理员权限表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+#1
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('site_owner', 255, '站长权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('site_optmize', 255, '系统管理权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('upgrade_user_to_admin', 255, '允许此管理提升其他用户为管理', 1);
@@ -205,6 +222,16 @@ INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `descript
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('user_search', 255, '管理用户时搜索权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('user_manage', 255, '管理用户时更新用户信息权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('conpensate_add', 255, '增加系统补偿积分', 1);
+#2
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('goods_add', 255, '增加有关商品内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('badges_search', 255, '搜索有关勋章内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('badges_add', 255, '增加有关勋章内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('badges_update', 255, '修改有勋章内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('badges_delete', 255, '删除有勋章内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('effects_search', 255, '搜索有关效果内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('effects_add', 255, '增加有关效果内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('effects_update', 255, '修改有效果内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('effects_delete', 255, '删除有效果内容的权限', 1);
 
 #系统设置表
 create table tcapps_checkin_system(
@@ -215,6 +242,7 @@ create table tcapps_checkin_system(
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('register_available', 'true', '是否开通注册通道');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit', 7, '签到历史记录极限查询时间');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit_unit', 'day', '签到历史记录极限查询时间单位,day/week/month');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('badges_wear_limit', 1, '用户佩戴勋章数量限制');
 
 #公告设置表
 create table tcapps_checkin_notices(
@@ -249,4 +277,11 @@ create table tcapps_checkin_effects(
   description text not null comment "效果描述",
   status tinyint not null default 1 comment "状态"
 )comment="效果系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#勋章佩戴系统
+create table tcapps_checkin_badges_wear(
+  uid int unsigned primary key not null comment "用户ID",
+  bid varchar(512) not null comment "勋章ID",
+  update_time datetime not null comment "修改时间"
+)comment="勋章佩戴系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
 ```

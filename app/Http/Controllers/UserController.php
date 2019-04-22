@@ -132,4 +132,38 @@ class UserController extends Controller {
       ];
       return view('user.activity', $data);
     }
+
+    // 勋章一览
+    public function badges() {
+      $uid = request()->cookie('uid');
+      $charts = DB::table('shop')
+          ->join('purchase_records', 'shop.gid', '=', 'purchase_records.gid')
+          ->join('badges', 'shop.gid', '=', 'badges.gid')
+          ->join('effects', 'badges.eid', '=', 'effects.eid')
+          ->where('shop.tid', 1)
+          ->where('purchase_records.uid', $uid)
+          ->select('badges.bid as bid',
+                  'badges.bname as bname',
+                  'badges.image as image',
+                  'badges.fgcolor as fgcolor',
+                  'badges.bgcolor as bgcolor',
+                  'effects.times as times',
+                  'purchase_records.purchase_time as purchase_time',
+                  'purchase_records.status as status')
+          ->paginate(25);
+      $wear = DB::table('badges_wear')->where('uid', $uid)->first();
+      if (!$wear) {
+        $wear = [];
+      }else {
+        $wear = explode(',', $wear->bid);
+      }
+      $limit = DB::table('system')->where('skey', 'badges_wear_limit')->first();
+      $limit = !$limit ? 1 : $limit->svalue;
+      $data = [
+        'charts'  => $charts,
+        'wear'    => $wear,
+        'limit'   => $limit
+      ];
+      return view('user.badges', $data);
+    }
 }

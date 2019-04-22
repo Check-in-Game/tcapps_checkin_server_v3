@@ -44,9 +44,10 @@
                <a class="dropdown-item" href="{{ action('UserController@activity') }}"><i class="fa-fw fab fa-slack"></i> 活动中心</a>
                <div class="dropdown-divider"></div>
                <h6 class="dropdown-header">勋章</h6>
+               <a class="dropdown-item" href="{{ action('UserController@badges') }}"><i class="fa-fw fas fa-archive"></i> 勋章盒子</a>
              </div>
            </li>
-           @if($_admin)
+           @if($_admin && $_admin->level > 0)
            <!-- 管理中心 -->
            <li class="nav-item dropdown">
              <a class="nav-link dropdown-toggle" href="javascript:;" id="admin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

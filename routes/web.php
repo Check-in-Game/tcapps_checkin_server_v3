@@ -21,6 +21,8 @@ Route::get('/webCheckin', 'PublicController@webCheckin')->middleware('notice:3')
 Route::get('/login', 'PublicController@login')->middleware('notice:4');
 // 错误提示
 Route::get('/alert/{error}/{content}', 'PublicController@alert');
+// 鸣谢
+Route::get('/credit', 'PublicController@credit');
 // 注册
 Route::match(['get', 'post'], '/register', 'PublicController@register')->middleware('notice:2');
 // 用户中心
@@ -30,6 +32,7 @@ Route::get('/user/security/password', 'UserController@security_change_password')
 Route::get('/user/history/checkin', 'UserController@history_checkin')             ->middleware('check.auth', 'notice:8');
 Route::get('/user/bill', 'UserController@bill')                                   ->middleware('check.auth', 'notice:9');
 Route::get('/user/activity', 'UserController@activity')                           ->middleware('check.auth', 'notice:10');
+Route::get('/user/badges', 'UserController@badges')                               ->middleware('check.auth', 'notice:25');
 
 // 管理中心
 Route::get('/admin', 'AdminController@index')                           ->middleware('check.auth', 'check.admin.auth', 'notice:11');
@@ -45,5 +48,5 @@ Route::get('/admin/users/manage', 'AdminController@users_manage')       ->middle
 Route::get('/admin/manage', 'AdminController@admins_manage')            ->middleware('check.auth', 'check.admin.auth', 'notice:20');
 Route::get('/admin/badges', 'AdminController@badges')                   ->middleware('check.auth', 'check.admin.auth', 'notice:21');
 Route::get('/admin/badges/manage', 'AdminController@badges_manage')     ->middleware('check.auth', 'check.admin.auth', 'notice:22');
-Route::get('/admin/effects', 'AdminController@effects')          ->middleware('check.auth', 'check.admin.auth', 'notice:23');
+Route::get('/admin/effects', 'AdminController@effects')                 ->middleware('check.auth', 'check.admin.auth', 'notice:23');
 Route::get('/admin/effects/manage', 'AdminController@effects_manage')   ->middleware('check.auth', 'check.admin.auth', 'notice:24');

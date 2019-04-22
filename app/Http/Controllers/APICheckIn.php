@@ -121,6 +121,21 @@ class APICheckIn extends Controller {
         $max = $db->max_worth;
       }
       $worth = mt_rand($min, $max);
+      // 查询用户佩戴勋章
+      $badges = DB::table('badges_wear')->where('uid', $user->uid)->first();
+      if( $badges && !empty($badges->bid) ) {
+        $badges = explode(',', $badges->bid);
+        foreach ($badges as $key => $bid) {
+          $times = DB::table('badges')
+                ->join('effects', 'badges.eid', '=', 'effects.eid')
+                ->where('badges.bid', $bid)
+                ->value('times');
+          if ($times) {
+            $worth = $worth * $times;
+          }
+        }
+        $worth = round($worth);
+      }
       $check_time = date('Y-m-d H:i:s');
       $data = array(
         'uid'     => $user->uid,

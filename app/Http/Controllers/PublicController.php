@@ -18,17 +18,22 @@ class PublicController extends Controller {
               ->orderBy('allWorth', 'desc')
               ->limit(100)
               ->get();
-      // 拥有内测勋章的UID
-      $nc_badge = [];
+      // 佩戴勋章
+      $badges = [];
       foreach ($charts as $key => $value) {
-        $db = DB::table('purchase_records')->where('uid', $value->uid)->where('gid', 1)->first();
-        if ($db) {
-          $nc_badge[] = $value->uid;
+        $badge = DB::table('badges_wear')
+            ->join('badges', 'badges.bid', '=', 'badges_wear.bid')
+            ->where('badges_wear.uid', $value->uid)
+            ->get()
+            ->map(function ($value) {return (array)$value;})
+            ->toArray();
+        if( count($badge) > 0 ) {
+          $badges[$value->uid] = $badge;
         }
       }
       $data = [
         'charts'    => $charts,
-        'nc_badge'  => $nc_badge,
+        'badges'    => $badges,
       ];
       return view('public.index', $data);
     }
@@ -125,6 +130,11 @@ class PublicController extends Controller {
     // 告警页面
     public function alert($error, $content) {
       return view('public.alert', ['error' => $error, 'content' => $content]);
+    }
+
+    // 鸣谢页面
+    public function credit() {
+      return view('public.credit');
     }
 
 }

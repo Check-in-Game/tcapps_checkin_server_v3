@@ -39,14 +39,14 @@
   <div class="input-group-prepend">
     <span class="input-group-text">前景色</span>
   </div>
-  <input type="text" class="form-control" placeholder="Fg color" id="fgcolor">
+  <input type="text" class="form-control" placeholder="Fg color" id="fgcolor" value="#f2f2f2">
 </div>
 
 <div class="input-group mb-3">
   <div class="input-group-prepend">
     <span class="input-group-text">背景色</span>
   </div>
-  <input type="text" class="form-control" placeholder="Bg color" id="bgcolor">
+  <input type="text" class="form-control" placeholder="Bg color" id="bgcolor" value="#202020">
 </div>
 
 <div class="input-group mb-3">
@@ -61,6 +61,18 @@
     <span class="input-group-text">效果EID</span>
   </div>
   <input type="number" class="form-control" placeholder="EID" id="eid" value=1>
+</div>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <label class="input-group-text" for="eid">效果EID</label>
+  </div>
+  <select class="custom-select" id="eid">
+    <option selected>选择效果</option>
+    @foreach($effects as $effect)
+    <option value="{{ $effect->eid }}" title="{{ $effect->description }}">#{{ $effect->eid }}:{{ $effect->description }}</option>
+    @endforeach
+  </select>
 </div>
 
 <div class="input-group mb-3">
@@ -108,7 +120,7 @@ function add() {
   let gid       = $('#gid').val();
   let eid       = $('#eid').val();
   let status    = $('#status').val();
-  if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '' || eid == '' || status == '') {
+  if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '' || eid == '选择效果' || status == '') {
     alert('请填写信息！');
     return false;
   }
@@ -158,7 +170,7 @@ function update() {
   let gid       = $('#gid').val();
   let eid       = $('#eid').val();
   let status    = $('#status').val();
-  if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '' || eid == '' || status == '') {
+  if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '' || eid == '选择效果' || status == '') {
     alert('请填写信息！');
     return false;
   }

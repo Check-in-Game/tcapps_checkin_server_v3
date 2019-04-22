@@ -56,8 +56,14 @@
               </th>
               <th scope="row">
                 {{ $chart->username }}
-                @if(in_array($chart->uid, $nc_badge) )
-                <span class="badge badge-dark" style="color: #ffdf54;">内测</span>
+                @if( isset($badges[$chart->uid]) )
+                  @foreach($badges[$chart->uid] as $badge)
+                    @if( !empty($badge['image']) )
+                    <img src="{{ $badge['image'] }}" alt="勋章预览" height="18px" title="{{ $badge['bname'] }}">
+                    @else
+                    <span class="badge badge-dark" style="color: {{ $badge['fgcolor'] }};background-color: {{ $badge['bgcolor'] }};">{{ $badge['bname'] }}</span>
+                    @endif
+                  @endforeach
                 @endif
               </th>
               <th scope="row">

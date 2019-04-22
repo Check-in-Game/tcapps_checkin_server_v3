@@ -32,6 +32,14 @@ Route::post('/user/security/password', 'APIUser@security_change_password')
 Route::get('/purchase/{gid}', 'APIUser@purchase')
       ->middleware('apicheck.auth');
 
+// Wear Badge
+  // wear
+Route::post('/user/badge/wear', 'APIUser@badge_wear')
+      ->middleware('apicheck.auth');
+  // take off
+Route::post('/user/badge/takeoff', 'APIUser@badge_takeoff')
+      ->middleware('apicheck.auth');
+
 // =======ADMIN=======
 // Conpensate
 Route::post('/admin/conpensate', 'APIAdmin@conpensate')
@@ -116,3 +124,21 @@ Route::post('/admin/badges/update', 'APIAdmin@badges_update')
 Route::post('/admin/badges/delete', 'APIAdmin@badges_delete')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:badges_delete');
+
+// Effects
+  // search
+Route::get('/admin/effects/search/{bid}', 'APIAdmin@effects_search')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:effects_search');
+  // add
+Route::post('/admin/effects/add', 'APIAdmin@effects_add')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:effects_add');
+  // update
+Route::post('/admin/effects/update', 'APIAdmin@effects_update')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:effects_update');
+  // delete
+Route::post('/admin/effects/delete', 'APIAdmin@effects_delete')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:effects_delete');

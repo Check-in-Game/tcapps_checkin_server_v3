@@ -559,4 +559,87 @@ class APIAdmin extends Controller {
         return response($json);
       }
     }
+
+    // 搜索效果
+    public function effects_search(int $bid) {
+      $badge = DB::table('effects')
+              ->where('eid', $bid)
+              ->first();
+      if (!$badge) {
+        $json = $this->JSON(3301, "Failed to find this EID.", null);
+        return response($json);
+      }else{
+        $json = $this->JSON(0, null, ['msg'=>'Success', 'data'=>$badge]);
+        return response($json);
+      }
+    }
+
+    // 添加效果
+    public function effects_add() {
+      $times        = request()->post('times');
+      $description  = request()->post('description');
+      $status       = request()->post('status');
+      if (!$times || !$description || !$status) {
+        $json = $this->JSON(3302, "Lost some infomation.", null);
+        return response($json);
+      }
+      $data['times']        = $times;
+      $data['description']  = $description;
+      $data['status']       = $status;
+      $notice = DB::table('effects')->insert($data);
+      if ($notice) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(3303, "Failed to add badge.", null);
+        return response($json);
+      }
+    }
+
+    // 修改效果
+    public function effects_update() {
+      $eid          = request()->post('eid');
+      $times        = request()->post('times');
+      $description  = request()->post('description');
+      $status       = request()->post('status');
+      if (!$eid || !$times || !$description || !$status) {
+        $json = $this->JSON(3304, "Lost some infomation.", null);
+        return response($json);
+      }
+      $data['eid']        = $eid;
+      $data['times']        = $times;
+      $data['description']  = $description;
+      $data['status']       = $status;
+      $notice = DB::table('effects')->where('eid', $eid)->update($data);
+      if ($notice) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(3305, "Failed to update badge.", null);
+        return response($json);
+      }
+    }
+
+    // 删除效果
+    public function effects_delete() {
+      $eid      = request()->post('eid');
+      if (!$eid){
+        $json = $this->JSON(3306, "Lost some infomation.", null);
+        return response($json);
+      }
+      // 查询该BID是否存在
+      $badge = DB::table('effects')->where('eid', $eid)->first();
+      if (!$badge) {
+        $json = $this->JSON(3307, "Failed to find this EID.", null);
+        return response($json);
+      }
+      $notice = DB::table('effects')->where('eid', $eid)->delete();
+      if ($notice) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(3308, "Failed to delete badge.", null);
+        return response($json);
+      }
+    }
 }

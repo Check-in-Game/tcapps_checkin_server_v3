@@ -28,10 +28,13 @@
               <a class="nav-link" href="{{ action('PublicController@index') }}">首页</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ action('PublicController@register') }}">注册账户</a>
+              <a class="nav-link" href="{{ action('PublicController@register') }}"><i class="fa-fw fas fa-user-edit"></i> 注册账户</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ action('UserController@user') }}"><i class="fa-fw fas fa-user-circle"></i> 用户中心</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ action('PublicController@credit') }}"><i class="fa-fw fab fa-gratipay"></i> 鸣谢</a>
             </li>
           </ul>
         </div>

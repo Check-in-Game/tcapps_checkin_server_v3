@@ -198,4 +198,113 @@ class APIUser extends Controller {
         return response($json);
       }
     }
+
+    // 佩戴勋章
+    public function badge_wear() {
+      $uid    = request()->cookie('uid');
+      $bid    = request()->post('bid');
+      // 查询佩戴数量限制
+      $limit  = DB::table('system')->where('skey', 'badges_wear_limit')->first();
+      if (!$limit) {
+        $limit = 1;
+      }else{
+        $limit = $limit->svalue;
+      }
+      // 查询用户是否拥有该勋章
+      $ownership = DB::table('badges')
+                ->join('purchase_records', 'badges.gid', '=', 'purchase_records.gid')
+                ->where('purchase_records.uid', $uid)
+                ->where('purchase_records.status', 1)
+                ->first();
+      if (!$ownership) {
+        $json = $this->JSON(3401, 'The ownership of this badge is abnormal.', null);
+        return response($json);
+      }
+      // 查询用户佩戴信息
+      $wore = DB::table('badges_wear')->where('uid', $uid)->first();
+      // 信息不存在直接写入
+      if(!$wore) {
+        $data = [
+          'uid'           => $uid,
+          'bid'           => $bid,
+          'update_time'   => date('Y-m-d H:i:s'),
+        ];
+        $insert = DB::table('badges_wear')->insert($data);
+        if (!$insert) {
+          $json = $this->JSON(3402, 'Failed to wear badge.', null);
+          return response($json);
+        }else{
+          $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+          return response($json);
+        }
+      }
+      // 检查佩戴数量
+      $wore = explode(',', $wore->bid);
+      $count = count($wore);
+      // 限制1直接更新
+      if ($limit == 1) {
+        $data = [
+          'uid'           => $uid,
+          'bid'           => $bid,
+          'update_time'   => date('Y-m-d H:i:s'),
+        ];
+      }else{
+        // 限制不为1，查询是否超额佩戴
+        if ($count >= $limit) {
+          $json = $this->JSON(3404, 'The count of wore badges is limited.', null);
+          return response($json);
+        }else{
+          $tmp = $wore;
+          $tmp[] = $bid;
+          $bid = join(',', $tmp);
+          $data = [
+            'uid'           => $uid,
+            'bid'           => $bid,
+            'update_time'   => date('Y-m-d H:i:s'),
+          ];
+        }
+      }
+      $update = DB::table('badges_wear')->where('uid', $uid)->update($data);
+      if (!$update) {
+        $json = $this->JSON(3403, 'Failed to wear badge.', null);
+        return response($json);
+      }else{
+        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+        return response($json);
+      }
+    }
+
+    // 取消佩戴勋章
+    public function badge_takeoff() {
+      $uid    = request()->cookie('uid');
+      $bid    = request()->post('bid');
+      // 查询用户佩戴信息
+      $wore = DB::table('badges_wear')->where('uid', $uid)->first();
+      if (!$wore) {
+        $json = $this->JSON(3405, 'Failed to query badges.', null);
+        return response($json);
+      }
+      $badges = explode(',', $wore->bid);
+      if (!in_array($bid, $badges)) {
+        $json = $this->JSON(3406, 'This badge is not been wore.', null);
+        return response($json);
+      }
+      // 待删除bid
+      $_bid = array_search($bid, $badges);
+      unset($badges[$_bid]);
+      $badges = join(',', $badges);
+      $data = [
+        'uid'           => $uid,
+        'bid'           => $badges,
+        'update_time'   => date('Y-m-d H:i:s'),
+      ];
+      $update = DB::table('badges_wear')->where('uid', $uid)->update($data);
+      if (!$update) {
+        $json = $this->JSON(3407, 'Failed to take off badge.', null);
+        return response($json);
+      }else{
+        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+        return response($json);
+      }
+    }
 }
