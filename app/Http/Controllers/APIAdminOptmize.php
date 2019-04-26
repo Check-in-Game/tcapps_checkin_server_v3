@@ -42,7 +42,7 @@ class APIAdminOptmize extends Controller {
 
     // 清理结算一个月前正常的签到数据
     private function checkin_list_settle() {
-      $date = date('Y-m-d 00:00:00', strtotime('-1 week'));
+      $date = date('Y-m-d 00:00:00', strtotime('-1 month'));
       $db_prefix = env('DB_PREFIX');
       $charts = DB::table('lists_v2')
               ->join('user_accounts', 'lists_v2.uid', '=', 'user_accounts.uid')
