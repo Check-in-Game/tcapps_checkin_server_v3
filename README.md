@@ -131,7 +131,8 @@ create table tcapps_checkin_tokens_v2(
 #类型1:活动加值
 #类型2:系统加值
 #类型3:补偿加值
-#类型4:氪金加值
+#类型4:签到补偿
+#类型5:积分结算
 create table tcapps_checkin_lists_v2(
   cid int unsigned auto_increment primary key not null comment "签到ID",
   uid int unsigned not null comment "用户ID",
@@ -284,4 +285,14 @@ create table tcapps_checkin_badges_wear(
   bid varchar(512) not null comment "勋章ID",
   update_time datetime not null comment "修改时间"
 )comment="勋章佩戴系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#结算失败记录
+create table tcapps_checkin_lists_v2_settle_failure(
+  cid int unsigned auto_increment primary key not null comment "签到ID",
+  uid int unsigned not null comment "用户ID",
+  tid tinyint unsigned not null default 0 comment "签到类型",
+  worth int unsigned not null default 1 comment "价值",
+  check_time datetime not null comment "签到时间",
+  status tinyint not null default 1 comment "状态"
+)comment="结算失败记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
 ```

@@ -51,6 +51,8 @@
               <span class="badge badge-secondary">补偿</span>
               @elseif( $chart->tid === 4 )
               <span class="badge badge-success">签补</span>
+              @elseif( $chart->tid === 5 )
+              <span class="badge badge-info">结算</span>
               @endif
             </th>
           </tr>

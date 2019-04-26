@@ -17,6 +17,9 @@
   <div class="col-sm mb-4">
     <button type="button" class="btn btn-danger btn-block" onclick="javascript:optimize('inactive_users');">删除不活跃用户</button>
   </div>
+  <div class="col-sm mb-4">
+    <button type="button" class="btn btn-primary btn-block" onclick="javascript:optimize('checkin_list_settle');">结算一个月前的签到记录</button>
+  </div>
 </div>
 @endsection
 @section('script')
