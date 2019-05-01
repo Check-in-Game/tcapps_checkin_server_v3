@@ -68,6 +68,13 @@
 @section('script')
 <script src="{{ asset('js/base64.js') }}" charset="utf-8"></script>
 <script type="text/javascript">
+  $(function(){
+    $(document).keyup(function(){
+    	if(event.keyCode==13){
+    		login();
+    	}
+    });
+  });
   function login() {
     let username = $('#username').val();
     let password = $('#password').val();
@@ -102,13 +109,13 @@
         }
       },
       success: function(data){
+        $('#captcha_img').click();
+        $('#captcha').val('');
         if (data.errno === 0) {
           location.href = '/user';
         }else if(data.errno === 2307){
           alert('服务器开小差辣~');
         }else if(data.errno === 2305){
-          $('#captcha_img').click();
-          $('#captcha').val('');
           alert('验证码错误');
         }else{
           alert('用户名或密码错误');

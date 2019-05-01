@@ -29,18 +29,17 @@
     </div>
     @endforeach
 
-    <div class="alert alert-success" role="alert">
-      排行榜目前实时更新，显示前100名。
+    <div class="alert alert-success">
+      周活跃榜显示自现在起，过去7*24小时内的签到积分。
     </div>
 
     <!-- 排行榜 -->
-    <h2>排行榜</h2>
+    <h2>周活跃榜</h2>
 
     <table class="table table-striped table-hover">
       <thead>
         <tr>
           <th scope="col">排名</th>
-          <th scope="col" class="d-none d-sm-block">UID</th>
           <th scope="col">用户名</th>
           <th scope="col">签到积分</th>
         </tr>
@@ -50,9 +49,6 @@
             <tr>
               <th scope="row">
                 # {{ $key+1 }}
-              </th>
-              <th scope="row" class="d-none d-sm-block">
-                {{ $chart->uid }}
               </th>
               <th scope="row">
                 {{ $chart->username }}

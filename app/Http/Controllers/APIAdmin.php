@@ -282,13 +282,13 @@ class APIAdmin extends Controller {
         || !isset($_POST['priority']) || empty($_POST['priority'])
         || !isset($_POST['starttime']) || empty($_POST['starttime'])
         || !isset($_POST['endtime']) || empty($_POST['endtime'])
-        || !isset($_POST['status']) || empty($_POST['status'])
+        || !isset($_POST['status']) || (empty($_POST['status']) && $_POST['status'] != 0)
       ){
         $json = $this->JSON(2902, "Lost some infomation.", null);
         return response($json);
       }
-      $starttime = date('Y-m-d H:i:s', strtotime($starttime));
-      $endtime   = date('Y-m-d H:i:s', strtotime($endtime));
+      $starttime = date('Y-m-d H:i:s', strtotime($_POST['starttime']));
+      $endtime   = date('Y-m-d H:i:s', strtotime($_POST['endtime']));
       $data['place_id']   = $_POST['place_id'];
       $data['title']      = $_POST['title'];
       $data['content']    = $_POST['content'];
@@ -317,7 +317,7 @@ class APIAdmin extends Controller {
         || !isset($_POST['priority']) || empty($_POST['priority'])
         || !isset($_POST['starttime']) || empty($_POST['starttime'])
         || !isset($_POST['endtime']) || empty($_POST['endtime'])
-        || !isset($_POST['status']) || empty($_POST['status'])
+        || !isset($_POST['status']) || (empty($_POST['status']) && $_POST['status'] != 0)
       ){
         $json = $this->JSON(2904, "Lost some infomation.", null);
         return response($json);
@@ -329,8 +329,8 @@ class APIAdmin extends Controller {
         $json = $this->JSON(2905, "Failed to find this NID.", null);
         return response($json);
       }
-      $starttime = date('Y-m-d H:i:s', strtotime($starttime));
-      $endtime   = date('Y-m-d H:i:s', strtotime($endtime));
+      $starttime = date('Y-m-d H:i:s', strtotime($_POST['starttime']));
+      $endtime   = date('Y-m-d H:i:s', strtotime($_POST['endtime']));
       $data['place_id']   = $_POST['place_id'];
       $data['title']      = $_POST['title'];
       $data['content']    = $_POST['content'];
@@ -374,14 +374,50 @@ class APIAdmin extends Controller {
 
     // 搜索用户
     public function users_search(int $uid) {
-      $notice = DB::table('user_accounts')
+      $user = DB::table('user_accounts')
               ->where('uid', $uid)
               ->first();
-      if (!$notice) {
+      if (!$user) {
         $json = $this->JSON(3001, "Failed to find this UID.", null);
         return response($json);
       }else{
-        $json = $this->JSON(0, null, ['msg'=>'Success', 'data'=>$notice]);
+        $json = $this->JSON(0, null, ['msg'=>'Success', 'data'=>$user]);
+        return response($json);
+      }
+    }
+
+    // 搜索用户 根据用户名
+    public function users_search_username(string $username) {
+      $user = DB::table('user_accounts')
+              ->where('username', $username)
+              ->first();
+      if (!$user) {
+        $json = $this->JSON(3001, "Failed to find this Username.", null);
+        return response($json);
+      }else{
+        $json = $this->JSON(0, null, ['msg'=>'Success', 'data'=>$user]);
+        return response($json);
+      }
+    }
+
+    // 查询用户积分情况
+    public function users_points_get(int $uid) {
+      $allWorth = DB::table('lists_v2')
+              ->where('uid', $uid)
+              ->sum('worth');
+      $used     = DB::table('purchase_records')
+              ->where('uid', $uid)
+              ->sum('cost');
+
+      if (!$allWorth || !$used) {
+        $json = $this->JSON(3601, "Failed to get infomation.", null);
+        return response($json);
+      }else{
+        $data = [
+          'allWorth'  => $allWorth,
+          'used'      => $used
+        ];
+        $json = $this->JSON(0, null, ['msg'=>'Success', 'data'=>$data]);
         return response($json);
       }
     }

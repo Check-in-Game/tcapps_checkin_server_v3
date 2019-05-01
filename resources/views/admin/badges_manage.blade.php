@@ -53,7 +53,12 @@
   <div class="input-group-prepend">
     <span class="input-group-text">商品GID</span>
   </div>
-  <input type="number" class="form-control" placeholder="GID" id="gid">
+  <select class="custom-select" id="gid">
+    <option selected>选择商品</option>
+    @foreach($goods as $good)
+    <option value="{{ $good->gid }}" title="{{ $good->description }}">#{{ $good->gid }}: {{ $good->gname }}</option>
+    @endforeach
+  </select>
 </div>
 
 <div class="input-group mb-3">
@@ -113,7 +118,7 @@ function add() {
   let gid       = $('#gid').val();
   let eid       = $('#eid').val();
   let status    = $('#status').val();
-  if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '' || eid == '选择效果' || status == '') {
+  if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '选择商品' || eid == '选择效果' || status == '') {
     alert('请填写信息！');
     return false;
   }
@@ -163,7 +168,7 @@ function update() {
   let gid       = $('#gid').val();
   let eid       = $('#eid').val();
   let status    = $('#status').val();
-  if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '' || eid == '选择效果' || status == '') {
+  if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '选择商品' || eid == '选择效果' || status == '') {
     alert('请填写信息！');
     return false;
   }

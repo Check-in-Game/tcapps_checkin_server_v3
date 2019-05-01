@@ -33,6 +33,7 @@ Route::get('/user/history/checkin', 'UserController@history_checkin')           
 Route::get('/user/bill', 'UserController@bill')                                   ->middleware('check.auth', 'notice:9');
 Route::get('/user/activity', 'UserController@activity')                           ->middleware('check.auth', 'notice:10');
 Route::get('/user/badges', 'UserController@badges')                               ->middleware('check.auth', 'notice:25');
+Route::get('/user/security/username', 'UserController@username_modify')           ->middleware('check.auth', 'notice:26');
 
 // 管理中心
 Route::get('/admin', 'AdminController@index')                           ->middleware('check.auth', 'check.admin.auth', 'notice:11');

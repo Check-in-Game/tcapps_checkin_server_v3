@@ -26,6 +26,9 @@
     <span class="input-group-text">Username</span>
   </div>
   <input type="text" class="form-control" placeholder="Username" id="username">
+  <div class="input-group-append">
+    <button class="btn btn-outline-secondary" type="button" onclick="javascript:search_username();">查</button>
+  </div>
 </div>
 
 <div class="input-group mb-3">
@@ -44,6 +47,26 @@
 
 <p class="clearfix">
   <button class="btn btn-secondary float-right mr-2" id="btn" name="button" onclick="javascript:update();">修改</button>
+</p>
+
+<hr>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text">总积分</span>
+  </div>
+  <input type="number" class="form-control" id="points" readonly>
+</div>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text">剩余积分</span>
+  </div>
+  <input type="number" class="form-control" id="rest_points" readonly>
+</div>
+
+<p class="clearfix">
+  <button class="btn btn-secondary float-right mr-2" name="button" onclick="javascript:getPoints();">查询</button>
 </p>
 
 <div class="alert alert-primary" role="alert">
@@ -77,6 +100,52 @@ function search() {
     }
   });
 }
+
+function search_username() {
+  let username = $('#username').val();
+  if (username == '') {
+    alert('请输入用户名后查询');
+    return false;
+  }
+  $.getJSON('/api/admin/users/search_username/' + username, function(data){
+    if (data.errno === 0) {
+      let uid         = data.body.data.uid;
+      let username    = data.body.data.username;
+      let status      = data.body.data.status;
+      $('#uid').val(uid);
+      $('#username').val(username);
+      $('#password').val('');
+      $('#status').val(status);
+    }else{
+      $('#uid').val('');
+      $('#username').val('');
+      $('#password').val('');
+      $('#status').val('');
+      alert(data.error);
+    }
+  });
+}
+
+function getPoints() {
+  let uid = $('#uid').val();
+  if (uid == '') {
+    alert('请输入UID后查询');
+    return false;
+  }
+  $.getJSON('/api/admin/users/points/' + uid, function(data){
+    if (data.errno === 0) {
+      let points           = data.body.data.allWorth;
+      let rest_points      = data.body.data.allWorth - data.body.data.used;
+      $('#points').val(points);
+      $('#rest_points').val(rest_points);
+    }else{
+      $('#points').val('');
+      $('#rest_points').val('');
+      alert(data.error);
+    }
+  });
+}
+
 function update() {
   let uid       = $('#uid').val();
   let username  = $('#username').val();

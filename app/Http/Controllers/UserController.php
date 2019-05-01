@@ -166,4 +166,9 @@ class UserController extends Controller {
       ];
       return view('user.badges', $data);
     }
+
+    // 修改用户名
+    public function username_modify() {
+      return view('user.username_modify');
+    }
 }

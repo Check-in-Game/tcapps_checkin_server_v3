@@ -89,8 +89,15 @@ class AdminController extends Controller {
     // 勋章管理
     public function badges_manage() {
       $effects = DB::table('effects')->get();
+      $goods   = DB::table('shop')
+              ->leftJoin('badges', 'badges.gid', '=', 'shop.gid')
+              ->where('badges.gid', NULL)
+              ->where('shop.tid', 1)
+              ->select('shop.gid', 'shop.gname', 'shop.description')
+              ->get();
       $data = [
         'effects'  => $effects,
+        'goods'    => $goods,
       ];
       return view('admin.badges_manage', $data);
     }

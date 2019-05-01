@@ -199,6 +199,53 @@ class APIUser extends Controller {
       }
     }
 
+    // 修改用户名
+    public function security_change_username() {
+      // 获取用户uid
+      $uid = request()->cookie('uid');
+      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      if (!$user) {
+        $json = $this->JSON(3502, 'Invaild user.', null);
+        return response($json);
+      }else if($user->status === 1) {
+        $json = $this->JSON(3503, 'Cannot change username.', null);
+        return response($json);
+      }
+      $username = Request()->post('username');
+      // 判断用户名是否合法
+      $pattern = "/^[a-zA-Z0-9_]+$/";
+      $preg = preg_match($pattern, $username);
+      if (mb_strlen($username) < 5 || mb_strlen($username) > 16 || !$preg){
+        $json = $this->JSON(3501, 'Invaild username.', null);
+        return response($json);
+      }
+      // 用户名不合法状态
+      if ($user->status === 0) {
+        $data = [
+          'username'  => $username,
+          'status'    => 1,         // 修正合法状态
+        ];
+      }else{
+        // 其他情况不修改状态
+        $data = [
+          'username'  => $username,
+        ];
+      }
+      // 修改用户名
+      $res = DB::table('user_accounts')
+                ->where('uid', $user->uid)
+                ->update($data);
+      if ($res) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+        return response($json)
+        ->withCookie(cookie()->forget('uid'))
+        ->withCookie(cookie()->forget('auth'));
+      }else{
+        $json = $this->JSON(3503, 'Failed to change username.', null);
+        return response($json);
+      }
+    }
+
     // 佩戴勋章
     public function badge_wear() {
       $uid    = request()->cookie('uid');

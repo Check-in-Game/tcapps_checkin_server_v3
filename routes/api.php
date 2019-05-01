@@ -24,8 +24,10 @@ Route::post('/login', 'APIUser@login');
 Route::get('/logout', 'APIUser@logout')
       ->middleware('apicheck.auth');
 
-// Password
+// Security
 Route::post('/user/security/password', 'APIUser@security_change_password')
+      ->middleware('apicheck.auth');
+Route::post('/user/security/username', 'APIUser@security_change_username')
       ->middleware('apicheck.auth');
 
 // Purchase
@@ -94,6 +96,12 @@ Route::post('/admin/notices/delete', 'APIAdmin@notices_delete')
 // Users
   // search
 Route::get('/admin/users/search/{uid}', 'APIAdmin@users_search')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:user_search');
+Route::get('/admin/users/search_username/{username}', 'APIAdmin@users_search_username')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:user_search');
+Route::get('/admin/users/points/{uid}', 'APIAdmin@users_points_get')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:user_search');
   // update
