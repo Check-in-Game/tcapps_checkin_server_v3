@@ -53,12 +53,15 @@
   <div class="input-group-prepend">
     <span class="input-group-text">商品GID</span>
   </div>
-  <select class="custom-select" id="gid">
-    <option selected>选择商品</option>
-    @foreach($goods as $good)
-    <option value="{{ $good->gid }}" title="{{ $good->description }}">#{{ $good->gid }}: {{ $good->gname }}</option>
-    @endforeach
-  </select>
+  <input type="number" class="form-control" placeholder="GID" id="gid">
+  <div class="input-group-append">
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">选择商品</button>
+    <div class="dropdown-menu">
+      @foreach($goods as $good)
+      <a class="dropdown-item" href="javascript:$('#gid').val({{ $good->gid }});" title="{{ $good->description }}">#{{ $good->gid }}: {{ $good->gname }}</a>
+      @endforeach
+    </div>
+  </div>
 </div>
 
 <div class="input-group mb-3">

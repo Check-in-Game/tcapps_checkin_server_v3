@@ -38,7 +38,7 @@
             @if(empty($value['image']))
             <p class="card-text">此商品暂无预览图</p>
             @else
-            <img class="card-img-top" src="{{ $value->image }}" alt="Card image cap">
+            <img class="card-img-top img-thumbnail rounded" src="{{ $value['image'] }}" alt="商品预览">
             @endif
           @endif
           <p class="card-text text-left">价格：{{ $value['cost'] }}积分</p>

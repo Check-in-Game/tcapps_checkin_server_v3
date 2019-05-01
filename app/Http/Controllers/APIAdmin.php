@@ -427,7 +427,7 @@ class APIAdmin extends Controller {
       if (!isset($_POST['uid']) || empty($_POST['uid'])
         || !isset($_POST['username']) || empty($_POST['username'])
         || !isset($_POST['password'])
-        || !isset($_POST['status']) || empty($_POST['status'])
+        || !isset($_POST['status']) || (empty($_POST['status']) && $_POST['status'] != 0)
       ){
         $json = $this->JSON(2904, "Lost some infomation.", null);
         return response($json);
@@ -521,7 +521,7 @@ class APIAdmin extends Controller {
       $gid      = request()->post('gid');
       $eid      = request()->post('eid');
       $status   = request()->post('status');
-      if (!$bname || ($image !== '' && !$image) || !$fgcolor || !$bgcolor || !$gid || ($eid !== 0 && !$eid) || !$status) {
+      if (!$bname || ($image !== '' && !$image) || !$fgcolor || !$bgcolor || !$gid || ($eid !== 0 && !$eid) || is_null($status)) {
         $json = $this->JSON(3202, "Lost some infomation.", null);
         return response($json);
       }
@@ -552,7 +552,7 @@ class APIAdmin extends Controller {
       $gid      = request()->post('gid');
       $eid      = request()->post('eid');
       $status   = request()->post('status');
-      if (!$bid || !$bname || ($image !== '' && !$image) || !$fgcolor || !$bgcolor || !$gid || ($eid !== 0 && !$eid) || !$status) {
+      if (!$bid || !$bname || ($image !== '' && !$image) || !$fgcolor || !$bgcolor || !$gid || ($eid !== 0 && !$eid) || is_null($status)) {
         $json = $this->JSON(3204, "Lost some infomation.", null);
         return response($json);
       }
@@ -615,7 +615,7 @@ class APIAdmin extends Controller {
       $times        = request()->post('times');
       $description  = request()->post('description');
       $status       = request()->post('status');
-      if (!$times || !$description || !$status) {
+      if (!$times || !$description || is_null($status)) {
         $json = $this->JSON(3302, "Lost some infomation.", null);
         return response($json);
       }
@@ -638,7 +638,7 @@ class APIAdmin extends Controller {
       $times        = request()->post('times');
       $description  = request()->post('description');
       $status       = request()->post('status');
-      if (!$eid || !$times || !$description || !$status) {
+      if (!$eid || !$times || !$description || is_null($status)) {
         $json = $this->JSON(3304, "Lost some infomation.", null);
         return response($json);
       }
