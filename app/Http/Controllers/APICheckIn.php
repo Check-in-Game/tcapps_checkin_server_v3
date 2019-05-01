@@ -121,6 +121,14 @@ class APICheckIn extends Controller {
         $max = $db->max_worth;
       }
       $worth = mt_rand($min, $max);
+      // 查询签到次数
+      $count = DB::table('lists_v2')->where('uid', $user->uid)->count();
+      // 查询新用户加成
+      $buff = DB::table('system')->where('skey', 'newhand_support_pre_200')->first();
+      // 积分基数小于等于100有新手加成
+      if ($buff && $count <= 200) {
+        $worth = ($worth > 200) ? $worth : $worth * $buff->svalue;
+      }
       // 查询用户佩戴勋章
       $badges = DB::table('badges_wear')->where('uid', $user->uid)->first();
       if( $badges && !empty($badges->bid) ) {

@@ -249,6 +249,7 @@ INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('r
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit', 7, '签到历史记录极限查询时间');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('checkin_history_limit_unit', 'day', '签到历史记录极限查询时间单位,day/week/month');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('badges_wear_limit', 1, '用户佩戴勋章数量限制');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('newhand_support_pre_200', 3, '新用户前200次签到加成倍数');
 
 #公告设置表
 create table tcapps_checkin_notices(

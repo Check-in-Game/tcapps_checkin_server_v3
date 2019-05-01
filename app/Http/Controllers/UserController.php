@@ -16,6 +16,13 @@ class UserController extends Controller {
       $all_worth = DB::table('lists_v2')
               ->where('uid', $user->uid)
               ->sum('worth');
+      $count = DB::table('lists_v2')
+              ->where('uid', $user->uid)
+              ->count();
+      $buff = DB::table('system')
+              ->where('skey', 'newhand_support_pre_200')
+              ->first();
+      $buff = $buff ? $buff->svalue : 1;
       $cost = DB::table('purchase_records')
             ->where('uid', $user->uid)
             ->sum('cost');
@@ -23,6 +30,8 @@ class UserController extends Controller {
         'uid'          => $uid,
         'username'     => $username,
         'all_worth'    => $all_worth,
+        'count'        => $count,
+        'buff'         => $buff,
         'cost'         => $cost,
       ];
       return view('user.home', $data);
