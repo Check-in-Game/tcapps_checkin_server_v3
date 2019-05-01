@@ -1,10 +1,11 @@
 @extends('public.master')
 @section('headerExtraContent')
   <!-- 幕布 -->
-  <div class="jumbotron">
+  <div class="jumbotron pb-2">
       <div class="container">
         <h1 class="display-4">Check-in Game 在线签到器</h1>
         <p class="lead">签到排行榜实时更新，签到每隔5分钟即可进行一次，只需简单注册账户即可开始游戏！</p>
+        <hr class="my-4">
         <p class="lead">
           <a class="btn btn-primary" href="{{ action('PublicController@index') }}">首页</a>
           <a class="btn btn-success" href="{{ action('PublicController@register') }}">注册账户</a>
