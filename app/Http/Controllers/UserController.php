@@ -126,6 +126,7 @@ class UserController extends Controller {
           ->where('endtime', '>=', date('Y-m-d H:i:s', strtotime('-7 day')))
           ->where('starttime', '<=', date('Y-m-d H:i:s', strtotime('+7 day')))
           ->where('status', 1)
+          ->orderBy('starttime')
           ->paginate(25);
       $data = [
         'charts'  => $charts
