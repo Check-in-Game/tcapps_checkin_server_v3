@@ -138,6 +138,7 @@ create table tcapps_checkin_tokens_v2(
 #类型3:补偿加值
 #类型4:签到补偿
 #类型5:积分结算
+#类型6:赞助加值
 create table tcapps_checkin_lists_v2(
   cid int unsigned auto_increment primary key not null comment "签到ID",
   uid int unsigned not null comment "用户ID",

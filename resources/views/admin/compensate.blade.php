@@ -34,7 +34,7 @@
     <option value="2" title="参与系统回馈获得加值">系统加值</option>
     <option value="3" title="系统原因导致积分丢失补偿加值" selected>系统补偿</option>
     <option value="4" title="补偿签到加值">签到补偿</option>
-    <!-- <option value="4">氪金</option> -->
+    <option value="6" title="赞助加值">赞助加值</option>
   </select>
 </div>
 
