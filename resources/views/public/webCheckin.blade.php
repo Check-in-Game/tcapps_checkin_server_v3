@@ -27,8 +27,8 @@
   </div>
   @endforeach
 
-  <div class="alert alert-success" role="alert">
-    <p class="mb-0">使用签到器签到请将您的浏览器加入后台常驻白名单，否则被进程杀死后将不能进行签到。</p>
+  <div class="alert alert-warning" role="alert">
+    <p class="mb-0">出现用户状态不正常时，请登录用户中心查看是否有解封引导，若没有解封引导，请加群联系管理员。</p>
   </div>
 
   <!-- 排行榜 -->
@@ -135,6 +135,8 @@
     $.getJSON(url, function(data){
       if (data.errno == 0){
         status('签到成功！获得' + data.body.worth + '积分！');
+      }else if(data.errno == 2203){
+        status('签到失败，用户状态不正常！');
       }else{
         status('签到失败，延迟5分钟！');
       }

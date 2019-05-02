@@ -84,7 +84,8 @@ class APICheckIn extends Controller {
         return response($json);
       }
       // 判断用户状态
-      if ($user->status === -1) {
+      $banedStatus = [-1, 0];
+      if (in_array($user->status, $banedStatus)) {
         $json = $this->JSON(2203, 'Incorrect user status.', null);
         return response($json);
       }
