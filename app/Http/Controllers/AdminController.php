@@ -74,6 +74,16 @@ class AdminController extends Controller {
       $data = [
         'rights'  => $rights,
       ];
+      if (!is_null($uid = request()->get('uid'))) {
+        $have_rights = DB::table('admin_register')
+                    ->join('admin_rights_list', 'admin_register.rid', '=', 'admin_rights_list.rid')
+                    ->where('admin_register.uid', $uid)
+                    ->select('admin_register.rid', 'admin_register.status', 'admin_rights_list.description')
+                    ->get();
+        if ($have_rights) {
+          $data['have_rights'] = $have_rights;
+        }
+      }
       return view('admin.admins_manage', $data);
     }
 

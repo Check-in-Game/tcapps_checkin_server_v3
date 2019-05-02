@@ -472,7 +472,7 @@ class APIAdmin extends Controller {
       }
       $uid = $_POST['uid'];
       $rid = $_POST['rid'];
-      // 判断权限
+      // 查找权限
       $admin_level = request()->get('_admin');
       $admin_level = $admin_level->level;
       $right  = DB::table('admin_rights_list')->where('rid', $rid)->first();
@@ -480,9 +480,16 @@ class APIAdmin extends Controller {
         $json = $this->JSON(3102, "Failed to find right infomation.", null);
         return response($json);
       }
+      // 检查是否有权限提权
       $level_need = $right->level_need;
       if ($admin_level < $level_need) {
         $json = $this->JSON(3103, "Higher admin level needed.", null);
+        return response($json);
+      }
+      // 检查权限是否存在
+      $have_right = DB::table('admin_register')->where('uid', $_POST['uid'])->where('rid', $_POST['rid'])->first();
+      if ($have_right) {
+        $json = $this->JSON(3105, "The admin has already had this right.", null);
         return response($json);
       }
       $data['uid']      = $_POST['uid'];
@@ -494,6 +501,33 @@ class APIAdmin extends Controller {
         return response($json);
       }else{
         $json = $this->JSON(3104, "Failed to add rights.", null);
+        return response($json);
+      }
+    }
+
+    // 用户降权
+    public function admins_rights_del() {
+      $uid = request()->post('uid');
+      $rid = request()->post('rid');
+      if (is_null($uid) || is_null($rid)){
+        $json = $this->JSON(3701, "Lost some infomation.", null);
+        return response($json);
+      }
+      // 判断权限
+      $admin_level = request()->get('_admin');
+      $admin_level = $admin_level->level;
+      // 检查被降权用户权限等级
+      $level = DB::table('admin_level')->where('uid', $uid)->first();
+      if ($level && $level->level >= $admin_level) {
+        $json = $this->JSON(3702, "Have no rights to delete the right of this user.", null);
+        return response($json);
+      }
+      $notice = DB::table('admin_register')->where('uid', $uid)->where('rid', $rid)->delete();
+      if ($notice) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(3103, "Failed to del rights.", null);
         return response($json);
       }
     }

@@ -82,5 +82,10 @@ class Kernel extends HttpKernel
         \Illuminate\Session\Middleware\AuthenticateSession::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
         \Illuminate\Auth\Middleware\Authorize::class,
+        'check.auth' => \App\Http\Middleware\CheckAuth::class,
+        'apicheck.auth' => \App\Http\Middleware\APICheckAuth::class,
+        'notice' => \App\Http\Middleware\Notice::class,
+        'check.admin.auth' => \App\Http\Middleware\AdminCheckAuth::class,
+        'apicheck.admin.auth' => \App\Http\Middleware\APIAdminCheckAuth::class,
     ];
 }

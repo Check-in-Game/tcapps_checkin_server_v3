@@ -47,6 +47,7 @@ Route::post('/user/badge/takeoff', 'APIUser@badge_takeoff')
 Route::post('/admin/conpensate', 'APIAdmin@conpensate')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:conpensate_add');
+
 // Activity
   // search
 Route::get('/admin/activity/search/{aid}', 'APIAdmin@activity_search')
@@ -64,6 +65,7 @@ Route::post('/admin/activity/update', 'APIAdmin@activity_update')
 Route::post('/admin/activity/delete', 'APIAdmin@activity_delete')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:activity_delete');
+
 // Goods
   // add
 Route::post('/admin/goods/add', 'APIAdmin@goods_add')
@@ -112,6 +114,9 @@ Route::post('/admin/users/update', 'APIAdmin@users_update')
 // Admins 管理权限管理
   // add
 Route::post('/admin/rights/add', 'APIAdmin@admins_rights_add')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:site_owner');
+Route::delete('/admin/rights', 'APIAdmin@admins_rights_del')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
 
