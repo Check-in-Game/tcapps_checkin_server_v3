@@ -96,7 +96,7 @@
       thread = setInterval(function(){
         time(counter);
         if (counter == 0){
-          counter = 5 * 60 + 1;
+          counter = 10 * 60 + 1;
           // 获取Token
           let url = './api/getToken/' + username + '/' + base64.encode(password);
           console.log(url);

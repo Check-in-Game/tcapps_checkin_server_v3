@@ -91,7 +91,7 @@ class APICheckIn extends Controller {
       }
       // 查询上次签到时间
       $db = DB::table('lists_v2')->where('uid', $user->uid)->orderBy('check_time', 'desc')->where('tid', 0)->first();
-      if ($db && time() - strtotime($db->check_time) < 60 * 5) {
+      if ($db && time() - strtotime($db->check_time) < 60 * 10) {
         $json = $this->JSON(2205, 'Incorrect check-in time.', null);
         return response($json);
       }
