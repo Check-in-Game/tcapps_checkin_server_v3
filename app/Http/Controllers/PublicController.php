@@ -15,6 +15,8 @@ class PublicController extends Controller {
               ->join('user_accounts', 'lists_v2.uid', '=', 'user_accounts.uid')
               ->select(DB::raw("{$db_prefix}user_accounts.uid,{$db_prefix}user_accounts.username,sum({$db_prefix}lists_v2.worth) as allWorth"))
               ->where('lists_v2.check_time', '>', date('Y-m-d H:i:s', strtotime('-1 week')))
+              ->where('lists_v2.tid', '<>', 5)
+              ->where('lists_v2.status', 1)
               ->where('user_accounts.status', 1)
               ->groupBy('user_accounts.username')
               ->orderBy('allWorth', 'desc')
