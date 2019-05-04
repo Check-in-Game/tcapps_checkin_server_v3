@@ -46,7 +46,7 @@
       </thead>
       <tbody>
           @foreach ($charts as $key => $chart)
-            <tr>
+            <tr style="line-height:26px;">
               <th scope="row">
                 # {{ $key+1 }}
               </th>
@@ -55,9 +55,9 @@
                 @if( isset($badges[$chart->uid]) )
                   @foreach($badges[$chart->uid] as $badge)
                     @if( !empty($badge['image']) )
-                    <img src="{{ $badge['image'] }}" alt="勋章预览" height="18px" title="{{ $badge['bname'] }}">
+                    <img src="{{ $badge['image'] }}" alt="{{ $badge['bname'] }}勋章" height="26px" data-toggle="tooltip"  title="{{ $badge['bname'] }}勋章" name="badge">
                     @else
-                    <span class="badge badge-dark" style="color: {{ $badge['fgcolor'] }};background-color: {{ $badge['bgcolor'] }};">{{ $badge['bname'] }}</span>
+                    <span class="badge badge-dark" style="color: {{ $badge['fgcolor'] }};background-color: {{ $badge['bgcolor'] }};" data-toggle="tooltip" title="{{ $badge['bname'] }}勋章" name="badge">{{ $badge['bname'] }}</span>
                     @endif
                   @endforeach
                 @endif
@@ -83,4 +83,11 @@
       <hr />
       <p class="mb-0">感谢支持！</p>
     </div>
+@endsection
+@section('script')
+<script type="text/javascript">
+  $(function(){
+    $('[name=badge]').tooltip('enable');
+  });
+</script>
 @endsection
