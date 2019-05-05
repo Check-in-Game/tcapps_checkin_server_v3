@@ -51,7 +51,7 @@ class AdminController extends Controller {
 
     // 公告一览页
     public function notices() {
-      $notices = DB::table('notices')->paginate();
+      $notices = DB::table('notices')->orderBy('nid', 'desc')->paginate();
       $data = [
         'charts'  => $notices,
       ];
