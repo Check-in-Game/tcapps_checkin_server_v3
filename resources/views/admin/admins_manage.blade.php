@@ -37,6 +37,19 @@
   <button class="btn btn-primary float-right mr-2" id="btn" name="button" onclick="javascript:add();">增加权限</button>
 </p>
 
+<hr>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text">Level</span>
+  </div>
+  <input type="number" class="form-control" placeholder="Level" id="level" value="{{ $admin_level }}">
+  <div class="input-group-append">
+    <button class="btn btn-outline-danger" type="button" onclick="remove_level();">删</button>
+    <button class="btn btn-outline-success" type="button" onclick="update_level();">改</button>
+  </div>
+</div>
+
 @if(isset($have_rights))
 <h3>拥有权限一览</h3>
 <table class="table table-striped table-hover">
@@ -73,7 +86,7 @@ function add() {
   let uid   = $('#uid').val();
   let rid   = $('#rid').val();
   if (uid == '' || rid == '选择权限') {
-    alert('请正确填写信息！');
+    m_alert('请正确填写信息！', 'warning');
     return false;
   }
   m_loading();
@@ -106,7 +119,7 @@ function add() {
 function del(rid) {
   let uid   = $('#uid').val();
   if (uid == '') {
-    alert('请正确填写信息！');
+    m_alert('请正确填写信息！', 'warning');
     return false;
   }
   m_loading();
@@ -129,6 +142,72 @@ function del(rid) {
     success: function(data) {
       if (data.errno === 0) {
         $('#tr_' + rid).remove();
+        m_alert('成功删除！', 'success');
+      }else{
+        m_alert(data.error, 'danger');
+      }
+    }
+  });
+}
+
+function update_level() {
+  let uid   = $('#uid').val();
+  let level = $('#level').val();
+  if (uid == '' || level == '') {
+    m_alert('请正确填写信息！', 'warning');
+    return false;
+  }
+  m_loading();
+  $.ajax({
+    url: '/api/admin/level',
+    type: 'post',
+    data: {
+      'uid': uid,
+      'level': level
+    },
+    dataType: 'json',
+    timeout: 10000,
+    complete: function(XMLHttpRequest, status){
+      m_loading(false);
+      if (status == 'timeout') {
+        m_alert('请求超时，请稍候再试！', 'warning');
+        return false;
+      }
+    },
+    success: function(data) {
+      if (data.errno === 0) {
+        m_alert('成功修改！', 'success');
+      }else{
+        m_alert(data.error, 'danger');
+      }
+    }
+  });
+}
+
+function remove_level() {
+  let uid   = $('#uid').val();
+  if (uid == '') {
+    m_alert('请正确填写信息！', 'warning');
+    return false;
+  }
+  m_loading();
+  $.ajax({
+    url: '/api/admin/level',
+    type: 'delete',
+    data: {
+      'uid': uid
+    },
+    dataType: 'json',
+    timeout: 10000,
+    complete: function(XMLHttpRequest, status){
+      m_loading(false);
+      if (status == 'timeout') {
+        m_alert('请求超时，请稍候再试！', 'warning');
+        return false;
+      }
+    },
+    success: function(data) {
+      if (data.errno === 0) {
         m_alert('成功删除！', 'success');
       }else{
         m_alert(data.error, 'danger');

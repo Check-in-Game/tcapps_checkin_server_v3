@@ -531,7 +531,7 @@ class APIAdmin extends Controller {
       $admin_level = request()->get('_admin');
       $admin_level = $admin_level->level;
       $uid                = $_POST['uid'];
-      // 查询该NID是否存在
+      // 查询该UID是否存在
       $notice = DB::table('user_accounts')->where('uid', $uid)->first();
       if (!$notice) {
         $json = $this->JSON(3002, "Failed to find this UID.", null);
@@ -805,6 +805,89 @@ class APIAdmin extends Controller {
         return response($json);
       }else{
         $json = $this->JSON(3308, "Failed to delete badge.", null);
+        return response($json);
+      }
+    }
+
+    // 修改用户管理等级
+    public function admin_level_update() {
+      $uid    = request()->post('uid');
+      $t_level  = request()->post('level');
+      if (is_null($uid) || is_null($t_level)) {
+        $json = $this->JSON(3801, "Lost some infomation.", null);
+        return response($json);
+      }
+      if ($t_level < 0) {
+        $json = $this->JSON(3806, "Target admin level is invaild.", null);
+        return response($json);
+      }
+      // 修改者等级
+      $admin_level = request()->get('_admin');
+      $admin_level = $admin_level->level;
+      // 查询该UID是否存在
+      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      if (!$user) {
+        $json = $this->JSON(3802, "Failed to find this UID.", null);
+        return response($json);
+      }
+      // 查询是否有权限修改此用户
+      $level = DB::table('admin_level')->where('uid', $uid)->first();
+      if ($level && $level->level >= $admin_level) {
+        $json = $this->JSON(3803, "Have not rights to update this user.", null);
+        return response($json);
+      }
+      // 修改等级判定
+      if ($t_level >= $admin_level) {
+        $json = $this->JSON(3804, "Have not rights to update this user to this high admin level.", null);
+        return response($json);
+      }
+      // 判断更新或插入
+      $data['level'] = $t_level;
+      $data['update_time'] = date('Y-m-d H:i:s');
+      $data['status'] = 1;
+      if ($level) {
+        $db = DB::table('admin_level')->where('uid', $uid)->update($data);
+      }else{
+        $data['uid'] = $uid;
+        $db = DB::table('admin_level')->insert($data);
+      }
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(3805, "Failed to update user.", null);
+        return response($json);
+      }
+    }
+
+    // 清零用户管理等级
+    public function admin_level_remove() {
+      $uid    = request()->post('uid');
+      if (is_null($uid)) {
+        $json = $this->JSON(3811, "Lost some infomation.", null);
+        return response($json);
+      }
+      // 修改者等级
+      $admin_level = request()->get('_admin');
+      $admin_level = $admin_level->level;
+      // 查询该UID是否存在
+      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      if (!$user) {
+        $json = $this->JSON(3812, "Failed to find this UID.", null);
+        return response($json);
+      }
+      // 查询是否有权限修改此用户
+      $level = DB::table('admin_level')->where('uid', $uid)->first();
+      if ($level && $level->level >= $admin_level) {
+        $json = $this->JSON(3813, "Have not rights to update this user.", null);
+        return response($json);
+      }
+      $db = DB::table('admin_level')->where('uid', $uid)->delete();
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(3814, "Failed to remove admin level of this user.", null);
         return response($json);
       }
     }

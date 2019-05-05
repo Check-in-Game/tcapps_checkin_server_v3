@@ -125,6 +125,16 @@
 - `3701`: 给管理员降权时，部分数据没有被提交
 - `3702`: 给管理员降权时，操作员管理权限不足
 - `3703`: 给管理员降权时，数据库写入失败
+- `3801`: 管理员修改用户管理等级时，部分数据没有提交
+- `3802`: 管理员修改用户管理等级时，被修改的用户不存在
+- `3803`: 管理员修改用户管理等级时，没有修改指定用户的权限
+- `3804`: 管理员修改用户管理等级时，无法授予比自己等级高的等级
+- `3805`: 管理员修改用户管理等级时，数据库写入失败
+- `3806`: 管理员修改用户管理等级时，目标等级范围不正确
+- `3811`: 管理员清空用户管理等级时，部分数据没有提交
+- `3812`: 管理员清空用户管理等级时，被修改的用户不存在
+- `3813`: 管理员清空用户管理等级时，没有修改指定用户的权限
+- `3814`: 管理员清空用户管理等级时，数据库写入失败
 
 ## 数据库设计
 ```
@@ -229,8 +239,8 @@ create table tcapps_checkin_admin_rights_list(
 #1
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('site_owner', 255, '站长权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('site_optmize', 255, '系统管理权限', 1);
-INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('upgrade_user_to_admin', 255, '允许此管理提升其他用户为管理', 1);
-INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('upgrade_admin_to_activity_manage', 255, '允许赋予其他用户管理活动有关的所有内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('admin_level_update', 255, '允许此管理提升其他用户管理等级', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('admin_level_remove', 255, '允许此管理清空其他用户管理等级', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('activity_search', 255, '搜索有关活动内容的权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('activity_add', 255, '增加有关活动内容的权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('activity_update', 255, '修改有关活动内容的权限', 1);
@@ -280,7 +290,7 @@ create table tcapps_checkin_notices(
   priority tinyint not null default 1 comment "权重顺序",
   status tinyint not null default 1 comment "状态"
 )comment="公告设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
-INSERT INTO `tcapps_checkin_notices` (`place_id`, `title`, `content`, `color`, `starttime`, `endtime`, `priority`, `status`) VALUES ('1', '净化行动公告', '为保证平台正常运行，所有用户名涉及广告的用户将收到系统提示更改用户名。不进行更改的用户将被暂停签到，暂停期间造成的签到损失不予补偿。', 'warning', '2019-04-13 00:00:00', '1970-01-01 00:00:00', 1, 1);
+#INSERT INTO `tcapps_checkin_notices` (`place_id`, `title`, `content`, `color`, `starttime`, `endtime`, `priority`, `status`) VALUES ('1', '净化行动公告', '为保证平台正常运行，所有用户名涉及广告的用户将收到系统提示更改用户名。不进行更改的用户将被暂停签到，暂停期间造成的签到损失不予补偿。', 'warning', '2019-04-13 00:00:00', '1970-01-01 00:00:00', 1, 1);
 
 #勋章系统
 create table tcapps_checkin_badges(

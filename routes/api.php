@@ -128,9 +128,19 @@ Route::post('/admin/users/update', 'APIAdmin@users_update')
 Route::post('/admin/rights/add', 'APIAdmin@admins_rights_add')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
+  // del
 Route::delete('/admin/rights', 'APIAdmin@admins_rights_del')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
+// Admins 管理等级管理
+  // update
+Route::post('/admin/level', 'APIAdmin@admin_level_update')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:admin_level_update');
+  // update
+Route::delete('/admin/level', 'APIAdmin@admin_level_remove')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:admin_level_remove');
 
 // Badges
   // search

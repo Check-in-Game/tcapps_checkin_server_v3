@@ -84,6 +84,7 @@ class AdminController extends Controller {
         'rights'  => $rights,
       ];
       if (!is_null($uid = request()->get('uid'))) {
+        // 查询授权信息
         $have_rights = DB::table('admin_register')
                     ->join('admin_rights_list', 'admin_register.rid', '=', 'admin_rights_list.rid')
                     ->where('admin_register.uid', $uid)
@@ -92,6 +93,10 @@ class AdminController extends Controller {
         if ($have_rights) {
           $data['have_rights'] = $have_rights;
         }
+        // 查询管理等级
+        $admin = DB::table('admin_level')->where('uid', $uid)->where('status', '<>', -1)->first();
+        $admin_level = $admin ? $admin->level : -1;
+        $data['admin_level'] = $admin_level;
       }
       return view('admin.admins_manage', $data);
     }
