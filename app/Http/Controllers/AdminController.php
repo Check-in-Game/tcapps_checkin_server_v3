@@ -30,9 +30,18 @@ class AdminController extends Controller {
       return view('admin.activity_manage');
     }
 
-    // 商店管理
+    // 商店一览
     public function goods() {
-      return view('admin.goods');
+      $notices = DB::table('shop')->paginate();
+      $data = [
+        'charts'  => $notices,
+      ];
+      return view('admin.goods', $data);
+    }
+
+    // 商店管理
+    public function goods_manage() {
+      return view('admin.goods_manage');
     }
 
     // 优化页

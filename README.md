@@ -37,28 +37,37 @@
 - `2507`: 购买时写入数据库失败
 - `2508`: 购买时有其他商品也处于购买状态
 - `2601`: 管理员状态无效
-- `2602`: 管理员增加补偿时写入数据表失败
+- `2602`: 管理员增加补偿时，写入数据表失败
 - `2611`: 管理员增加补偿时，部分数据没有提交
 - `2612`: 管理员增加补偿时，提交的用户UID中含有不存在的用户
 - `2613`: 管理员增加补偿时，提交的验证码不正确
-- `2603`: 管理员增加活动时日期参数不合法
-- `2604`: 管理员增加活动时最小价值数不合法
-- `2605`: 管理员增加活动时最大价值数小于最小价值数
-- `2606`: 管理员增加活动时写入数据库失败
-- `2617`: 管理员搜索活动时无法找到对应的aid
+- `2603`: 管理员增加活动时，日期参数不合法
+- `2604`: 管理员增加活动时，最小价值数不合法
+- `2605`: 管理员增加活动时，最大价值数小于最小价值数
+- `2606`: 管理员增加活动时，写入数据库失败
+- `2617`: 管理员搜索活动时，无法找到对应的aid
 - `2618`: 管理员增加活动时， 部分数据没有被提交
 - `2619`: 管理员修改活动时， 部分数据没有被提交
 - `2620`: 管理员修改活动时， 日期参数不合法
-- `2621`: 管理员修改活动时最小价值数不合法
-- `2622`: 管理员修改活动时最大价值数小于最小价值数
+- `2621`: 管理员修改活动时，最小价值数不合法
+- `2622`: 管理员修改活动时，最大价值数小于最小价值数
 - `2623`: 管理员修改活动时，写入数据库失败
 - `2624`: 管理员删除活动时，部分数据没有被提交
 - `2625`: 管理员删除活动时，无法找到对应活动AID
 - `2626`: 管理员删除活动时，无法删除数据库记录
-- `2607`: 管理员增加商品时日期参数不合法
-- `2608`: 管理员增加商品时存在小于0的值
-- `2609`: 管理员增加商品时写入数据库失败
+- `2607`: 管理员增加商品时,日期参数不合法
+- `2608`: 管理员增加商品时，存在小于0的值
+- `2609`: 管理员增加商品时，写入数据库失败
 - `2611`: 管理员增加商品时，提交的验证码不正确
+- `2614`: 管理员搜索商品时，无法找到对应GID商品
+- `2630`: 管理员修改商品时，提交的验证码不正确
+- `2631`: 管理员修改商品时，日期参数不合法
+- `2632`: 管理员修改商品时，存在小于0的值
+- `2633`: 管理员修改商品时，找不到对应GID商品
+- `2634`: 管理员修改商品时，写入数据库失败
+- `2640`: 管理员删除商品时，部分数据没有被提交
+- `2641`: 管理员删除商品时，找不到对应GID商品
+- `2642`: 管理员删除商品时，写入数据库失败
 - `2610`: 管理员无操作权限
 - `2701`: 管理员修改密码时未使用POST方式提交数据
 - `2702`: 管理员修改密码时该用户处于非正常状态或不存在
@@ -234,7 +243,10 @@ INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `descript
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('user_manage', 255, '管理用户时更新用户信息权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('conpensate_add', 255, '增加系统补偿积分', 1);
 #2
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('goods_search', 255, '搜索有关商品内容的权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('goods_add', 255, '增加有关商品内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('goods_update', 255, '增加有关商品内容的权限', 1);
+INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('goods_delete', 255, '增加有关商品内容的权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('badges_search', 255, '搜索有关勋章内容的权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('badges_add', 255, '增加有关勋章内容的权限', 1);
 INSERT INTO `tcapps_checkin_admin_rights_list` (`rname`, `level_need`, `description`, `status`) VALUES ('badges_update', 255, '修改有勋章内容的权限', 1);

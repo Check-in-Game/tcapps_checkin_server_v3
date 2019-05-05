@@ -67,10 +67,22 @@ Route::post('/admin/activity/delete', 'APIAdmin@activity_delete')
       ->middleware('apicheck.admin.auth:activity_delete');
 
 // Goods
+  // search
+Route::get('/admin/goods/search/{gid}', 'APIAdmin@goods_search')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:goods_search');
   // add
 Route::post('/admin/goods/add', 'APIAdmin@goods_add')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:goods_add');
+  // update
+Route::post('/admin/goods/update', 'APIAdmin@goods_update')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:goods_update');
+  // delete
+Route::post('/admin/goods/delete', 'APIAdmin@goods_delete')
+      ->middleware('apicheck.auth')
+      ->middleware('apicheck.admin.auth:goods_delete');
 
 // Optmize
 Route::get('/admin/optimize/{project}', 'APIAdminOptmize@optmize')

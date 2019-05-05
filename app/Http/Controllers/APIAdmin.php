@@ -204,9 +204,21 @@ class APIAdmin extends Controller {
       }
     }
 
+    // 搜索商品
+    function goods_search(int $gid) {
+      $db = DB::table('shop')->where('gid', $gid)->first();
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg' => 'Success.', 'data' => $db]);
+        return response($json);
+      }else{
+        $json = $this->JSON(2614, 'Failed to find this good.', null);
+        return response($json);
+      }
+    }
+
     // 增加商品
     function goods_add() {
-      $name         = request()->post('name');
+      $gname        = request()->post('gname');
       $cost         = request()->post('cost');
       $starttime    = request()->post('starttime');
       $endtime      = request()->post('endtime');
@@ -237,7 +249,7 @@ class APIAdmin extends Controller {
         return response($json);
       }
       $data = [
-        'gname'         => $name,
+        'gname'         => $gname,
         'cost'          => $cost,
         'starttime'     => $starttime,
         'endtime'       => $endtime,
@@ -255,6 +267,90 @@ class APIAdmin extends Controller {
         return response($json);
       }else{
         $json = $this->JSON(2609, 'Failed to insert into database.', null);
+        return response($json);
+      }
+    }
+
+    // 修改商品
+    function goods_update() {
+      $gid          = request()->post('gid');
+      $gname        = request()->post('gname');
+      $cost         = request()->post('cost');
+      $starttime    = request()->post('starttime');
+      $endtime      = request()->post('endtime');
+      $tid          = request()->post('tid');
+      $sid          = request()->post('sid');
+      $rebuy        = request()->post('rebuy');
+      $all_count    = request()->post('all_count');
+      $description  = request()->post('description');
+      $image        = request()->post('image');
+      $captcha      = request()->post('captcha');
+      // 检查验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(2630, 'Bad captcha.', null);
+        return response($json);
+      }
+      // process image link
+      $image        = $image === 'null' ? '' : $image;
+      // 判断日期格式
+      if (!strtotime($starttime) || !strtotime($endtime) ) {
+        $json = $this->JSON(2631, 'Invaild datetime.', null);
+        return response($json);
+      }
+      // 格式化日期
+      $starttime = date('Y-m-d H:i:s', strtotime($starttime));
+      $endtime   = date('Y-m-d H:i:s', strtotime($endtime));
+      if ($cost < 0 || $tid < 0 || $sid < 0 || $rebuy < 0 || $all_count < 0) {
+        $json = $this->JSON(2632, "Invaild params.", null);
+        return response($json);
+      }
+      // 查找gid
+      if( !DB::table('shop')->where('gid', $gid)->first() ) {
+        $json = $this->JSON(2633, 'Failed to find this good.', null);
+        return response($json);
+      }
+      $data = [
+        'gname'         => $gname,
+        'cost'          => $cost,
+        'starttime'     => $starttime,
+        'endtime'       => $endtime,
+        'tid'           => $tid,
+        'sid'           => $sid,
+        'all_count'     => $all_count,
+        'image'         => $image,
+        'rebuy'         => $rebuy,
+        'description'   => $description,
+        'status'        => 1
+      ];
+      $db = DB::table('shop')->where('gid', $gid)->update($data);
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg' => 'Success.']);
+        return response($json);
+      }else{
+        $json = $this->JSON(2634, 'Failed to update into database.', null);
+        return response($json);
+      }
+    }
+
+    // 删除商品
+    public function goods_delete() {
+      $gid          = request()->post('gid');
+      if (!$gid){
+        $json = $this->JSON(2640, "Lost some infomation.", null);
+        return response($json);
+      }
+      // 查询该GID是否存在
+      $good = DB::table('shop')->where('gid', $gid)->first();
+      if (!$good) {
+        $json = $this->JSON(2641, "Failed to find this GID.", null);
+        return response($json);
+      }
+      $good = DB::table('shop')->where('gid', $gid)->delete();
+      if ($good) {
+        $json = $this->JSON(0, null, ['msg'=>'Success']);
+        return response($json);
+      }else{
+        $json = $this->JSON(2642, "Failed to delete this good.", null);
         return response($json);
       }
     }

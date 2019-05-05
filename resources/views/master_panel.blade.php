@@ -64,7 +64,8 @@
                <a class="dropdown-item" href="{{ action('AdminController@activity_manage') }}"><i class="fa-fw fab fa-slack-hash"></i> 管理活动</a>
                <div class="dropdown-divider"></div>
                <h6 class="dropdown-header">商店</h6>
-               <a class="dropdown-item" href="{{ action('AdminController@goods') }}"><i class="fa-fw fas fa-gifts"></i>  管理商品</a>
+               <a class="dropdown-item" href="{{ action('AdminController@goods') }}"><i class="fa-fw fab fa-elementor"></i>  商品一览</a>
+               <a class="dropdown-item" href="{{ action('AdminController@goods_manage') }}"><i class="fa-fw fas fa-gifts"></i>  管理商品</a>
                <div class="dropdown-divider"></div>
                <h6 class="dropdown-header">用户</h6>
                <a class="dropdown-item" href="{{ action('AdminController@users_list') }}"><i class="fa-fw fas fa-users"></i> 用户一览</a>
@@ -105,11 +106,58 @@
       @yield('container')
 
     </div>
+
+    <!-- modal-loading -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal-loading">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body p-0">
+            <div class="alert alert-primary m-0 text-center">
+              <i class="fas fa-spinner fa-spin"></i>
+              操作中，请稍候...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- modal-alert -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal-alert">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body p-0">
+            <div class="alert m-0 text-center" id='modal-alert-content'></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script type="text/javascript">
+    // 清理modal-alert-content中的class
+      $(function(){
+        $('#modal-alert').on('hidden.bs.modal', function (e) {
+          $('#modal-alert-content').removeClass();
+          $('#modal-alert-content').addClass('alert m-0 text-center');
+        })
+      });
       function logout() {
         $.getJSON('/api/logout', function(){
           location.href = '/home';
         });
+      }
+      function m_loading(up = true) {
+        if (up === true) {
+          $('#modal-loading').modal({
+            'backdrop': 'static',
+            'keyboard': false
+          });
+        }else{
+          setTimeout("$('#modal-loading').modal('hide')", 500)
+        }
+      }
+      function m_alert(text, color='primary') {
+        $('#modal-alert-content').addClass('alert-' + color);
+        $('#modal-alert-content').text(text);
+        $('#modal-alert').modal('show');
       }
     </script>
     @yield('script')

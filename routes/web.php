@@ -40,7 +40,8 @@ Route::get('/admin', 'AdminController@index')                           ->middle
 Route::get('/admin/compensate', 'AdminController@compensate')           ->middleware('check.auth', 'check.admin.auth', 'notice:12');
 Route::get('/admin/activity', 'AdminController@activity')               ->middleware('check.auth', 'check.admin.auth', 'notice:20');
 Route::get('/admin/activity_manage', 'AdminController@activity_manage') ->middleware('check.auth', 'check.admin.auth', 'notice:13');
-Route::get('/admin/goods', 'AdminController@goods')                     ->middleware('check.auth', 'check.admin.auth', 'notice:14');
+Route::get('/admin/goods', 'AdminController@goods')                     ->middleware('check.auth', 'check.admin.auth', 'notice:27');
+Route::get('/admin/goods_manage', 'AdminController@goods_manage')       ->middleware('check.auth', 'check.admin.auth', 'notice:14');
 Route::get('/admin/optimize', 'AdminController@optimize')               ->middleware('check.auth', 'check.admin.auth', 'notice:15');
 Route::get('/admin/notices', 'AdminController@notices')                 ->middleware('check.auth', 'check.admin.auth', 'notice:16');
 Route::get('/admin/notices/manage', 'AdminController@notices_manage')   ->middleware('check.auth', 'check.admin.auth', 'notice:17');
