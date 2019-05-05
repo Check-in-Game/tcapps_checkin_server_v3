@@ -27,9 +27,9 @@
   function optimize(project) {
     $.getJSON('/api/admin/optimize/' + project, function(data){
       if (data.errno === 0) {
-        alert('优化成功！');
+        m_alert('优化成功！', 'success');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     });
   }

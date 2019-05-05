@@ -73,7 +73,7 @@
 function search() {
   let aid       = $('#aid').val();
   if (aid == '') {
-    alert('请填写AID！');
+    m_alert('请填写AID！', 'warning');
     return false;
   }
   $.getJSON('/api/admin/activity/search/' + aid, function(data){
@@ -89,7 +89,7 @@ function search() {
       $('#min').val('');
       $('#max').val('');
       $('#status').val('');
-      alert(data.error);
+      m_alert(data.error, 'danger');
     }
   });
 }
@@ -100,9 +100,10 @@ function add() {
   let max       = $('#max').val();
   let status    = $('#status').val();
   if (starttime == '' || endtime == '' || min == '' || max == '' || status == '') {
-    alert('请填写信息！');
+    m_alert('请填写信息！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/activity/add',
     type: 'post',
@@ -116,8 +117,9 @@ function add() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'danger');
         return false;
       }
     },
@@ -128,9 +130,9 @@ function add() {
         $('#min').val('');
         $('#max').val('');
         $('#status').val(1);
-        alert('增加完成！');
+        m_alert('增加完成！', 'success');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });
@@ -143,9 +145,10 @@ function update() {
   let max       = $('#max').val();
   let status    = $('#status').val();
   if (aid == '' || starttime == '' || endtime == '' || min == '' || max == '' || status == '') {
-    alert('请填写信息！');
+    m_alert('请填写信息！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/activity/update',
     type: 'post',
@@ -160,16 +163,17 @@ function update() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'danger');
         return false;
       }
     },
     success: function(data) {
       if (data.errno === 0) {
-        alert('修改完成！');
+        m_alert('修改完成！', 'success');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });
@@ -177,9 +181,10 @@ function update() {
 function del() {
   let aid       = $('#aid').val();
   if (aid == '') {
-    alert('请填写AID！');
+    m_alert('请填写AID！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/activity/delete',
     type: 'post',
@@ -189,8 +194,9 @@ function del() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
@@ -201,9 +207,9 @@ function del() {
         $('#min').val('');
         $('#max').val('');
         $('#status').val(1);
-        alert('删除成功！');
+        m_alert('删除成功！', 'success');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });

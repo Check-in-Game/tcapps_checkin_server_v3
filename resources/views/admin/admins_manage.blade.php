@@ -76,6 +76,7 @@ function add() {
     alert('请正确填写信息！');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/rights/add',
     type: 'post',
@@ -86,8 +87,9 @@ function add() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
@@ -95,7 +97,7 @@ function add() {
       if (data.errno === 0) {
         alert('增加完成！');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });
@@ -107,6 +109,7 @@ function del(rid) {
     alert('请正确填写信息！');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/rights',
     type: 'delete',
@@ -117,17 +120,18 @@ function del(rid) {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
     success: function(data) {
       if (data.errno === 0) {
         $('#tr_' + rid).remove();
-        alert('成功删除！');
+        m_alert('成功删除！', 'success');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });

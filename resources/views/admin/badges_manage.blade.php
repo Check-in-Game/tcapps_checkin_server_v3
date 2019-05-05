@@ -95,7 +95,7 @@
 function search() {
   let bid       = $('#bid').val();
   if (bid === '') {
-    alert('请填写BID！');
+    m_alert('请填写BID！', 'warning');
     return false;
   }
   $.getJSON('/api/admin/badges/search/' + bid, function(data){
@@ -109,7 +109,7 @@ function search() {
       $('#eid').val(data.body.data.eid);
       $('#status').val(data.body.data.status);
     }else{
-      alert(data.error);
+      m_alert(data.error, 'danger');
     }
   });
 }
@@ -122,9 +122,10 @@ function add() {
   let eid       = $('#eid').val();
   let status    = $('#status').val();
   if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '选择商品' || eid == '选择效果' || status == '') {
-    alert('请填写信息！');
+    m_alert('请填写信息！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/badges/add',
     type: 'post',
@@ -140,8 +141,9 @@ function add() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
@@ -155,9 +157,9 @@ function add() {
         $('#gid').val('');
         $('#eid').val('');
         $('#status').val(1);
-        alert('增加完成！');
+        m_alert('增加完成！', 'success');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });
@@ -172,9 +174,10 @@ function update() {
   let eid       = $('#eid').val();
   let status    = $('#status').val();
   if (bname == '' || fgcolor == '' || bgcolor == '' || gid == '选择商品' || eid == '选择效果' || status == '') {
-    alert('请填写信息！');
+    m_alert('请填写信息！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/badges/update',
     type: 'post',
@@ -191,16 +194,17 @@ function update() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
     success: function(data) {
       if (data.errno === 0) {
-        alert('修改完成！');
+        m_alert('修改完成！', 'success');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });
@@ -208,9 +212,10 @@ function update() {
 function del() {
   let bid       = $('#bid').val();
   if (bid == '') {
-    alert('请填写BID！');
+    m_alert('请填写BID！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/badges/delete',
     type: 'post',
@@ -220,8 +225,9 @@ function del() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
@@ -235,9 +241,9 @@ function del() {
         $('#gid').val('');
         $('#eid').val('');
         $('#status').val(1);
-        alert('删除成功！');
+        m_alert('删除成功！', 'success');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });

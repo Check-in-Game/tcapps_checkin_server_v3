@@ -60,10 +60,11 @@ function conpensate() {
   let tid = $('#tid').val();
   let captcha = $('#captcha').val();
   if (uid == '' || count == '' || tid == '' || captcha == '') {
-    alert('请填写信息！');
+    m_alert('请填写信息！', 'warning');
     return false;
   }
   $('#btn').attr('disabled', 'disabled');
+  m_loading();
   $.ajax({
     url: '/api/admin/conpensate',
     type: 'post',
@@ -76,22 +77,23 @@ function conpensate() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       $('#btn').removeAttr('disabled');
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
     success: function(data) {
       if (data.errno === 0) {
-        alert('增加完成！');
+        m_alert('增加完成！', 'success');
       }else if(data.errno === 2613){
         // 验证码错误
         $('#captcha_img').click();
         $('#captcha').val('');
         alert('验证码错误');
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });

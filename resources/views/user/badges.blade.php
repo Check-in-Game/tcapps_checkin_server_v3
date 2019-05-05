@@ -83,20 +83,20 @@
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
         if (status == 'timeout') {
-          alert('请求超时，请稍候再试！');
+          m_alert('请求超时，请稍候再试！', 'warning');
           return false;
         }
       },
       success: function(data) {
         if (data.errno === 0) {
-          alert('佩戴成功！');
+          m_alert('佩戴成功！', 'success');
           location.href = '';
         }else{
           console.log(data.error);
           if(data.errno === 3404) {
-            alert('佩戴失败，佩戴数量超出上限！');
+            m_alert('佩戴失败，佩戴数量超出上限！', 'danger');
           }else{
-            alert('佩戴失败，请刷新后再试！');
+            m_alert('佩戴失败，请刷新后再试！', 'danger');
           }
         }
       }
@@ -113,17 +113,17 @@
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
         if (status == 'timeout') {
-          alert('请求超时，请稍候再试！');
+          m_alert('请求超时，请稍候再试！', 'warning');
           return false;
         }
       },
       success: function(data) {
         if (data.errno === 0) {
-          alert('取消佩戴成功！');
+          m_alert('取消佩戴成功！', 'success');
           location.href = '';
         }else{
           console.log(data.error);
-          alert('取消佩戴失败，请刷新后再试！');
+          m_alert('取消佩戴失败，请刷新后再试！', 'danger');
 
         }
       }

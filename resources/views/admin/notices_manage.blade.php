@@ -98,7 +98,7 @@
 function search() {
   let nid = $('#nid').val();
   if (nid == '') {
-    alert('请输入NID后查询');
+    m_alert('请输入NID后查询', 'warning');
     return false;
   }
   $.getJSON('/api/admin/notices/search/' + nid, function(data){
@@ -128,7 +128,7 @@ function search() {
       $('#starttime').val('');
       $('#endtime').val('');
       $('#status').val('');
-      alert(data.error);
+      m_alert(data.error, 'danger');
     }
   });
 }
@@ -142,9 +142,10 @@ function add() {
   let endtime   = $('#endtime').val();
   let status    = $('#status').val();
   if (place_id == '' || title == '' || content == '' || color == '选择颜色Class' || priority == '' || starttime == '' || endtime == '' || status == '') {
-    alert('请填写信息！');
+    m_alert('请填写信息！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/notices/add',
     type: 'post',
@@ -161,8 +162,9 @@ function add() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
@@ -176,9 +178,9 @@ function add() {
         $('#starttime').val('');
         $('#endtime').val('');
         $('#status').val('');
-        alert('添加完成！')
+        m_alert('添加完成！', 'success')
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });
@@ -194,9 +196,10 @@ function update() {
   let endtime   = $('#endtime').val();
   let status    = $('#status').val();
   if (nid == '' || place_id == '' || title == '' || content == '' || color == '选择颜色Class' || priority == '' || starttime == '' || endtime == '' || status == '') {
-    alert('请填写信息！');
+    m_alert('请填写信息！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/notices/update',
     type: 'post',
@@ -214,25 +217,17 @@ function update() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
     success: function(data) {
       if (data.errno === 0) {
-        $('#nid').val('');
-        $('#place_id').val('');
-        $('#title').val('');
-        $('#content').val('');
-        $('#color').val('');
-        $('#priority').val('');
-        $('#starttime').val('');
-        $('#endtime').val('');
-        $('#status').val('');
-        alert('修改完成！')
+        m_alert('修改完成！', 'success')
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });
@@ -240,9 +235,10 @@ function update() {
 function del() {
   let nid       = $('#nid').val();
   if (nid == '') {
-    alert('请填写信息！');
+    m_alert('请填写信息！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/notices/delete',
     type: 'post',
@@ -252,8 +248,9 @@ function del() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
@@ -268,9 +265,9 @@ function del() {
         $('#starttime').val('');
         $('#endtime').val('');
         $('#status').val('');
-        alert('成功删除！')
+        m_alert('成功删除！', 'success')
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });

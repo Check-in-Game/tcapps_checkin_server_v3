@@ -82,9 +82,11 @@
 <script type="text/javascript">
   function purchase(gid) {
     $('#btn_g_' + gid).attr('disabled', 'disabled');
+    m_loading();
     $.getJSON('/api/purchase/' + gid, function(data){
+      m_loading(false);
       if (data.errno === 0) {
-        alert('购买成功！');
+        m_alert('购买成功！', 'success');
         location.href = '';
       }else{
         let info = '购买失败！请刷新页面后重试！';
@@ -100,7 +102,7 @@
         if (data.errno === 2506) {
           info = '该商品的购买次数已经达到上限！';
         }
-        alert(info);
+        m_alert(info, 'danger');
         $('#btn_g_' + gid).removeAttr('disabled');
       }
     });

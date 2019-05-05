@@ -79,7 +79,7 @@
 function search() {
   let uid = $('#uid').val();
   if (uid == '') {
-    alert('请输入UID后查询');
+    m_alert('请输入UID后查询', 'warning');
     return false;
   }
   $.getJSON('/api/admin/users/search/' + uid, function(data){
@@ -96,7 +96,7 @@ function search() {
       $('#username').val('');
       $('#password').val('');
       $('#status').val('');
-      alert(data.error);
+      m_alert(data.error, 'danger');
     }
   });
 }
@@ -104,7 +104,7 @@ function search() {
 function search_username() {
   let username = $('#username').val();
   if (username == '') {
-    alert('请输入用户名后查询');
+    m_alert('请输入用户名后查询', 'warning');
     return false;
   }
   $.getJSON('/api/admin/users/search_username/' + username, function(data){
@@ -121,7 +121,7 @@ function search_username() {
       $('#username').val('');
       $('#password').val('');
       $('#status').val('');
-      alert(data.error);
+      m_alert(data.error, 'danger');
     }
   });
 }
@@ -129,7 +129,7 @@ function search_username() {
 function getPoints() {
   let uid = $('#uid').val();
   if (uid == '') {
-    alert('请输入UID后查询');
+    m_alert('请输入UID后查询', 'warning');
     return false;
   }
   $.getJSON('/api/admin/users/points/' + uid, function(data){
@@ -141,7 +141,7 @@ function getPoints() {
     }else{
       $('#points').val('');
       $('#rest_points').val('');
-      alert(data.error);
+      m_alert(data.error, 'danger');
     }
   });
 }
@@ -152,9 +152,10 @@ function update() {
   let password  = $('#password').val();
   let status    = $('#status').val();
   if (uid == '' || username == '' || status == '') {
-    alert('请填写信息！');
+    m_alert('请填写信息！', 'warning');
     return false;
   }
+  m_loading();
   $.ajax({
     url: '/api/admin/users/update',
     type: 'post',
@@ -167,8 +168,9 @@ function update() {
     dataType: 'json',
     timeout: 10000,
     complete: function(XMLHttpRequest, status){
+      m_loading(false);
       if (status == 'timeout') {
-        alert('请求超时，请稍候再试！');
+        m_alert('请求超时，请稍候再试！', 'warning');
         return false;
       }
     },
@@ -178,9 +180,9 @@ function update() {
         $('#username').val('');
         $('#password').val('');
         $('#status').val('');
-        alert('修改完成！')
+        m_alert('修改完成！', 'success')
       }else{
-        alert(data.error);
+        m_alert(data.error, 'danger');
       }
     }
   });
