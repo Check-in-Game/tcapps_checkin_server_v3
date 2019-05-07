@@ -5,7 +5,7 @@
       <div class="container">
         <h1 class="display-4">Check-in Game 登录</h1>
         <p class="lead">签到排行榜实时更新，签到每隔5分钟即可进行一次，只需简单注册账户即可开始游戏！</p>
-        <p class="lead">
+        <p class="lead mb-0">
           <a class="btn btn-primary" href="{{ action('PublicController@index') }}">首页</a>
           <a class="btn btn-success" href="{{ action('PublicController@register') }}">注册账户</a>
         </p>
@@ -23,11 +23,6 @@
     {{ $notice['content'] }}
   </div>
   @endforeach
-
-  <div class="alert alert-success" role="alert">
-    <h4 class="alert-heading">登录</h4>
-    <p class="mb-0">登录后将开放更多有趣、便捷的功能。</p>
-  </div>
 
   <!-- 登录 -->
   <h2>登录 / Login</h2>
@@ -81,18 +76,19 @@
     let captcha  = $('#captcha').val();
     let b64password = new Base64().encode(password);
     if (username.length < 5 || username.length > 16) {
-      alert('用户名或密码错误');
+      m_alert('用户名或密码错误', 'warning');
       return false;
     }
     if (password.length < 8 || password.length > 16) {
-      alert('用户名或密码错误');
+      m_alert('用户名或密码错误', 'warning');
       return false;
     }
     if (captcha.length < 4 || captcha.length > 6) {
       $('#captcha').val('');
-      alert('验证码错误');
+      m_alert('验证码错误', 'warning');
       return false;
     }
+    m_loading();
     $.ajax({
       url: '/api/login',
       type: 'post',
@@ -104,6 +100,7 @@
       dataType: 'json',
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
+        m_loading(false);
         if (status == 'timeout') {
           alert('连接超时！');
         }
@@ -114,11 +111,11 @@
         if (data.errno === 0) {
           location.href = '/user';
         }else if(data.errno === 2307){
-          alert('服务器开小差辣~');
+          m_alert('服务器开小差辣~', 'danger');
         }else if(data.errno === 2305){
-          alert('验证码错误');
+          m_alert('验证码错误', 'danger');
         }else{
-          alert('用户名或密码错误');
+          m_alert('用户名或密码错误');
         }
       }
     });

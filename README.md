@@ -135,6 +135,12 @@
 - `3812`: 管理员清空用户管理等级时，被修改的用户不存在
 - `3813`: 管理员清空用户管理等级时，没有修改指定用户的权限
 - `3814`: 管理员清空用户管理等级时，数据库写入失败
+- `3901`: 用户擦灰时，登录授权auth不存在
+- `3902`: 用户擦灰时，请求的uid在数据库中不存在
+- `3903`: 用户擦灰时，用户状态不合法
+- `3904`: 用户擦灰时，距离上次擦灰不满18小时
+- `3905`: 用户擦灰时，写入数据库失败D
+- `3906`: 用户擦灰时，提交的验证码不正确
 
 ## 数据库设计
 ```
@@ -162,6 +168,7 @@ create table tcapps_checkin_tokens_v2(
 #类型4:签到补偿
 #类型5:积分结算
 #类型6:赞助加值
+#类型7:擦灰加值
 create table tcapps_checkin_lists_v2(
   cid int unsigned auto_increment primary key not null comment "签到ID",
   uid int unsigned not null comment "用户ID",

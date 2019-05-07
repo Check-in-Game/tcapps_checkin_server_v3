@@ -153,6 +153,8 @@
       </div>
     </div>
 
+    @yield('extraModalContent')
+
     <script type="text/javascript">
     // 清理modal-alert-content中的class
       $(function(){

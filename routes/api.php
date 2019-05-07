@@ -14,14 +14,17 @@ use Illuminate\Http\Request;
 */
 
 // =======USER=======
-// Check in
-Route::get('/getToken/{username}/{b64password}', 'APICheckIn@get_token');
-Route::get('/checkIn/{username}/{token}', 'APICheckIn@check_in');
-
 // Login
 Route::post('/login', 'APIUser@login');
 // Logout
 Route::get('/logout', 'APIUser@logout')
+      ->middleware('apicheck.auth');
+
+// Check in
+Route::get('/getToken/{username}/{b64password}', 'APICheckIn@get_token');
+Route::get('/checkIn/{username}/{token}', 'APICheckIn@check_in');
+// Check in v2
+Route::post('/user/checkin/clean', 'APICheckIn@clean')
       ->middleware('apicheck.auth');
 
 // Security

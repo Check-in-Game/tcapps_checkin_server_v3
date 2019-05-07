@@ -70,19 +70,19 @@
     let comfirm = $('#comfirm').val();
     let captcha = $('#captcha').val();
     if (username.length < 5 || username.length > 16) {
-      alert('用户名长度需要大于5小于16。');
+      m_alert('用户名长度需要大于5小于16。', 'warning');
       return false;
     }
     if (password.length < 8 || password.length > 16) {
-      alert('密码长度需要大于8小于16。');
+      m_alert('密码长度需要大于8小于16。', 'warning');
       return false;
     }
     if (captcha.length < 4 || captcha.length > 6) {
-      alert('验证码错误');
+      m_alert('验证码错误', 'warning');
       return false;
     }
     if (password != comfirm) {
-      alert('两次密码不一致。');
+      m_alert('两次密码不一致。', 'warning');
       return false;
     }
     form.submit();

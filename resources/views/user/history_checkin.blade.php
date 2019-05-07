@@ -55,6 +55,10 @@
               <span class="badge badge-info">结算</span>
               @elseif( $chart->tid === 6 )
               <span class="badge badge-primary">赞助</span>
+              @elseif( $chart->tid === 7 )
+              <span class="badge badge-dark">擦灰</span>
+              @else
+              <span class="badge badge-light">其他</span>
               @endif
             </th>
           </tr>

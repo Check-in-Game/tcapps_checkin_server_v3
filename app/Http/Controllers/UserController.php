@@ -26,6 +26,16 @@ class UserController extends Controller {
       $cost = DB::table('purchase_records')
             ->where('uid', $user->uid)
             ->sum('cost');
+      // 清灰时间结算
+      $clean = DB::table('lists_v2')
+            ->where('uid', $user->uid)
+            ->where('tid', 7)
+            ->first();
+      if (!$clean) {
+        $clean = 0;
+      }else{
+        $clean = 18 * 60 * 60 - (time() - strtotime($clean->check_time));
+      }
       $data = [
         'uid'          => $uid,
         'username'     => $username,
@@ -33,6 +43,7 @@ class UserController extends Controller {
         'count'        => $count,
         'buff'         => $buff,
         'cost'         => $cost,
+        'clean'        => $clean
       ];
       return view('user.home', $data);
     }

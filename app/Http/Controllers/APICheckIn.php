@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Captcha;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -168,6 +169,74 @@ class APICheckIn extends Controller {
         ];
         DB::table('tokens_v2')->where('uid', $user->uid)->update($data);
         $json =  $this->JSON(0, null, $return);
+        return response($json);
+      }
+    }
+
+    // 清灰
+    public function clean() {
+      $uid      = request()->cookie('uid');
+      $captcha  = request()->post('captcha');
+      // 查询登录状态是否正常
+      if (is_null($uid) || is_null($captcha)) {
+        $json = $this->JSON(3901, 'Bad auth.', null);
+        return response($json);
+      }
+      // 匹配验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(3906, 'Bad captcha.', null);
+        return response($json);
+      }
+      // 查询用户信息
+      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      if (!$user) {
+        $json = $this->JSON(3902, 'Bad user id.', null);
+        return response($json);
+      }
+      // 判断用户状态
+      $banedStatus = [-1, 0];
+      if (in_array($user->status, $banedStatus)) {
+        $json = $this->JSON(3903, 'Incorrect user status.', null);
+        return response($json);
+      }
+      // 查询上次擦灰时间
+      $db = DB::table('lists_v2')->where('uid', $user->uid)->orderBy('check_time', 'desc')->where('tid', 7)->first();
+      if ($db && time() - strtotime($db->check_time) < 60 * 60 * 18) {
+        $json = $this->JSON(3904, 'Incorrect clean time.', null);
+        return response($json);
+      }
+      // 固定擦灰500分
+      $worth = 500;
+      // 查询签到次数
+      $count = DB::table('lists_v2')->where('uid', $user->uid)->count();
+      // 查询用户佩戴勋章
+      // $badges = DB::table('badges_wear')->where('uid', $user->uid)->first();
+      // if( $badges && !empty($badges->bid) ) {
+      //   $badges = explode(',', $badges->bid);
+      //   foreach ($badges as $key => $bid) {
+      //     $times = DB::table('badges')
+      //           ->join('effects', 'badges.eid', '=', 'effects.eid')
+      //           ->where('badges.bid', $bid)
+      //           ->value('times');
+      //     if ($times) {
+      //       $worth = $worth * $times;
+      //     }
+      //   }
+      //   $worth = round($worth);
+      // }
+      $check_time = date('Y-m-d H:i:s');
+      $data = array(
+        'uid'         => $user->uid,
+        'tid'         => 7,       // 擦灰加值
+        'worth'       => $worth,
+        'check_time'  => $check_time
+      );
+      $db = DB::table('lists_v2')->insert($data);
+      if (!$db) {
+        $json = $this->JSON(3905, 'Unknown error.', null);
+        return response($json);
+      }else{
+        $json =  $this->JSON(0, null, ['msg'  => 'Success!']);
         return response($json);
       }
     }

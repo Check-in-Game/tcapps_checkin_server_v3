@@ -25,6 +25,22 @@
           <div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
         </th>
       </tr>
+      <tr>
+        <th scope="row">
+          <img src="https://i.loli.net/2019/05/04/5ccd7c953d9f1.png" alt="勋章预览" height="18px">
+        </th>
+        <th scope="row">
+          <div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+        </th>
+      </tr>
+      <tr>
+        <th scope="row">
+          <img src="https://i.loli.net/2019/05/04/5ccd7c952932e.png" alt="勋章预览" height="18px">
+        </th>
+        <th scope="row">
+          <div>Icons made by <a href="https://www.flaticon.com/authors/smalllikeart" title="smalllikeart">smalllikeart</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+        </th>
+      </tr>
     </tr>
   </tbody>
 </table>
