@@ -4,7 +4,7 @@
   <div class="jumbotron pb-2">
       <div class="container">
         <h1 class="display-4">Check-in Game 在线签到器</h1>
-        <p class="lead">签到排行榜实时更新，签到每隔5分钟即可进行一次，只需简单注册账户即可开始游戏！</p>
+        <p class="lead">签到排行榜实时更新，签到每隔10分钟即可进行一次，只需简单注册账户即可开始游戏！</p>
         <hr class="my-4">
         <p class="lead">
           <a class="btn btn-primary" href="{{ action('PublicController@index') }}">首页</a>
@@ -138,7 +138,7 @@
       }else if(data.errno == 2203){
         status('签到失败，用户状态不正常！');
       }else{
-        status('签到失败，延迟5分钟！');
+        status('签到失败，延迟10分钟！');
       }
     });
   }
