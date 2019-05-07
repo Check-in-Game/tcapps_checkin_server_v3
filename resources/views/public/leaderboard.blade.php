@@ -3,23 +3,15 @@
   <!-- 幕布 -->
   <div class="jumbotron pb-2">
     <div class="container">
-      <h1 class="display-4">Check-in Game</h1>
-      <p class="lead">签到排行榜实时更新，只需简单注册即可开始游戏！</p>
-      <hr class="my-4">
-      <p class="lead">
-        <a class="btn btn-success" href="{{ action('PublicController@register') }}" target="_blank" role="button">注册账户</a>
-        <a class="btn btn-primary" href="{{ action('UserController@user') }}" target="_self" role="button">用户中心</a>
-        <a class="btn btn-primary" href="{{ action('PublicController@webCheckin') }}" target="_self" role="button">在线端</a>
-        <a class="btn btn-secondary" href="https://github.com/jokin1999/tcapps-checkin" target="_blank" role="button">Python客户端</a>
-        <a class="btn btn-info" href="https://jq.qq.com/?_wv=1027&k=5ax4j23" target="_blank" role="button">加入交流QQ群：887304185</a>
-      </p>
+      <h1 class="display-4">{{ $typeName }}</h1>
+      <p class="lead">签到排行榜实时更新，显示前100名。</p>
     </div>
   </div>
   <div class="container">
 @endsection
 @section('container')
 
-    <!-- 公告-1 -->
+    <!-- 公告-28 -->
     @foreach($_notices as $notice)
     <div class="alert alert-{{ $notice['color'] }}" role="alert">
       @if (!empty($notice['title']))
@@ -28,9 +20,6 @@
       {{ $notice['content'] }}
     </div>
     @endforeach
-
-    <!-- 排行榜 -->
-    <h2>周活跃榜</h2>
 
     <table class="table table-striped table-hover">
       <thead>

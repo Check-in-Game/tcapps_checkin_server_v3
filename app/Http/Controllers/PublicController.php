@@ -141,4 +141,50 @@ class PublicController extends Controller {
       return view('public.credit');
     }
 
+    // 鸣谢页面
+    public function leaderboard() {
+      $type = request()->get('type');
+      $db_prefix = env('DB_PREFIX');
+      if ($type === 'week') {
+        $typeName = '7日活跃榜';
+        $timeLimitation = date('Y-m-d H:i:s', strtotime('-1 week'));
+      }else if($type === 'month') {
+        $typeName = '31日活跃榜';
+        $timeLimitation = date('Y-m-d H:i:s', strtotime('-1 month'));
+      }else{
+        $typeName = '天梯榜';
+        $timeLimitation = date('Y-m-d H:i:s', 0);
+      }
+      $charts = DB::table('lists_v2')
+      ->join('user_accounts', 'lists_v2.uid', '=', 'user_accounts.uid')
+      ->select(DB::raw("{$db_prefix}user_accounts.uid,{$db_prefix}user_accounts.username,sum({$db_prefix}lists_v2.worth) as allWorth"))
+      ->where('lists_v2.check_time', '>', $timeLimitation)
+      ->where('lists_v2.tid', '<>', 5)
+      ->where('lists_v2.status', 1)
+      ->where('user_accounts.status', 1)
+      ->groupBy('user_accounts.username')
+      ->orderBy('allWorth', 'desc')
+      ->limit(100)
+      ->get();
+      // 佩戴勋章
+      $badges = [];
+      foreach ($charts as $key => $value) {
+        $badge = DB::table('badges_wear')
+            ->join('badges', 'badges.bid', '=', 'badges_wear.bid')
+            ->where('badges_wear.uid', $value->uid)
+            ->get()
+            ->map(function ($value) {return (array)$value;})
+            ->toArray();
+        if( count($badge) > 0 ) {
+          $badges[$value->uid] = $badge;
+        }
+      }
+      $data = [
+        'charts'    => $charts,
+        'badges'    => $badges,
+        'typeName'  => $typeName,
+      ];
+      return view('public.leaderboard', $data);
+    }
+
 }

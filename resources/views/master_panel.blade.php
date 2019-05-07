@@ -59,7 +59,7 @@
               <a class="nav-link dropdown-toggle" href="javascript:;" id="admin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fa-fw fas fa-magic"></i> 管理
               </a>
-              <div class="dropdown-menu" aria-labelledby="user">
+              <div class="dropdown-menu" aria-labelledby="admin">
                 <a class="dropdown-item" href="{{ action('AdminController@index') }}"><i class="fa-fw fas fa-hat-wizard"></i> 管理中心</a>
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">积分</h6>
@@ -93,6 +93,17 @@
              </div>
             </li>
             @endif
+            <!-- 排行榜 -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="javascript:;" id="leaderboard" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa-fw fas fa-list-ol"></i> 排行榜
+              </a>
+              <div class="dropdown-menu" aria-labelledby="leaderboard">
+                <a class="dropdown-item" href="{{ action('PublicController@leaderboard') }}?type=week"><i class="fa-fw fas fa-calendar-week"></i> 7日</a>
+                <a class="dropdown-item" href="{{ action('PublicController@leaderboard') }}?type=month"><i class="fa-fw fas fa-calendar-alt"></i>  31日</a>
+                <a class="dropdown-item" href="{{ action('PublicController@leaderboard') }}"><i class="fa-fw fas fa-sort-amount-down"></i>  天梯榜</a>
+              </div>
+            </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ action('PublicController@credit') }}"><i class="fa-fw fab fa-gratipay"></i> 鸣谢</a>
             </li>
