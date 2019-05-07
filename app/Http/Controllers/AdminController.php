@@ -95,10 +95,10 @@ class AdminController extends Controller {
         }
         // 查询管理等级
         $admin = DB::table('admin_level')->where('uid', $uid)->where('status', '<>', -1)->first();
-        $admin_level = $admin ? $admin->level : -1;
+        $admin_level = $admin ? $admin->level : '';
         $data['admin_level'] = $admin_level;
       }else{
-        $data['admin_level'] = -1;
+        $data['admin_level'] = '';
       }
       return view('admin.admins_manage', $data);
     }
