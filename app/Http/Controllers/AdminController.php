@@ -97,6 +97,8 @@ class AdminController extends Controller {
         $admin = DB::table('admin_level')->where('uid', $uid)->where('status', '<>', -1)->first();
         $admin_level = $admin ? $admin->level : -1;
         $data['admin_level'] = $admin_level;
+      }else{
+        $data['admin_level'] = -1;
       }
       return view('admin.admins_manage', $data);
     }
