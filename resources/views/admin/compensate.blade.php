@@ -91,7 +91,7 @@ function conpensate() {
         // 验证码错误
         $('#captcha_img').click();
         $('#captcha').val('');
-        alert('验证码错误');
+        m_alert('验证码错误', 'danger');
       }else{
         m_alert(data.error, 'danger');
       }
