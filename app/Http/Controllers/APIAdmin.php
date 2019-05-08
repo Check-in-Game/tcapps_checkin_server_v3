@@ -14,7 +14,7 @@ class APIAdmin extends Controller {
       $count = request()->post('count');
       $tid = request()->post('tid');
       $captcha = request()->post('captcha');
-      if (!$uid || !$count || !$tid || !$captcha) {
+      if (is_null($uid) || is_null($count) || is_null($tid) || is_null($captcha)) {
         $json = $this->JSON(2611, 'Lost some infomation.', null);
         return response($json);
       }
@@ -29,7 +29,7 @@ class APIAdmin extends Controller {
           $uid = $value->uid;
           $data = array(
             'uid'     => $uid,
-            'tid'     => 3,       // 系统补偿
+            'tid'     => $tid,       // 系统补偿
             'worth'   => $count,
             'check_time'  => date('Y-m-d H:i:s')
           );
