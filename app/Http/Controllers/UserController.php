@@ -34,7 +34,7 @@ class UserController extends Controller {
       if (!$clean) {
         $clean = 0;
       }else{
-        $clean = 18 * 60 * 60 - (time() - strtotime($clean->check_time));
+        $clean = strtotime(date('Y-m-d 23:59:59')) - time();
       }
       $data = [
         'uid'          => $uid,

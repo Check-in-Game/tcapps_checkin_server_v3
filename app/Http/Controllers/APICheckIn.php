@@ -200,8 +200,13 @@ class APICheckIn extends Controller {
         return response($json);
       }
       // 查询上次擦灰时间
-      $db = DB::table('lists_v2')->where('uid', $user->uid)->orderBy('check_time', 'desc')->where('tid', 7)->first();
-      if ($db && time() - strtotime($db->check_time) < 60 * 60 * 18) {
+      $db = DB::table('lists_v2')
+          ->where('uid', $user->uid)
+          ->where('tid', 7)
+          ->where('check_time', '>=', date('Y-m-d 00:00:00'))
+          ->where('check_time', '<=', date('Y-m-d 23:59:59'))
+          ->first();
+      if ($db) {
         $json = $this->JSON(3904, 'Incorrect clean time.', null);
         return response($json);
       }
