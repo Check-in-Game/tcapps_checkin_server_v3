@@ -48,7 +48,7 @@
             <th scope="row">
               {{ $chart->purchase_time }}
             </th>
-            <th scope="row">
+            <th scope="row" id="r_{{ $chart->bid }}">
               @if( in_array($chart->bid, $wear) )
               <div class="badge badge-secondary" onclick="javascript:takeoff({{ $chart->bid }});">取消佩戴</div>
               @else
@@ -89,8 +89,8 @@
       },
       success: function(data) {
         if (data.errno === 0) {
-          m_alert('佩戴成功！', 'success');
-          location.href = '';
+          m_alert('佩戴成功！3秒后刷新页面', 'success');
+          setTimeout("location.href=''", 3000);
         }else{
           console.log(data.error);
           if(data.errno === 3404) {

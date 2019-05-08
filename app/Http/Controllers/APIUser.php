@@ -316,7 +316,7 @@ class APIUser extends Controller {
         $json = $this->JSON(3403, 'Failed to wear badge.', null);
         return response($json);
       }else{
-        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'wearing' => $bid]);
         return response($json);
       }
     }
