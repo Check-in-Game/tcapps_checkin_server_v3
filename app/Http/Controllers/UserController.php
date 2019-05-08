@@ -30,6 +30,8 @@ class UserController extends Controller {
       $clean = DB::table('lists_v2')
             ->where('uid', $user->uid)
             ->where('tid', 7)
+            ->where('check_time', '>=', date('Y-m-d 00:00:00'))
+            ->where('check_time', '<=', date('Y-m-d 23:59:59'))
             ->first();
       if (!$clean) {
         $clean = 0;
