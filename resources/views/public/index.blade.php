@@ -1,4 +1,4 @@
-@extends('master_panel')
+@extends('public.master')
 @section('headerExtraContent')
   <!-- 幕布 -->
   <div class="jumbotron pb-2">
