@@ -48,12 +48,12 @@
               </th>
               <th scope="row">
                 {{ $chart->username }}
-                @if( isset($badges[$chart->uid]) )
-                  @foreach($badges[$chart->uid] as $badge)
-                    @if( !empty($badge['image']) )
-                    <img src="{{ $badge['image'] }}" alt="{{ $badge['bname'] }}勋章" height="26px" data-toggle="tooltip"  title="{{ $badge['bname'] }}勋章" name="badge">
+                @if( isset($badges[$chart->uid]) && !empty($badges[$chart->uid]))
+                  @foreach(explode(',', $badges[$chart->uid]) as $bid)
+                    @if( !empty($allBadges[$bid]['image']) )
+                    <img src="{{ $allBadges[$bid]['image'] }}" alt="{{ $allBadges[$bid]['bname'] }}勋章" height="26px" data-toggle="tooltip"  title="{{ $allBadges[$bid]['bname'] }}勋章" name="badge">
                     @else
-                    <span class="badge badge-dark" style="color: {{ $badge['fgcolor'] }};background-color: {{ $badge['bgcolor'] }};" data-toggle="tooltip" title="{{ $badge['bname'] }}勋章" name="badge">{{ $badge['bname'] }}</span>
+                    <span class="badge badge-dark" style="color: {{ $allBadges[$bid]['fgcolor'] }};background-color: {{ $allBadges[$bid]['bgcolor'] }};" data-toggle="tooltip" title="{{ $allBadges[$bid]['bname'] }}勋章" name="badge">{{ $allBadges[$bid]['bname'] }}</span>
                     @endif
                   @endforeach
                 @endif

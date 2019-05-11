@@ -284,6 +284,19 @@ class APIUser extends Controller {
           $json = $this->JSON(0, null, ['msg'  => 'Success!']);
           return response($json);
         }
+      }else if(empty($wore->bid)){
+        $data = [
+          'bid'           => $bid,
+          'update_time'   => date('Y-m-d H:i:s'),
+        ];
+        $insert = DB::table('badges_wear')->where('uid', $uid)->update($data);
+        if (!$insert) {
+          $json = $this->JSON(3402, 'Failed to wear badge.', null);
+          return response($json);
+        }else{
+          $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+          return response($json);
+        }
       }
       // 检查佩戴数量
       $wore = explode(',', $wore->bid);

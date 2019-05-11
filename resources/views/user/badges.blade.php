@@ -89,8 +89,8 @@
       },
       success: function(data) {
         if (data.errno === 0) {
-          m_alert('佩戴成功！3秒后刷新页面', 'success');
-          setTimeout("location.href=''", 3000);
+          m_alert('佩戴成功！2秒后刷新页面', 'success');
+          setTimeout("location.href=''", 2000);
         }else{
           console.log(data.error);
           if(data.errno === 3404) {
@@ -119,8 +119,8 @@
       },
       success: function(data) {
         if (data.errno === 0) {
-          m_alert('取消佩戴成功！', 'success');
-          location.href = '';
+          m_alert('取消佩戴成功！2秒后刷新页面', 'success');
+          setTimeout("location.href=''", 2000);
         }else{
           console.log(data.error);
           m_alert('取消佩戴失败，请刷新后再试！', 'danger');
