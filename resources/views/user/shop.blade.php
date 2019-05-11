@@ -22,18 +22,20 @@
     <div class="col-md-4 col-sm-12 mb-3 text-center">
       <div class="card @if($value['endtime'] !== '1970-01-01 00:00:00') border-danger @endif mb-3">
         <div class="card-header">
-          @if($value['endtime'] !== '1970-01-01 00:00:00')
-          <span class="badge badge-danger">限时</span>
-          @endif
-          @if($value['all_count'] !== 0)
-          <span class="badge badge-warning">限量</span>
-          @endif
-          @if($value['endtime'] === '1970-01-01 00:00:00' && $value['all_count'] === 0)
-          <span class="badge badge-primary">日常销售</span>
-          @endif
+          {{ $value['gname'] }}
         </div>
         <div class="card-body">
-          <h5 class="card-title">{{ $value['gname'] }}</h5>
+          <h5 class="card-title">
+            @if($value['endtime'] !== '1970-01-01 00:00:00')
+            <span class="badge badge-danger">限时</span>
+            @endif
+            @if($value['all_count'] !== 0)
+            <span class="badge badge-warning">限量</span>
+            @endif
+            @if($value['endtime'] === '1970-01-01 00:00:00' && $value['all_count'] === 0)
+            <span class="badge badge-primary">日常</span>
+            @endif
+          </h5>
           @if($value['sid'] === 1)
             @if(empty($value['image']))
             <p class="card-text">此商品暂无预览图</p>
@@ -44,18 +46,18 @@
           <p class="card-text text-left">价格：{{ $value['cost'] }}积分</p>
           @if($value['all_count'] !== 0)
           <p class="card-text text-left">剩余：{{ $value['all_count']-$value['all_bought'] }} 枚</p>
-          @else
-          <p class="card-text text-left">此商品不限量</p>
           @endif
-          <p class="card-text text-left">{{ $value['description'] }}</p>
           <p class="card-text text-left">
-            发售停止时间：
-            @if($value['endtime'] !== '1970-01-01 00:00:00')
-            {{ $value['endtime'] }}
-            @else
-            无
-            @endif
+            描述：<b>{{ $value['description'] }}</b>
           </p>
+          @if($value['endtime'] !== '1970-01-01 00:00:00')
+          <p class="card-text text-left">
+            发售结束日期：
+            <span class="badge badge-primary">
+                {{ $value['endtime'] }}
+            </span>
+          </p>
+          @endif
         </div>
         <div class="card-footer text-muted">
           @if($value['all_count'] !== 0 && $value['all_count']-$value['all_bought'] <= 0)
