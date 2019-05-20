@@ -37,15 +37,6 @@
               </th>
               <th scope="row">
                 {{ $chart->username }}
-                @if( isset($badges[$chart->uid]) )
-                  @foreach($badges[$chart->uid] as $badge)
-                    @if( !empty($badge['image']) )
-                    <img src="{{ $badge['image'] }}" alt="{{ $badge['bname'] }}勋章" height="26px" data-toggle="tooltip"  title="{{ $badge['bname'] }}勋章" name="badge">
-                    @else
-                    <span class="badge badge-dark" style="color: {{ $badge['fgcolor'] }};background-color: {{ $badge['bgcolor'] }};" data-toggle="tooltip" title="{{ $badge['bname'] }}勋章" name="badge">{{ $badge['bname'] }}</span>
-                    @endif
-                  @endforeach
-                @endif
               </th>
               <th scope="row">
                 {{ $chart->allWorth }}

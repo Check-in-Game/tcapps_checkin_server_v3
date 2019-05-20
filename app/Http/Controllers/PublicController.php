@@ -172,22 +172,8 @@ class PublicController extends Controller {
       ->orderBy('allWorth', 'desc')
       ->limit(100)
       ->get();
-      // 佩戴勋章
-      $badges = [];
-      foreach ($charts as $key => $value) {
-        $badge = DB::table('badges_wear')
-            ->join('badges', 'badges.bid', '=', 'badges_wear.bid')
-            ->where('badges_wear.uid', $value->uid)
-            ->get()
-            ->map(function ($value) {return (array)$value;})
-            ->toArray();
-        if( count($badge) > 0 ) {
-          $badges[$value->uid] = $badge;
-        }
-      }
       $data = [
         'charts'    => $charts,
-        'badges'    => $badges,
         'typeName'  => $typeName,
       ];
       return view('public.leaderboard', $data);
