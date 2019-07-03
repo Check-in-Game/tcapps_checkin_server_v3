@@ -13,38 +13,33 @@ class UserController extends Controller {
       $username = $user->username;
       // 查询积分
       $db_prefix = env('DB_PREFIX');
-      $all_worth = DB::table('lists_v2')
+      $point = DB::table('v3_user_point')
               ->where('uid', $user->uid)
-              ->sum('worth');
-      $count = DB::table('lists_v2')
+              ->value('point');
+      $point = $point ? $point : 0;
+      // 基础资源信息 comber
+      $combers = DB::table('v3_items')
+                ->whereIn('iid', [1,2,3,4,5])
+                ->get();
+      // 查询资源物品
+      $items = DB::table('v3_user_items')
               ->where('uid', $user->uid)
-              ->count();
-      $buff = DB::table('system')
-              ->where('skey', 'newhand_support_pre_200')
-              ->first();
-      $buff = $buff ? $buff->svalue : 1;
-      $cost = DB::table('purchase_records')
-            ->where('uid', $user->uid)
-            ->sum('cost');
+              ->value('items');
       // 清灰时间结算
-      $clean = DB::table('lists_v2')
+      $clean = DB::table('v3_clean_list')
             ->where('uid', $user->uid)
-            ->where('tid', 7)
-            ->where('check_time', '>=', date('Y-m-d 00:00:00'))
-            ->where('check_time', '<=', date('Y-m-d 23:59:59'))
             ->first();
-      if (!$clean) {
-        $clean = 0;
-      }else{
+      if ($clean && $clean->check_time >= date('Y-m-d 00:00:00')) {
         $clean = strtotime(date('Y-m-d 23:59:59')) - time();
+      }else{
+        $clean = 0;
       }
       $data = [
         'uid'          => $uid,
         'username'     => $username,
-        'all_worth'    => $all_worth,
-        'count'        => $count,
-        'buff'         => $buff,
-        'cost'         => $cost,
+        'combers'      => $combers,
+        'point'        => $point,
+        'items'        => json_decode($items, true),
         'clean'        => $clean
       ];
       return view('user.home', $data);
@@ -101,59 +96,6 @@ class UserController extends Controller {
         'username'        => $user->username
       ];
       return view('user.security_change_password', $data);
-    }
-
-    // 签到历史查询
-    public function history_checkin() {
-      $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      // 读取系统设置
-      $limit = DB::table('system')
-                ->where('skey', 'checkin_history_limit')
-                ->first();
-      $unit = DB::table('system')
-                ->where('skey', 'checkin_history_limit_unit')
-                ->first();
-      $earliest = date('Y-m-d 00:00:00', strtotime("-{$limit->svalue} {$unit->svalue}"));
-      $charts = DB::table('lists_v2')
-              ->where('uid', $user->uid)
-              ->where('check_time', '>', $earliest)
-              ->orderBy('check_time', 'desc')
-              ->paginate(25);
-      $data = [
-        'limit'   => $limit->svalue,
-        'unit'    => $unit->svalue,
-        'charts'  => $charts
-      ];
-      return view('user.history_checkin', $data);
-    }
-
-    // 积分账单
-    public function bill() {
-      $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      $charts = DB::table('purchase_records')
-              ->where('uid', $user->uid)
-              ->orderBy('purchase_time', 'desc')
-              ->paginate(25);
-      $data = [
-        'charts'  => $charts
-      ];
-      return view('user.bill', $data);
-    }
-
-    // 活动一览
-    public function activity() {
-      $charts = DB::table('activity')
-          ->where('endtime', '>=', date('Y-m-d H:i:s', strtotime('-7 day')))
-          ->where('starttime', '<=', date('Y-m-d H:i:s', strtotime('+7 day')))
-          ->where('status', 1)
-          ->orderBy('starttime', 'desc')
-          ->paginate(25);
-      $data = [
-        'charts'  => $charts
-      ];
-      return view('user.activity', $data);
     }
 
     // 勋章一览

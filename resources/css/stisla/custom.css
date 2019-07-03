@@ -1,0 +1,27 @@
+/**
+ *
+ * You can write your CSS code here, DO NOT touch the default JavaScript file
+ * because it will make it harder for you to update.
+ *
+ */
+
+/*# sourceMappingURL=custom.css.map */
+.alert-success {
+  background-color: #33bb49 !important;
+}
+
+.btn-success {
+  background-color: #33bb49 !important;
+}
+
+.btn-success:hover {
+  background-color: #37cd50 !important;
+}
+
+.card-success {
+  border-top: 2px solid #33bb49 !important;
+}
+
+.popover-body {
+  box-shadow: 5px 5px 10px #a7a7a7 !important;
+}

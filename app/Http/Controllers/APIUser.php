@@ -162,6 +162,12 @@ class APIUser extends Controller {
       $old_password = Request()->post('old_password');
       $new_password = Request()->post('new_password');
       $comfirm_password = Request()->post('comfirm_password');
+      $captcha = Request()->post('captcha');
+      // 检查验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(2706, 'Bad captcha.', null);
+        return response($json);
+      }
       // 解析密码
       $old_password = base64_decode($old_password);
       $new_password = base64_decode($new_password);
@@ -227,9 +233,8 @@ class APIUser extends Controller {
         ];
       }else{
         // 其他情况不修改状态
-        $data = [
-          'username'  => $username,
-        ];
+        $json = $this->JSON(3503, 'Failed to change username.', null);
+        return response($json);
       }
       // 修改用户名
       $res = DB::table('user_accounts')

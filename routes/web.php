@@ -13,21 +13,17 @@
 
 // 错误提示
 Route::get('/alert/{error}/{content}', 'PublicController@alert');
-// 鸣谢
-Route::get('/credit', 'PublicController@credit')                                  ->middleware('check.auth:info');
 
 // 首页
 Route::redirect('/', '/home');
 Route::redirect('/index', '/home');
 Route::get('/home', 'PublicController@index')                                     ->middleware('check.auth:info', 'notice:1');
-// 签到器
-Route::get('/webCheckin', 'PublicController@webCheckin')                          ->middleware('check.auth:info', 'notice:3');
 // 登录
 Route::get('/login', 'PublicController@login')                                    ->middleware('check.auth:info', 'notice:4');
 // 注册
 Route::match(['get', 'post'], '/register', 'PublicController@register')           ->middleware('check.auth:info', 'notice:2');
 // 排行榜
-Route::get('/leaderboard', 'PublicController@leaderboard')                        ->middleware('check.auth:info', 'notice:28');
+// Route::get('/leaderboard', 'PublicController@leaderboard')                        ->middleware('check.auth:info', 'notice:28');
 
 // 用户中心
 Route::get('/user', 'UserController@user')                                        ->middleware('check.auth', 'notice:5');

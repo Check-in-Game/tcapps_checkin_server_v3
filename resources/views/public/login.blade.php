@@ -1,30 +1,21 @@
 @extends('public.master')
-@section('headerExtraContent')
-  <!-- 幕布 -->
-  <div class="jumbotron">
-      <div class="container">
-        <h1 class="display-4">Check-in Game 登录</h1>
-        <p class="lead">签到排行榜实时更新，签到每隔5分钟即可进行一次，只需简单注册账户即可开始游戏！</p>
-        <p class="lead mb-0">
-          <a class="btn btn-primary" href="{{ action('PublicController@index') }}">首页</a>
-          <a class="btn btn-success" href="{{ action('PublicController@register') }}">注册账户</a>
-        </p>
-      </div>
-    </div>
-  <div class="container">
-@endsection
 @section('container')
-  <!-- 公告-4 -->
-  @foreach($_notices as $notice)
+<!-- 公告-4 -->
+@foreach($_notices as $notice)
+<div class="container">
   <div class="alert alert-{{ $notice['color'] }}" role="alert">
     @if (!empty($notice['title']))
     <h4 class="alert-heading">{{ $notice['title'] }}</h4>
     @endif
     {{ $notice['content'] }}
   </div>
-  @endforeach
-
-  <!-- 登录 -->
+</div>
+@endforeach
+<!-- 登录 -->
+<div class="mt-4 text-center">
+  <img src="https://checkin-static.twocola.com/cdn/common/icons/logo_256.png" alt="logo" width="100px">
+</div>
+<div class="mx-auto my-4 text-center" style="max-width:400px;">
   <h2>登录 / Login</h2>
   <div class="input-group mb-3">
     <div class="input-group-prepend">
@@ -51,13 +42,10 @@
   </div>
 
   <p class="clearfix">
-    <button class="btn btn-success float-right" id="btn" name="button" onclick="javascript:login();">登录</button>
+    <button class="btn btn-success btn-block" id="btn" name="button" onclick="javascript:login();">登录</button>
+    <button class="btn btn-secondary btn-block" id="btn" name="button" onclick="javascript:location.href='{{ action('PublicController@register') }}';">没有帐号？</button>
   </p>
-
-  <div class="alert alert-warning" role="alert">
-    <h4 class="alert-heading">安全提示</h4>
-    <p class="mb-0">管理员不会向您索要您帐号的密码，请勿将密码透露给任何人！</p>
-  </div>
+</div>
 
 @endsection
 @section('script')

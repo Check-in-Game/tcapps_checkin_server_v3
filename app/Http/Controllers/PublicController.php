@@ -126,11 +126,6 @@ class PublicController extends Controller {
       }
     }
 
-    // 在线签到器
-    public function webCheckin() {
-      return view('public.webCheckin');
-    }
-
     // 登录
     public function login() {
       return view('public.login');
@@ -139,11 +134,6 @@ class PublicController extends Controller {
     // 告警页面
     public function alert($error, $content) {
       return view('public.alert', ['error' => $error, 'content' => $content]);
-    }
-
-    // 鸣谢页面
-    public function credit() {
-      return view('public.credit');
     }
 
     // 鸣谢页面
