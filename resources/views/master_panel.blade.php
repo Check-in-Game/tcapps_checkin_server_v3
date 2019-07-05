@@ -26,27 +26,6 @@
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav mr-md-0 ml-sm-auto ml-md-auto d-md-flex text-center">
           @if(isset($_COOKIE['auth']))
-          <!-- 用户中心 -->
-          <!-- <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="javascript:;" id="user" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="fa-fw fas fa-user-circle"></i> 用户
-            </a>
-            <div class="dropdown-menu" aria-labelledby="user">
-              <a class="dropdown-item" href="{{ action('UserController@user') }}"><i class="fa-fw fas fa-user-tie"></i> 用户中心</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">积分</h6>
-              <a class="dropdown-item" href="{{ action('UserController@shop') }}"><i class="fa-fw fas fa-gifts"></i> 系统商城</a>
-              <a class="dropdown-item" href="{{ action('UserController@shop') }}"><i class="fa-fw fas fa-exchange-alt"></i> 兑换中心</a>
-              <a class="dropdown-item" href="{{ action('UserController@bill') }}"><i class="fa-fw fas fa-coins"></i> 积分账单</a>
-              <a class="dropdown-item" href="{{ action('UserController@history_checkin') }}"><i class="fa-fw fas fa-clipboard-list"></i> 签到记录</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">活动</h6>
-              <a class="dropdown-item" href="{{ action('UserController@activity') }}"><i class="fa-fw fab fa-slack"></i> 活动中心</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">勋章</h6>
-              <a class="dropdown-item" href="{{ action('UserController@badges') }}"><i class="fa-fw fas fa-archive"></i> 勋章盒子</a>
-            </div>
-          </li> -->
           <li class="nav-item">
             <a class="nav-link" href="{{ action('UserController@user') }}"><i class="fa-fw fas fa-user-circle"></i> 用户</a>
           </li>
@@ -114,7 +93,7 @@
     </nav>
 
     @yield('headerExtraContent')
-    
+
     @yield('container')
 
     <!-- modal-loading -->
