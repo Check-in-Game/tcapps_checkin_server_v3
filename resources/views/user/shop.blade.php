@@ -1,84 +1,82 @@
 @extends('user/master')
-@section('before_nav')
+@section('header')
+资源商城
 @endsection
-
-@section('container')
-<!-- 公告-6 -->
-@foreach($_notices as $notice)
-<div class="alert alert-{{ $notice['color'] }}" role="alert">
-  @if (!empty($notice['title']))
-  <h4 class="alert-heading">{{ $notice['title'] }}</h4>
-  @endif
-  {{ $notice['content'] }}
-</div>
-@endforeach
-
-<div class="alert alert-primary mt-4" role="alert">
-  兑换中心欢迎您，{{ $username }} ！您的可用积分为：{{ $balance }}。
-</div>
+@section('body')
 <div class="row">
   @if($goods)
-    @foreach($goods as $key => $value)
-    <div class="col-md-4 col-sm-12 mb-3 text-center">
-      <div class="card @if($value['endtime'] !== '1970-01-01 00:00:00') border-danger @endif mb-3">
-        <div class="card-header">
-          {{ $value['gname'] }}
+  @foreach($goods as $key => $value)
+  <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+    <article class="article article-style-b">
+      <div class="article-header">
+        <div class="article-image" data-background="{{ $value['image'] }}" style="background-size: contain;">
         </div>
-        <div class="card-body">
-          <h5 class="card-title">
-            @if($value['endtime'] !== '1970-01-01 00:00:00')
-            <span class="badge badge-danger">限时</span>
-            @endif
-            @if($value['all_count'] !== 0)
-            <span class="badge badge-warning">限量</span>
-            @endif
-            @if($value['endtime'] === '1970-01-01 00:00:00' && $value['all_count'] === 0)
-            <span class="badge badge-primary">日常</span>
-            @endif
-          </h5>
-          @if($value['sid'] === 1)
-            @if(empty($value['image']))
-            <p class="card-text">此商品暂无预览图</p>
-            @else
-            <img class="card-img-top img-thumbnail rounded" src="{{ $value['image'] }}" alt="商品预览">
-            @endif
-          @endif
-          <p class="card-text text-left">价格：{{ $value['cost'] }}积分</p>
-          @if($value['all_count'] !== 0)
-          <p class="card-text text-left">剩余：{{ $value['all_count']-$value['all_bought'] }} 枚</p>
-          @endif
-          <p class="card-text text-left">
-            描述：<b>{{ $value['description'] }}</b>
-          </p>
+        <div class="article-badge">
           @if($value['endtime'] !== '1970-01-01 00:00:00')
-          <p class="card-text text-left">
-            发售结束日期：
-            <span class="badge badge-primary">
-                {{ $value['endtime'] }}
-            </span>
-          </p>
+          <div class="article-badge-item bg-danger"><i class="fa-fw fas fa-clock"></i> 限时</div>
           @endif
-        </div>
-        <div class="card-footer text-muted">
-          @if($value['all_count'] !== 0 && $value['all_count']-$value['all_bought'] <= 0)
-          <button type="button" name="button" class="btn btn-primary" disabled>已售罄</button>
-          @elseif($value['rebuy'] !== 0 && $value['rebuy'] <= $value['user_bought'])
-          <button type="button" name="button" class="btn btn-primary" disabled>已到达购买上限</button>
-          @else
-          <button type="button" name="button" class="btn btn-primary" onclick="javascript:purchase({{ $value['gid'] }});" id="btn_g_{{ $value['gid'] }}">购买 / Purchase</button>
+          @if($value['all_count'] !== 0)
+          <div class="article-badge-item bg-warning"><i class="fa-fw fas fa-fire"></i> 限量</div>
+          @endif
+          @if($value['onsale'] === 1)
+          <div class="article-badge-item bg-info"><i class="fa-fw fas fa-coins"></i> 促销</div>
+          @endif
+          @if($value['endtime'] === '1970-01-01 00:00:00' && $value['all_count'] === 0)
+          <!-- 日常销售 -->
           @endif
         </div>
       </div>
-    </div>
-    @endforeach
+      <div class="article-details" style="height:100%;">
+        <div class="article-title">
+          <h2><a href="javascript:m_alert('描述：{{ $value['description'] }}');">{{ $value['iname'] }}</a></h2>
+        </div>
+        <p>
+          <strong>商品单价：</strong>
+          {{ $value['cost'] }} 积分
+          <br>
+          <strong>剩余库存：</strong>
+          @if($value['all_count'] !== 0)
+            {{ $value['all_count']-$value['all_bought'] }}
+          @else
+            不限量
+          @endif
+          <br>
+          <strong>销售时间：</strong>
+          @if($value['endtime'] !== '1970-01-01 00:00:00')
+            {{ $value['endtime'] }}
+          @else
+            不限时
+          @endif
+        </p>
+        <div class="article-cta">
+          <div class="article-cta">
+            @if($value['all_count'] !== 0 && $value['all_count']-$value['all_bought'] <= 0)
+            <button type="button" name="button" class="btn btn-primary" disabled>已售罄</button>
+            @elseif($value['rebuy'] !== 0 && $value['rebuy'] <= $value['user_bought'])
+            <button type="button" name="button" class="btn btn-primary" disabled>已到达购买上限</button>
+            @else
+            <button type="button" name="button" class="btn btn-primary" onclick="javascript:purchase({{ $value['iid'] }});" id="btn_g_{{ $value['iid'] }}">购买 / Purchase</button>
+            @endif
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  @endforeach
   @else
-  <div class="col-md-12 col-sm-12 mb-3 text-center">
-    <div class="alert alert-secondary" role="alert">
-      还没有商品上架呢，等一会再来看吧~
+  <div class="col-md-12 col-sm-12 mb-3">
+    <div class="alert alert-light alert-has-icon">
+      <div class="alert-icon"><i class="far fa-lightbulb"></i></div>
+      <div class="alert-body">
+        <div class="alert-title">老板别急~小店一会就开张！</div>
+        我们正在努力备货中，请稍等...
+      </div>
     </div>
   </div>
   @endif
 </div>
+
 @endsection
 @section('script')
 <script type="text/javascript">

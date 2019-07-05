@@ -23,6 +23,14 @@ INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `descript
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (3, '绿色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_lb.svg', '基础资源的一种', 10, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (4, '黄色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_rb.svg', '基础资源的一种', 10, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (5, '可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber.svg', '基础资源的一种', 50, 1);
+#v2版本勋章
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (6, '内测勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/1.png', '传说中的勋章之一', 0, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (7, '公测勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/2.png', '传说中的勋章之一', 0, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (8, '佬勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/3.svg', '传说中的勋章之一', 0, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (9, '萌勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/4.svg', '传说中的勋章之一', 0, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (10, '一起加倍吧！（1.2倍纪念版）', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/5.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (11, '一起加倍吧！（1.3倍纪念版）', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/6.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (12, 'v2勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/7.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 2000, 1);
 
 #物品类型列表v3
 create table tcapps_checkin_v3_items_types(
@@ -57,6 +65,34 @@ create table tcapps_checkin_v3_badges(
   fgcolor varchar(64) not null comment "前景颜色",
   status tinyint not null default 1 comment "状态"
 )comment="勋章系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#商城系统v3
+create table tcapps_checkin_v3_shop(
+  iid int unsigned primary key not null comment "物品ID",
+  cost int unsigned not null comment "商品售价",
+  starttime datetime not null default '1970-01-01 00:00:00' comment "销售开始时间",
+  endtime datetime not null default '1970-01-01 00:00:00' comment "销售结束时间",
+  sid tinyint unsigned not null default 1 comment "展示类型",
+  all_count int unsigned not null default 0 comment "总销售数量",
+  rebuy int unsigned not null default 1 comment "最多购买数量",
+  onsale tinyint unsigned not null default 0 comment "促销状态",
+  sale_starttime datetime not null default '1970-01-01 00:00:00' comment "促销开始时间",
+  sale_endtime datetime not null default '1970-01-01 00:00:00' comment "促销结束时间",
+  sale_cost int unsigned not null comment "促销价格",
+  description text not null comment "商品描述",
+  status tinyint not null default 1 comment "状态"
+)comment="商城系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#购买记录v3
+create table tcapps_checkin_v3_purchase_records(
+  pid int unsigned auto_increment primary key not null comment "购买ID",
+  uid int unsigned not null comment "用户ID",
+  iid int unsigned not null comment "商品ID",
+  item_count int unsigned not null comment "购买数量",
+  cost int unsigned not null default 0 comment "花费",
+  purchase_time datetime not null comment "购买时间",
+  status tinyint not null default 1 comment "状态"
+)comment="购买记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #管理员等级表
 create table tcapps_checkin_admin_level(

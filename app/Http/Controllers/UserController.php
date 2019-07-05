@@ -52,38 +52,54 @@ class UserController extends Controller {
       $username = $user->username;
       $db_prefix = env('DB_PREFIX');
       // 读取商品
-      $shop = DB::table('shop')
+      $cols = [
+        'v3_shop.iid',
+        'v3_shop.cost',
+        'v3_shop.starttime',
+        'v3_shop.endtime',
+        'v3_shop.sid',
+        'v3_shop.all_count',
+        'v3_shop.rebuy',
+        'v3_shop.onsale',
+        'v3_shop.sale_starttime',
+        'v3_shop.sale_endtime',
+        'v3_shop.sale_cost',
+        'v3_shop.description',
+        'v3_shop.status',
+        'v3_items.iname',
+        'v3_items.tid',
+        'v3_items.image',
+        'v3_items.description as item_description',
+      ];
+      $shop = DB::table('v3_shop')
+              ->join('v3_items', 'v3_shop.iid', '=', 'v3_items.iid')
               ->where('starttime' ,'<=', date('Y-m-d H:i:s'))
               ->where('endtime' ,'>=', date('Y-m-d H:i:s'))
               ->orWhere('endtime' ,'=', '1970-01-01 00:00:00')
               ->where('starttime' ,'<=', date('Y-m-d H:i:s'))
-              ->where('status', 1)
-              ->orderBy('gid', 'desc')
+              ->where('v3_shop.status', 1)
+              ->orderBy('v3_shop.iid', 'asc')
+              ->select($cols)
               ->get()
               ->map(function ($value) {return (array)$value;})
               ->toArray();
       foreach ($shop as $key => $value) {
-        $all = DB::table('purchase_records')
-              ->where('gid', $value['gid'])
-              ->count();
-        $userR = DB::table('purchase_records')
-              ->where('gid', $value['gid'])
+        // 总销售量
+        $all = DB::table('v3_purchase_records')
+              ->where('iid', $value['iid'])
+              ->sum('item_count');
+        // 当前用户购买量
+        $userR = DB::table('v3_purchase_records')
+              ->where('iid', $value['iid'])
               ->where('uid', $user->uid)
-              ->count();
+              ->sum('item_count');
         $shop[$key]['all_bought'] = $all;
         $shop[$key]['user_bought'] = $userR;
       }
-      $all_worth = DB::table('lists_v2')
-                ->where('uid', $user->uid)
-                ->sum('worth');
-      $cost = DB::table('purchase_records')
-            ->where('uid', $user->uid)
-            ->sum('cost');
       $data = [
         'uid'             => $uid,
         'username'        => $username,
         'goods'           => $shop,
-        'balance'         => $all_worth - $cost
       ];
       return view('user.shop', $data);
     }

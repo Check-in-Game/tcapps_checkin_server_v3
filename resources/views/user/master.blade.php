@@ -59,7 +59,7 @@
               </ul>
               <li><a class="nav-link" href="layout-transparent.html"><i class="fa-fw fas fa-recycle"></i> <span>回收中心</span></a></li>
               <li><a class="nav-link" href="layout-transparent.html"><i class="fa-fw fas fa-money-check"></i> <span>交易市场</span></a></li>
-              <li><a class="nav-link" href="layout-transparent.html"><i class="fa-fw fas fa-store-alt"></i> <span>资源商城</span></a></li>
+              <li><a class="nav-link" href="{{ action('UserController@shop') }}"><i class="fa-fw fas fa-store-alt"></i> <span>资源商城</span></a></li>
             </li>
             <li class="menu-header">基金会</li>
             <li><a class="nav-link" href="layout-default.html"><i class="fa-fw fas fa-hotel"></i> <span>科技研发</span></a></li>

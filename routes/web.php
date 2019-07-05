@@ -27,7 +27,7 @@ Route::match(['get', 'post'], '/register', 'PublicController@register')         
 
 // 用户中心
 Route::get('/user', 'UserController@user')                                        ->middleware('check.auth', 'notice:5');
-// Route::get('/shop', 'UserController@shop')                                        ->middleware('check.auth', 'notice:6');
+Route::get('/shop', 'UserController@shop')                                        ->middleware('check.auth', 'notice:6');
 Route::get('/user/security/password', 'UserController@security_change_password')  ->middleware('check.auth', 'notice:7');
 // Route::get('/user/history/checkin', 'UserController@history_checkin')             ->middleware('check.auth', 'notice:8');
 // Route::get('/user/bill', 'UserController@bill')                                   ->middleware('check.auth', 'notice:9');
