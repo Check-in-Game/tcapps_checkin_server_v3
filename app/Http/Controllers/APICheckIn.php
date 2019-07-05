@@ -59,7 +59,7 @@ class APICheckIn extends Controller {
         return response($json);
       }
       // 注册积分
-      $db = DB::table('v3_user_point')->where('uid', $user->uid)->first();
+      $db = DB::table('v3_user_point')->where('uid', $user->uid)->sharedLock()->first();
       // 是否需要新建记录
       $need_insert = !$db;
       // 固定擦灰1-5积分
@@ -76,7 +76,7 @@ class APICheckIn extends Controller {
       );
       // 写入积分
       if ($need_insert) {
-        $db = DB::table('v3_user_point')->sharedLock()->insert($data);
+        $db = DB::table('v3_user_point')->sharedLock()->sharedLock()->insert($data);
       }else{
         $db = DB::table('v3_user_point')->where('uid', $user->uid)->sharedLock()->update($data);
       }
@@ -84,7 +84,7 @@ class APICheckIn extends Controller {
       if ($worth === 1 || $worth === 2) {
         $comber = rand(1, 4); // 四种碎片随机
         // 查询用户背包
-        $db = DB::table('v3_user_items')->where('uid', $user->uid)->first();
+        $db = DB::table('v3_user_items')->where('uid', $user->uid)->sharedLock()->first();
         if (!$db) {
           // 直接写入
           $items = array(
@@ -97,7 +97,7 @@ class APICheckIn extends Controller {
             'items' => json_encode($items)
           );
           // 写入信息
-          $db = DB::table('v3_user_items')->insert($data);
+          $db = DB::table('v3_user_items')->sharedLock()->insert($data);
         }else{
           // 检查当前数量
           $items = json_decode($db->items, true);
@@ -110,7 +110,7 @@ class APICheckIn extends Controller {
             'items' => json_encode($items)
           );
           // 更新信息
-          $db = DB::table('v3_user_items')->where('uid', $user->uid)->update($data);
+          $db = DB::table('v3_user_items')->where('uid', $user->uid)->sharedLock()->update($data);
         }
         if (!$db) {
           $json = $this->JSON(3908, 'Unknown error.', null);

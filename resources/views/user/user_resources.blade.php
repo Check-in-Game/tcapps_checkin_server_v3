@@ -1,0 +1,28 @@
+@extends('user/master')
+@section('header')
+我的资源
+@endsection
+@section('body')
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col">图标</th>
+      <th scope="col">名称</th>
+      <th scope="col">描述</th>
+      <th scope="col">数量</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach($items as $item)
+    <tr>
+      <td><img src="{{ $item->image }}" alt="{{ $item->iname }}" height="18x;"></td>
+      <td>{{ $item->iname }}</td>
+      <td class="text-truncate">{{ $item->description }}</td>
+      <td>{{ $user_items[$item->iid]['count'] }}</td>
+    </tr>
+    @endforeach
+  </tbody>
+</table>
+@endsection
+@section('script')
+@endsection

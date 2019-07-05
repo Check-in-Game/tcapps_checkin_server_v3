@@ -1,6 +1,6 @@
 @extends('user/master')
 @section('header')
-用户中心
+用户面板
 @endsection
 @section('body')
 <div class="row">

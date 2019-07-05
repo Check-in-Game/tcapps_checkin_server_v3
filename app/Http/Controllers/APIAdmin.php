@@ -505,7 +505,7 @@ class APIAdmin extends Controller {
               ->where('uid', $uid)
               ->sum('cost');
 
-      if (!$allWorth || !$used) {
+      if ($allWorth === false || $used === false) {
         $json = $this->JSON(3601, "Failed to get infomation.", null);
         return response($json);
       }else{

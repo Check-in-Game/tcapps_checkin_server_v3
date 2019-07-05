@@ -15,13 +15,14 @@ create table tcapps_checkin_v3_items(
   tid int unsigned not null default 1 comment "商品类型",
   image varchar(512) not null default '' comment "图片链接",
   description text not null comment "物品描述",
+  recycle_value int unsigned not null comment "回收价格",
   status tinyint not null default 1 comment "状态"
 )comment="物品列表",engine=InnoDB default character set utf8 collate utf8_general_ci;
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `status`) VALUES (1, '粉色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_lt.svg', '基础资源：粉色可莫尔', 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `status`) VALUES (2, '蓝色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_rt.svg', '基础资源：蓝色可莫尔', 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `status`) VALUES (3, '绿色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_lb.svg', '基础资源：绿色可莫尔', 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `status`) VALUES (4, '黄色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_rb.svg', '基础资源：黄色可莫尔', 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `status`) VALUES (5, '可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber.svg', '基础资源：可莫尔', 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (1, '粉色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_lt.svg', '基础资源的一种', 10, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (2, '蓝色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_rt.svg', '基础资源的一种', 10, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (3, '绿色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_lb.svg', '基础资源的一种', 10, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (4, '黄色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_rb.svg', '基础资源的一种', 10, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (5, '可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber.svg', '基础资源的一种', 50, 1);
 
 #物品类型列表v3
 create table tcapps_checkin_v3_items_types(

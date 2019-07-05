@@ -136,4 +136,29 @@ class UserController extends Controller {
     public function username_modify() {
       return view('user.username_modify');
     }
+
+    // 我的资源
+    public function user_resources() {
+      $uid = request()->cookie('uid');
+      // 查询资源
+      $resources = DB::table('v3_user_items')
+                  ->where('uid', $uid)
+                  ->sharedLock()
+                  ->value('items');
+      $items = [];
+      if ($resources !== false) {
+        $resources = json_decode($resources, true);
+        // 获取所有物品id
+        $user_items_id = array_keys($resources);
+        // 查询所需要的物品
+        $items = DB::table('v3_items')
+                  ->whereIn('iid', $user_items_id)
+                  ->get();
+      }
+      $data = array(
+        'user_items'  => $resources,
+        'items'       => $items
+      );
+      return view('user.user_resources', $data);
+    }
 }

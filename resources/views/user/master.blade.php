@@ -47,17 +47,24 @@
             </a>
           </div>
           <ul class="sidebar-menu">
-            <li class="menu-header">用户</li>
-            <li><a class="nav-link" href="{{ action('UserController@user') }}"><i class="fa-fw fas fa-user-circle"></i> <span>用户中心</span></a></li>
-            <li class="menu-header">Starter</li>
+            <li class="menu-header">个人中心</li>
+            <li><a class="nav-link" href="{{ action('UserController@user') }}"><i class="fa-fw fas fa-user-circle"></i> <span>用户面板</span></a></li>
+            <li><a class="nav-link" href="{{ action('UserController@user_resources') }}"><i class="fa-fw fas fa-box-open"></i> <span>我的资源</span></a></li>
+            <li class="menu-header">资源中心</li>
             <li class="dropdown">
-              <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Layout</span></a>
+              <a href="javascript:;" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa-fw fas fa-square"></i> <span>可莫尔</span></a>
               <ul class="dropdown-menu">
-                <li><a class="nav-link" href="layout-default.html">Default Layout</a></li>
-                <li><a class="nav-link" href="layout-transparent.html">Transparent Sidebar</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Top Navigation</a></li>
+                <li><a class="nav-link" href="layout-default.html"><i class="fa-fw fas fa-tools"></i> Workers</a></li>
+                <li><a class="nav-link" href="layout-transparent.html"><i class="fa-fw fas fa-mortar-pestle"></i> 合成中心</a></li>
               </ul>
+              <li><a class="nav-link" href="layout-transparent.html"><i class="fa-fw fas fa-recycle"></i> <span>回收中心</span></a></li>
+              <li><a class="nav-link" href="layout-transparent.html"><i class="fa-fw fas fa-money-check"></i> <span>交易市场</span></a></li>
+              <li><a class="nav-link" href="layout-transparent.html"><i class="fa-fw fas fa-store-alt"></i> <span>资源商城</span></a></li>
             </li>
+            <li class="menu-header">基金会</li>
+            <li><a class="nav-link" href="layout-default.html"><i class="fa-fw fas fa-hotel"></i> <span>科技研发</span></a></li>
+            <li><a class="nav-link" href="layout-transparent.html"><i class="fa-fw fas fa-handshake"></i> <span>会议中心</span></a></li>
+            <li><a class="nav-link" href="layout-transparent.html"><i class="fa-fw fas fa-keyboard"></i> <span>办公中心</span></a></li>
           </ul>
 
           <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
