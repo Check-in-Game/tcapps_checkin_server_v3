@@ -13,13 +13,13 @@
         </div>
         <div class="article-badge">
           @if($value['endtime'] !== '1970-01-01 00:00:00')
-          <div class="article-badge-item bg-danger"><i class="fa-fw fas fa-clock"></i> 限时</div>
+          <div class="article-badge-item bg-danger" data-toggle="tooltip" title="现在 - {{ $value['endtime'] }}"><i class="fa-fw fas fa-clock"></i> 限时</div>
           @endif
           @if($value['all_count'] !== 0)
           <div class="article-badge-item bg-warning"><i class="fa-fw fas fa-fire"></i> 限量</div>
           @endif
-          @if($value['onsale'] === 1)
-          <div class="article-badge-item bg-info"><i class="fa-fw fas fa-coins"></i> 促销</div>
+          @if($value['onsale'] === 1 && date('Y-m-d H:i:s') >= $value['sale_starttime'] && date('Y-m-d H:i:s') <= $value['sale_endtime'])
+          <div class="article-badge-item bg-info" data-toggle="tooltip" title="{{ $value['sale_starttime'] }} - {{ $value['sale_endtime'] }}"><i class="fa-fw fas fa-coins"></i> 促销</div>
           @endif
           @if($value['endtime'] === '1970-01-01 00:00:00' && $value['all_count'] === 0)
           <!-- 日常销售 -->
@@ -32,20 +32,18 @@
         </div>
         <p>
           <strong>商品单价：</strong>
-          {{ $value['cost'] }} 积分
+          @if($value['onsale'] === 1 && date('Y-m-d H:i:s') >= $value['sale_starttime'] && date('Y-m-d H:i:s') <= $value['sale_endtime'])
+            <s class="text-muted">{{ $value['cost'] }}</s> <strong>{{ $value['sale_cost'] }}</strong>
+          @else
+            {{ $value['cost'] }}
+          @endif
+          积分
           <br>
           <strong>剩余库存：</strong>
           @if($value['all_count'] !== 0)
             {{ $value['all_count']-$value['all_bought'] }}
           @else
             不限量
-          @endif
-          <br>
-          <strong>销售时间：</strong>
-          @if($value['endtime'] !== '1970-01-01 00:00:00')
-            {{ $value['endtime'] }}
-          @else
-            不限时
           @endif
         </p>
         <div class="article-cta">
