@@ -61,85 +61,140 @@ class APIUser extends Controller {
     }
 
     // purchase
-    public function purchase(int $gid) {
+    public function purchase(int $iid) {
       $now = date('Y-m-d H:i:s');
+      // 购买数量
+      $item_count = 1;
       // 查询商品信息
-      $good = DB::table('shop')
-            ->where('gid', $gid)
+      $good = DB::table('v3_shop')
+            ->where('iid', $iid)
             ->where('status', 1)
+            ->sharedLock()
             ->first();
       // 商品不存在
       if (!$good) {
-        $json = $this->JSON(2501, 'Invaild gid.', null);
+        $json = $this->JSON(2501, 'Invaild iid.', null);
         return response($json);
       }
       $uid = Cookie::get('uid');
       // 获取用户信息
       $user = DB::table('user_accounts')
               ->where('uid', $uid)
+              ->sharedLock()
               ->first();
       if ($user->status !== 1) {
         $json = $this->JSON(2502, 'Invaild user status.', null);
         return response($json);
       }
-      // 查询用户余额
-      $all_worth = DB::table('lists_v2')
-                ->where('uid', $user->uid)
-                ->sum('worth');
-      $cost = DB::table('purchase_records')
-            ->where('uid', $user->uid)
-            ->sum('cost');
-      $balance = $all_worth - $cost;
-      // 余额不足
-      if ($good->cost > $balance) {
-        $json = $this->JSON(2503, 'Insuffcient funds.', null);
-        return response($json);
+      // 计算花费
+      // 查询促销状态
+      if ($good->onsale === 1 && $now >= $good->sale_starttime && $now <= $good->sale_endtime) {
+        $cost = $good->sale_cost;
+      }else{
+        $cost = $good->cost;
       }
       // 判断购买时间是否合法
-      if ($good->endtime !== '1970-01-01 00:00:00' && strtotime($good->endtime) < time()) {
+      if ($good->endtime !== '1970-01-01 00:00:00' && $now > $good->endtime) {
         $json = $this->JSON(2504, 'Invaild time.', null);
         return response($json);
       }
-      // 检查用户购买状态
-      $pur_status = DB::table('purchase_records')
-                  ->where('uid', $user->uid)
-                  ->where('status', 0)
-                  ->first();
-      // 该用户有其他商品处于购买状态
-      if ($pur_status) {
-        $json = $this->JSON(2508, 'Other goods are checking out.', null);
+      // 检查物品存量
+      $all = DB::table('v3_purchase_records')
+            ->where('iid', $good->iid)
+            ->sharedLock()
+            ->sum('item_count');
+      if ($all === false) {
+        $json = $this->JSON(2508, 'System is busy.', null);
         return response($json);
       }
-      // 查询商品购买信息
-      $all = DB::table('purchase_records')
-            ->where('gid', $gid)
-            ->count();
-      $userR = DB::table('purchase_records')
-            ->where('gid', $gid)
-            ->where('uid', $user->uid)
-            ->count();
-      if ($all >= $good->all_count && $good->all_count !== 0) {
+      if ($good->all_count !== 0 && $all >= $good->all_count) {
         $json = $this->JSON(2505, 'Insuffcient goods.', null);
         return response($json);
       }
-      if ($userR >= $good->rebuy && $good->rebuy !== 0) {
+      // 检查购买限制
+      $userR = DB::table('v3_purchase_records')
+            ->where('iid', $good->iid)
+            ->where('uid', $user->uid)
+            ->sharedLock()
+            ->sum('item_count');
+      if ($userR === false) {
+        $json = $this->JSON(2508, 'System is busy.', null);
+        return response($json);
+      }
+      if ($good->rebuy !== 0 && $userR >= $good->rebuy) {
         $json = $this->JSON(2506, 'Purchasing times limited('. $userR .').', null);
         return response($json);
       }
       // 创建购买记录
       $data = [
         'uid'           => $user->uid,
-        'gid'           => $good->gid,
-        'cost'          => $good->cost,
+        'iid'           => $good->iid,
+        'item_count'    => $item_count,
+        'cost'          => $cost,
         'purchase_time' => date('Y-m-d H:i:s'),
         'status'        => 1
       ];
-      $pid = DB::table('purchase_records')->insertGetId($data);
+      $pid = DB::table('v3_purchase_records')->sharedLock()->insertGetId($data);
       if (!$pid) {
         $json = $this->JSON(2507, 'Unknown error.', null);
         return response($json);
+      }
+      // 查询用户余额
+      $balance = DB::table('v3_user_point')
+                ->where('uid', $user->uid)
+                ->where('point', '>=', $cost)
+                ->sharedLock()
+                ->value('point');
+      // 余额不足
+      if ($balance === false) {
+        $json = $this->JSON(2503, 'Insuffcient funds.', null);
+        return response($json);
+      }
+      // 扣除积分
+      $db = DB::table('v3_user_point')
+          ->where('uid', $user->uid)
+          ->sharedLock()
+          ->decrement('point', $cost);
+      if (!$db) {
+        $json = $this->JSON(2507, 'Unknown error.', null);
+        return response($json);
+      }
+      // 注册购买信息
+      // 查询用户资源
+      $user_package = DB::table('v3_user_items')
+                    ->where('uid', $user->uid)
+                    ->value('items');
+      if (!$user_package) {
+        // 首次注册购买信息
+        $items = array(
+          $good->iid  => array(
+            'count'   => $item_count
+          )
+        );
+        $data = array(
+          'uid' => $user->uid,
+          'items' => json_encode($items)
+        );
+        $db = DB::table('v3_user_items')->sharedLock()->insert($data);
       }else{
+        // 更新购买信息
+        $items = json_decode($user_package, true);
+        if (isset($items[$good->iid]['count'])) {
+          $items[$good->iid]['count'] += $item_count;
+        }else{
+          $items[$good->iid]['count'] = $item_count;
+        }
+        $data = array(
+          'uid' => $user->uid,
+          'items' => json_encode($items)
+        );
+        $db = DB::table('v3_user_items')->where('uid', $user->uid)->sharedLock()->update($data);
+      }
+      if ($db) {
         $json = $this->JSON(0, null, ['msg' => 'Success!']);
+        return response($json);
+      }else{
+        $json = $this->JSON(2507, 'Unknown error.', null);
         return response($json);
       }
     }

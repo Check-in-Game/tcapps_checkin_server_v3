@@ -78,30 +78,35 @@
 @endsection
 @section('script')
 <script type="text/javascript">
-  function purchase(gid) {
-    $('#btn_g_' + gid).attr('disabled', 'disabled');
+  function purchase(iid) {
+    $('#btn_g_' + iid).attr('disabled', 'disabled');
     m_loading();
-    $.getJSON('/api/purchase/' + gid, function(data){
+    $.getJSON('/api/purchase/' + iid, function(data){
       m_loading(false);
       if (data.errno === 0) {
         m_alert('购买成功！', 'success');
-        location.href = '';
+        $('#btn_g_' + iid).removeAttr('disabled');
       }else{
+        $('#btn_g_' + iid).removeAttr('disabled');
         let info = '购买失败！请刷新页面后重试！';
         if (data.errno === 2503) {
           info = '余额不足！';
-        }
-        if (data.errno === 2504) {
+        }else if (data.errno === 2504) {
           info = '该商品已经停售！';
-        }
-        if (data.errno === 2505) {
+          $('#btn_g_' + iid).text('已停售');
+          $('#btn_g_' + iid).attr('disabled', 'disabled');
+        }else if (data.errno === 2505) {
           info = '该商品已售罄！';
-        }
-        if (data.errno === 2506) {
+          $('#btn_g_' + iid).text('已售罄');
+          $('#btn_g_' + iid).attr('disabled', 'disabled');
+        }else if (data.errno === 2506) {
           info = '该商品的购买次数已经达到上限！';
+          $('#btn_g_' + iid).text('已到达购买上限');
+          $('#btn_g_' + iid).attr('disabled', 'disabled');
+        }else {
+          info = '系统繁忙，请稍候再试';
         }
         m_alert(info, 'danger');
-        $('#btn_g_' + gid).removeAttr('disabled');
       }
     });
   }
