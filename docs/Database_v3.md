@@ -18,19 +18,19 @@ create table tcapps_checkin_v3_items(
   recycle_value int unsigned not null comment "回收价格",
   status tinyint not null default 1 comment "状态"
 )comment="物品列表",engine=InnoDB default character set utf8 collate utf8_general_ci;
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (1, '粉色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_lt.svg', '基础资源的一种', 10, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (2, '蓝色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_rt.svg', '基础资源的一种', 10, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (3, '绿色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_lb.svg', '基础资源的一种', 10, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (4, '黄色可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber_rb.svg', '基础资源的一种', 10, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (5, '可莫尔', 2, 'https://checkin-static.twocola.com/cdn/v3/basic_resources/comber.svg', '基础资源的一种', 50, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (1, '粉色可莫尔', 2, '/cdn/v3/basic_resources/comber_lt.svg', '基础资源的一种', 10, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (2, '蓝色可莫尔', 2, '/cdn/v3/basic_resources/comber_rt.svg', '基础资源的一种', 10, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (3, '绿色可莫尔', 2, '/cdn/v3/basic_resources/comber_lb.svg', '基础资源的一种', 10, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (4, '黄色可莫尔', 2, '/cdn/v3/basic_resources/comber_rb.svg', '基础资源的一种', 10, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (5, '可莫尔', 2, '/cdn/v3/basic_resources/comber.svg', '基础资源的一种', 50, 1);
 #v2版本勋章
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (6, '内测勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/1.png', '传说中的勋章之一', 0, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (7, '公测勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/2.png', '传说中的勋章之一', 0, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (8, '佬勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/3.svg', '传说中的勋章之一', 0, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (9, '萌勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/4.svg', '传说中的勋章之一', 0, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (10, '一起加倍吧！（1.2倍纪念版）', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/5.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (11, '一起加倍吧！（1.3倍纪念版）', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/6.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (12, 'v2勋章', 1, 'https://checkin-static.twocola.com/cdn/v2/badges/7.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 2000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (6, '内测勋章', 1, '/cdn/v2/badges/1.png', '传说中的勋章之一', 0, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (7, '公测勋章', 1, '/cdn/v2/badges/2.png', '传说中的勋章之一', 0, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (8, '佬勋章', 1, '/cdn/v2/badges/3.svg', '传说中的勋章之一', 0, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (9, '萌勋章', 1, '/cdn/v2/badges/4.svg', '传说中的勋章之一', 0, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (10, '一起加倍吧！（1.2倍纪念版）', 1, '/cdn/v2/badges/5.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (11, '一起加倍吧！（1.3倍纪念版）', 1, '/cdn/v2/badges/6.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (12, 'v2勋章', 1, '/cdn/v2/badges/7.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 2000, 1);
 
 #物品类型列表v3
 create table tcapps_checkin_v3_items_types(
@@ -159,5 +159,6 @@ create table tcapps_checkin_system(
 )comment="系统设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('register_available', 'true', '是否开通注册通道');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('badges_wear_limit', 1, '用户佩戴勋章数量限制');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('cdn_prefix', 'https://checkin-static.twocola.com', '用户佩戴勋章数量限制');
 
 ```

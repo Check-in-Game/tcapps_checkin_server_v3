@@ -22,7 +22,7 @@
 
 <!-- 登录 -->
 <div class="mt-4 text-center">
-  <img src="https://checkin-static.twocola.com/cdn/common/icons/logo_256.png" alt="logo" width="100px">
+  <img src="{{ $_system['cdn_prefix'] }}/cdn/common/icons/logo_256.png" alt="logo" width="100px">
 </div>
 <div class="mx-auto my-4 text-center" style="max-width:400px;">
   <h2>注册 / Register</h2>

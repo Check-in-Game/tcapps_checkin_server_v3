@@ -3,7 +3,7 @@
 回收中心
 @endsection
 @section('body')
-<div class="alert alert-primary" role="alert">
+<div class="alert alert-success" role="alert">
   <h4 class="alert-heading">注意事项</h4>
   <p>
     回收中心以积分结算，显示的【单价】是回收单价，点击【回收】后填写回收数量确认回收即可。
@@ -24,7 +24,7 @@
   <tbody>
     @foreach($items as $item)
     <tr>
-      <td><img src="{{ $item->image }}" alt="{{ $item->iname }}" height="18x;"></td>
+      <td><img class="lazy" src="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}{{ $item->image }}" alt="{{ $item->iname }}" height="18x;"></td>
       <td>{{ $item->iname }}</td>
       <td>{{ $user_items[$item->iid]['count'] }}</td>
       <td>{{ $item->recycle_value }}</td>

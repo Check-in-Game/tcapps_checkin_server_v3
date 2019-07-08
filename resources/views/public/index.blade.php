@@ -4,10 +4,10 @@
 <div class="mb-4 py-4 pb-2 text-center bg-light">
   <div class="container">
     <div class="text-center">
-      <img src="https://checkin-static.twocola.com/cdn/common/icons/logo_256.png" alt="logo">
+      <img class="lazy" src="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}/cdn/common/icons/logo_256.png" alt="logo">
     </div>
     <h1 class="display-4">Check-in Game</h1>
-    <p class="lead">一款有参与感的收菜游戏。</p>
+    <p class="lead">有参与感的收菜游戏。</p>
     <hr class="my-4">
     <p class="lead">
       @if(isset($_COOKIE['auth']))
@@ -24,7 +24,6 @@
 @endsection
 @section('container')
 
-<!-- 公告-1 -->
 <div class="container">
   @foreach($_notices as $notice)
   <div class="alert alert-{{ $notice['color'] }}" role="alert">
@@ -41,7 +40,7 @@
   <div class="container-fluid p-0">
     <div class="row no-gutters">
       <!-- 自由交易 -->
-      <div class="col-md-6 text-white d-none d-md-block" style="background: no-repeat center center;background-image: url('https://checkin-static.twocola.com/cdn/v3/home/deal.jpg');height: 480px;"></div>
+      <div class="col-md-6 text-white d-none d-md-block lazy" data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/home/deal.jpg" style="background: no-repeat center center;background-image: url('{{ asset('img/loading.svg') }}');height: 480px;"></div>
       <div class="col-md-6 my-auto py-auto text-center" style="padding: 7rem;">
         <h2>自由交易</h2>
         <p class="lead mb-0">游戏中几乎所有的货币、道具都能进行交易。玩家的所有资源都由您自己掌握。</p>
@@ -52,10 +51,10 @@
         <h2>多元货币</h2>
         <p class="lead mb-0">除去官方发行的货币外，玩家可自行使用其他道具作为货币。</p>
       </div>
-      <div class="col-md-6 text-white d-none d-md-block" style="background: no-repeat center center;background-image: url('https://checkin-static.twocola.com/cdn/v3/home/currencies.jpg');height: 480px;"></div>
+      <div class="col-md-6 text-white d-none d-md-block lazy" data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/home/currencies.jpg" style="background: no-repeat center center;background-image: url('{{ asset('img/loading.svg') }}');height: 480px;"></div>
 
       <!-- 国度进化 -->
-      <div class="col-md-6 text-white d-none d-md-block" style="background: no-repeat center center;background-image: url('https://checkin-static.twocola.com/cdn/v3/home/co-workers.jpg');height: 480px;"></div>
+      <div class="col-md-6 text-white d-none d-md-block lazy" data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/home/co-workers.jpg" style="background: no-repeat center center;background-image: url('{{ asset('img/loading.svg') }}');height: 480px;"></div>
       <div class="col-md-6 my-auto py-auto text-center" style="padding: 7rem;">
         <h2>国度进化</h2>
         <p class="lead mb-0">游戏会预先开发更多功能，玩家需要团结一致，共同推进发展研究，解锁新功能与道具。</p>
@@ -87,7 +86,7 @@
         <p>
           <a class="text-dark" href="https://checkin-docs.twocola.com" target="_blank">游戏手册</a>
           <br />
-          <a class="text-dark" href="https://checkin-static.twocola.com" target="_blank">静态文件站</a>
+          <a class="text-dark" href="{{ $_system['cdn_prefix'] }}" target="_blank">静态文件站</a>
         </p>
       </div>
       <div class="col-sm-12 col-md-4">
@@ -102,11 +101,4 @@
     </div>
   </div>
 </footer>
-@endsection
-@section('script')
-<script type="text/javascript">
-  $(function(){
-    $('[name=badge]').tooltip('enable');
-  });
-</script>
 @endsection

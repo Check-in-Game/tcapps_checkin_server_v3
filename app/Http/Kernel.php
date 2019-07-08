@@ -35,6 +35,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\GlobalConfigs::class,
             'throttle:60,1',
         ],
 
@@ -82,6 +83,7 @@ class Kernel extends HttpKernel
         \Illuminate\Session\Middleware\AuthenticateSession::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
         \Illuminate\Auth\Middleware\Authorize::class,
+        \App\Http\Middleware\GlobalConfigs::class,
         'check.auth' => \App\Http\Middleware\CheckAuth::class,
         'apicheck.auth' => \App\Http\Middleware\APICheckAuth::class,
         'notice' => \App\Http\Middleware\Notice::class,

@@ -9,7 +9,7 @@
   <div class="col-12 col-sm-6 col-md-6 col-lg-3">
     <article class="article article-style-b">
       <div class="article-header">
-        <div class="article-image" data-background="{{ $value['image'] }}" style="background-size: contain;">
+        <div class="article-image lazy" data-background="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}{{ $value['image'] }}" style="background-size: contain;">
         </div>
         <div class="article-badge">
           @if($value['endtime'] !== '1970-01-01 00:00:00')

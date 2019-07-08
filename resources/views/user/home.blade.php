@@ -13,11 +13,11 @@
       <div class="card-body text-dark">
         <div class="row">
           <!-- UID -->
-          <div class="col-sm-6 text-right mb-1 font-weight-bold">UID：</div>
-          <div class="col-sm-6 text-left mb-1">{{ $uid }}</div>
+          <div class="col-6 text-right mb-1 font-weight-bold">UID：</div>
+          <div class="col-6 text-left mb-1">{{ $uid }}</div>
           <!-- 积分 -->
-          <div class="col-sm-6 text-right mb-1 font-weight-bold">积分：</div>
-          <div class="col-sm-6 text-left mb-1">{{ $point }}</div>
+          <div class="col-6 text-right mb-1 font-weight-bold">积分：</div>
+          <div class="col-6 text-left mb-1">{{ $point }}</div>
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@
   @foreach($combers as $comber)
   <div class="col-lg-3 col-md-6 col-sm-6 col-12">
     <div class="card card-statistic-1">
-      <div class="card-icon bg-white" style="background-image: url('{{ $comber->image }}');">
+      <div class="card-icon bg-white lazy" style="background: url('{{ asset('img/loading.svg') }}') no-repeat center center;" data-src="{{ $_system['cdn_prefix'] }}{{ $comber->image }}">
       </div>
       <div class="card-wrap">
         <div class="card-header">
@@ -70,10 +70,10 @@
   @endforeach
 </div>
 
-<div class="alert alert-primary" role="alert">
+<div class="alert alert-info" role="alert">
   <h4 class="alert-heading">更快的获取积分</h4>
   <p>
-    您可以在<a href="{{ action('PublicController@index') }}" target="_self">首页</a>加入QQ交流群获取一手活动预告信息，您也可以在用户中心的活动中心查询活动一览以更好的把握时机。
+    您可以在<a class="alert-link" href="{{ action('PublicController@index') }}" target="_self">首页</a>加入QQ交流群获取一手活动预告信息，您也可以在用户中心的活动中心查询活动一览以更好的把握时机。
   </p>
   <p>
     如果您在使用过程中发现Bug或由其他的意见和建议，加入QQ群向群主反映（Bug请私聊），会有丰厚的礼包奖励。

@@ -68,7 +68,7 @@
           </ul>
 
           <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
-            <a href="https://checkin-docs.twocola.com" target="_blank" class="btn btn-primary btn-lg btn-block btn-icon-split">
+            <a href="https://checkin-docs.twocola.com" target="_blank" class="btn btn-success btn-lg btn-block btn-icon-split">
               <i class="fas fa-book"></i> 手册 / Manual
             </a>
           </div>
@@ -135,6 +135,16 @@
 </div>
 @yield('extraModalContent')
 <script type="text/javascript">
+$(function(){
+  $("img.lazy").Lazy({
+    effect: 'fadeIn',
+    effectTime: 500
+  });
+  $("div.lazy").Lazy({
+    effect: 'fadeIn',
+    effectTime: 500
+  });
+});
 function m_loading(up = true) {
   if (up === true) {
     $('#modal-loading').modal({

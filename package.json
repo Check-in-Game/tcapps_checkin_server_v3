@@ -24,6 +24,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "jquery-lazy": "^1.7.10",
         "js-yaml": "^3.13.1",
         "nicescroll": "^3.7.4"
     }
