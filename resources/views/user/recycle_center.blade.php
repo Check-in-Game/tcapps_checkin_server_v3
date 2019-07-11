@@ -26,13 +26,98 @@
     <tr>
       <td><img class="lazy" src="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}{{ $item->image }}" alt="{{ $item->iname }}" height="18x;"></td>
       <td>{{ $item->iname }}</td>
-      <td>{{ isset($user_items[$item->iid]['count']) ? $user_items[$item->iid]['count'] : 0 }}</td>
-      <td>{{ $item->recycle_value }}</td>
-      <td><a href="javascript:m_alert('暂未开放回收功能', 'warning');">回收</a></td>
+      <td id="rc_{{ $item->iid }}">{{ isset($user_items[$item->iid]['count']) ? $user_items[$item->iid]['count'] : 0 }}</td>
+      <td id="rv_{{ $item->iid }}">{{ $item->recycle_value }}</td>
+      <td><a href="javascript:comfirm_recycle({{ $item->iid }});">回收</a></td>
     </tr>
     @endforeach
   </tbody>
 </table>
 @endsection
+@section('extraModalContent')
+<div class="modal fade" tabindex="-1" role="dialog" id="_comfirm">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">回收确认</h5>
+      </div>
+      <div class="modal-body">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">回收数量</span>
+          </div>
+          <input type="hidden" class="form-control" placeholder="回收物品" id="recycle_iid" value="1">
+          <input type="number" class="form-control" placeholder="回收数量" id="recycle_count" value="1" min="1" onchange="calc();" onkeydown="calc();">
+        </div>
+        <p>
+          本次回收预计到账 <span id="anticipate_point">0</span> 积分
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="javascript:recycle();">确认回收</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+@endsection
 @section('script')
+<script type="text/javascript">
+// 计算预计到账积分
+function calc() {
+  let iid   = $('#recycle_iid').val();
+  let value = $('#rv_' + iid).text();
+  let count = $('#recycle_count').val();
+  $('#anticipate_point').text(value * count);
+}
+function comfirm_recycle(iid) {
+  // 弹出数量选择
+  $('#recycle_iid').val(iid);
+  // 计算预计到账积分
+  calc();
+  $('#_comfirm').modal({
+    backdrop: 'static'
+  });
+}
+function recycle() {
+  $('#_comfirm').modal('hide');
+  m_loading();
+  let iid = $('#recycle_iid').val();;
+  let count = $('#recycle_count').val();;
+  $.ajax({
+    url: '/api/recycle',
+    type: 'post',
+    dataType: 'json',
+    data: {
+      'iid': iid,
+      'count': count
+    },
+    timeout: 10000,
+    complete: function(XMLHttpRequest, status){
+      m_loading(false);
+      if (status === 'timeout') {
+        m_alert('响应超时，请稍候再试！');
+      }
+    },
+    success: function(data){
+      if (data.errno === 0) {
+        m_alert('回收成功！', 'success');
+        let value = $('#rc_' + iid).text($('#rc_' + iid).text() - count);
+      }else{
+        let info = '系统繁忙，请稍候再试';
+        if (data.errno === 4102) {
+          info = "拥有的资源数量不足！";
+        }else if(data.errno === 4103) {
+          info = "错误的物品ID！";
+        }else if(data.errno === 4104) {
+          info = "扣除资源失败！";
+        }else if(data.errno === 4105) {
+          info = "增加积分失败！";
+        }
+        m_alert(info, 'danger');
+      }
+    }
+  });
+}
+</script>
 @endsection

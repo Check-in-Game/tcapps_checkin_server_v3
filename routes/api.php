@@ -38,6 +38,10 @@ Route::get('/purchase/{cid}', 'APIUser@purchase')
 Route::post('/blend', 'APIUser@blend')
       ->middleware('apicheck.auth');
 
+// Recycle
+Route::post('/recycle', 'APIUser@recycle')
+      ->middleware('apicheck.auth');
+
 // Wear Badge
   // wear
 Route::post('/user/badge/wear', 'APIUser@badge_wear')

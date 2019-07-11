@@ -87,11 +87,11 @@ class UserController extends Controller {
       foreach ($shop as $key => $value) {
         // 总销售量
         $all = DB::table('v3_purchase_records')
-              ->where('iid', $value['iid'])
+              ->where('cid', $value['cid'])
               ->sum('item_count');
         // 当前用户购买量
         $userR = DB::table('v3_purchase_records')
-              ->where('iid', $value['iid'])
+              ->where('cid', $value['cid'])
               ->where('uid', $user->uid)
               ->sum('item_count');
         $shop[$key]['all_bought'] = $all;
