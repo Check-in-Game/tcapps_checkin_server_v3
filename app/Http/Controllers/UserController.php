@@ -53,6 +53,7 @@ class UserController extends Controller {
       $db_prefix = env('DB_PREFIX');
       // 读取商品
       $cols = [
+        'v3_shop.cid',
         'v3_shop.iid',
         'v3_shop.cost',
         'v3_shop.starttime',
@@ -78,7 +79,7 @@ class UserController extends Controller {
               ->orWhere('endtime' ,'=', '1970-01-01 00:00:00')
               ->where('starttime' ,'<=', date('Y-m-d H:i:s'))
               ->where('v3_shop.status', 1)
-              ->orderBy('v3_shop.iid', 'asc')
+              ->orderBy('v3_shop.cid', 'asc')
               ->select($cols)
               ->get()
               ->map(function ($value) {return (array)$value;})
@@ -162,15 +163,15 @@ class UserController extends Controller {
                   ->sharedLock()
                   ->value('items');
       $items = [];
-      if ($resources !== false) {
+      if ($resources) {
         $resources = json_decode($resources, true);
         // 获取所有物品id
         $user_items_id = array_keys($resources);
         // 查询所需要的物品
         $items = DB::table('v3_items')
-                  ->whereIn('iid', $user_items_id)
-                  ->sharedLock()
-                  ->get();
+        ->whereIn('iid', $user_items_id)
+        ->sharedLock()
+        ->get();
       }
       $data = array(
         'user_items'  => $resources,
@@ -188,7 +189,7 @@ class UserController extends Controller {
                   ->sharedLock()
                   ->value('items');
       $items = [];
-      if ($resources !== false) {
+      if ($resources) {
         $resources = json_decode($resources, true);
         // 获取所有物品id
         $user_items_id = array_keys($resources);
@@ -203,5 +204,23 @@ class UserController extends Controller {
         'items'       => $items
       );
       return view('user.recycle_center', $data);
+    }
+
+    // 合成中心
+    public function blend() {
+      $uid = request()->cookie('uid');
+      // 基础资源信息 comber
+      $combers = DB::table('v3_items')
+                ->whereIn('iid', [1,2,3,4])
+                ->get();
+      // 查询资源物品
+      $items = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->value('items');
+      $data = array(
+        'combers'  => $combers,
+        'items'    => json_decode($items, true)
+      );
+      return view('user.blend_center', $data);
     }
 }

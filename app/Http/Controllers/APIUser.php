@@ -61,13 +61,13 @@ class APIUser extends Controller {
     }
 
     // purchase
-    public function purchase(int $iid) {
+    public function purchase(int $cid) {
       $now = date('Y-m-d H:i:s');
       // 购买数量
       $item_count = 1;
       // 查询商品信息
       $good = DB::table('v3_shop')
-            ->where('iid', $iid)
+            ->where('cid', $cid)
             ->where('status', 1)
             ->sharedLock()
             ->first();
@@ -100,7 +100,7 @@ class APIUser extends Controller {
       }
       // 检查物品存量
       $all = DB::table('v3_purchase_records')
-            ->where('iid', $good->iid)
+            ->where('cid', $good->cid)
             ->sharedLock()
             ->sum('item_count');
       if ($all === false) {
@@ -113,11 +113,11 @@ class APIUser extends Controller {
       }
       // 检查购买限制
       $userR = DB::table('v3_purchase_records')
-            ->where('iid', $good->iid)
+            ->where('cid', $good->cid)
             ->where('uid', $user->uid)
             ->sharedLock()
             ->sum('item_count');
-      if ($userR === false) {
+      if ($userR === false || $userR === null) {
         $json = $this->JSON(2508, 'System is busy.', null);
         return response($json);
       }
@@ -128,13 +128,14 @@ class APIUser extends Controller {
       // 创建购买记录
       $data = [
         'uid'           => $user->uid,
+        'cid'           => $good->cid,
         'iid'           => $good->iid,
         'item_count'    => $item_count,
         'cost'          => $cost,
         'purchase_time' => date('Y-m-d H:i:s'),
         'status'        => 1
       ];
-      $pid = DB::table('v3_purchase_records')->sharedLock()->insertGetId($data);
+      $pid = DB::table('v3_purchase_records')->sharedLock()->insert($data);
       if (!$pid) {
         $json = $this->JSON(2507, 'Unknown error.', null);
         return response($json);
@@ -421,6 +422,70 @@ class APIUser extends Controller {
       $update = DB::table('badges_wear')->where('uid', $uid)->update($data);
       if (!$update) {
         $json = $this->JSON(3407, 'Failed to take off badge.', null);
+        return response($json);
+      }else{
+        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+        return response($json);
+      }
+    }
+
+    // 可莫尔合成
+    public function blend() {
+      $uid    = request()->cookie('uid');
+      $count  = request()->post('count');
+      // 检查数量是否正确
+      if (!preg_match('/^[1-9][0-9]*$/', $count)) {
+        $json = $this->JSON(4001, 'Bad request.', null);
+        return response($json);
+      }
+      $count = (int) $count;
+      if (!is_numeric($count) || !is_int($count)) {
+        $json = $this->JSON(4001, 'Bad request.', null);
+        return response($json);
+      }
+      // 查询该用户可莫尔数量
+      $user_items = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->sharedLock()
+              ->value('items');
+      if (!$user_items) {
+        $json = $this->JSON(4002, 'Insufficient combers.', null);
+        return response($json);
+      }
+      $items = json_decode($user_items, true);
+      // 检查碎片数量需求
+      if (!isset($items[1]['count'], $items[2]['count'], $items[3]['count'], $items[4]['count'])) {
+        $json = $this->JSON(4002, 'Insufficient combers.', null);
+        return response($json);
+      }
+      $combers = [$items[1]['count'], $items[2]['count'], $items[3]['count'], $items[4]['count']];
+      if (min($combers) < $count) {
+        $json = $this->JSON(4002, 'Insufficient combers.', null);
+        return response($json);
+      }
+      // 扣除碎片
+      for ($i=1; $i <= 4; $i++) {
+        if ($items[$i]['count'] - $count <= 0) {
+          unset($items[$i]);
+        }else{
+          $items[$i]['count'] -= $count;
+        }
+      }
+      // 增加可莫尔
+      if (isset($items[5]['count'])) {
+        $items[5]['count'] += $count;
+      }else{
+        $items[5]['count'] = $count;
+      }
+      $data = array(
+        'items' => json_encode($items)
+      );
+      $db = DB::table('v3_user_items')
+          ->where('uid', $uid)
+          ->sharedLock()
+          ->update($data);
+      if (!$db) {
+        $json = $this->JSON(4003, 'Failed to blend.', null);
         return response($json);
       }else{
         $json = $this->JSON(0, null, ['msg'  => 'Success!']);

@@ -43,3 +43,16 @@
   color: #062c33 !important;
   font-weight: 700;
 }
+/* 3.12 Button */
+.btn-success, .btn-success.disabled {
+  box-shadow: 0 2px 6px #a8f5b4;
+  background-color: #28a745;
+  border-color: #28a745;
+  color: #fff; }
+  .btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.disabled:hover, .btn-success.disabled:focus, .btn-success.disabled:active {
+    background-color: #28a745 !important;
+    color: #fff !important; }
+
+.btn-outline-success:hover, .btn-outline-success:focus, .btn-outline-success:active, .btn-outline-success.disabled:hover, .btn-outline-success.disabled:focus, .btn-outline-success.disabled:active {
+  background-color: #28a745 !important;
+  color: #fff !important; }

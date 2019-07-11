@@ -18,7 +18,7 @@
       <td><img class="lazy" src="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}{{ $item->image }}" alt="{{ $item->iname }}" height="18x;"></td>
       <td>{{ $item->iname }}</td>
       <td class="text-truncate">{{ $item->description }}</td>
-      <td>{{ $user_items[$item->iid]['count'] }}</td>
+      <td>{{ isset($user_items[$item->iid]['count']) ? $user_items[$item->iid]['count'] : 0 }}</td>
     </tr>
     @endforeach
   </tbody>

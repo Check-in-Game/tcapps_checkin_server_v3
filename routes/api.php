@@ -20,9 +20,6 @@ Route::post('/login', 'APIUser@login');
 Route::get('/logout', 'APIUser@logout')
       ->middleware('apicheck.auth');
 
-// Check in
-Route::get('/getToken/{username}/{b64password}', 'APICheckIn@get_token');
-Route::get('/checkIn/{username}/{token}', 'APICheckIn@check_in');
 // Check in v2
 Route::post('/user/checkin/clean', 'APICheckIn@clean')
       ->middleware('apicheck.auth');
@@ -34,7 +31,11 @@ Route::post('/user/security/username', 'APIUser@security_change_username')
       ->middleware('apicheck.auth');
 
 // Purchase
-Route::get('/purchase/{iid}', 'APIUser@purchase')
+Route::get('/purchase/{cid}', 'APIUser@purchase')
+      ->middleware('apicheck.auth');
+
+// Blend
+Route::post('/blend', 'APIUser@blend')
       ->middleware('apicheck.auth');
 
 // Wear Badge

@@ -68,7 +68,8 @@ create table tcapps_checkin_v3_badges(
 
 #商城系统v3
 create table tcapps_checkin_v3_shop(
-  iid int unsigned primary key not null comment "物品ID",
+  cid int unsigned primary key auto_increment not null comment "物品ID",
+  iid int unsigned not null comment "物品ID",
   cost int unsigned not null comment "商品售价",
   starttime datetime not null default '1970-01-01 00:00:00' comment "销售开始时间",
   endtime datetime not null default '1970-01-01 00:00:00' comment "销售结束时间",
@@ -91,7 +92,8 @@ INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `si
 create table tcapps_checkin_v3_purchase_records(
   pid int unsigned auto_increment primary key not null comment "购买ID",
   uid int unsigned not null comment "用户ID",
-  iid int unsigned not null comment "商品ID",
+  cid int unsigned not null comment "商品ID",
+  iid int unsigned not null comment "物品ID",
   item_count int unsigned not null comment "购买数量",
   cost int unsigned not null default 0 comment "花费",
   purchase_time datetime not null comment "购买时间",
@@ -159,6 +161,6 @@ create table tcapps_checkin_system(
 )comment="系统设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('register_available', 'true', '是否开通注册通道');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('badges_wear_limit', 1, '用户佩戴勋章数量限制');
-INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('cdn_prefix', 'https://checkin-static.twocola.com', '用户佩戴勋章数量限制');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('cdn_prefix', 'https://checkin-static.twocola.com', 'CDN域名');
 
 ```

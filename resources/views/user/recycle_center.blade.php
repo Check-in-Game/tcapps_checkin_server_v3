@@ -26,9 +26,9 @@
     <tr>
       <td><img class="lazy" src="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}{{ $item->image }}" alt="{{ $item->iname }}" height="18x;"></td>
       <td>{{ $item->iname }}</td>
-      <td>{{ $user_items[$item->iid]['count'] }}</td>
+      <td>{{ isset($user_items[$item->iid]['count']) ? $user_items[$item->iid]['count'] : 0 }}</td>
       <td>{{ $item->recycle_value }}</td>
-      <td><a href="javascript:m_alert('暂未开放回收功能');">回收</a></td>
+      <td><a href="javascript:m_alert('暂未开放回收功能', 'warning');">回收</a></td>
     </tr>
     @endforeach
   </tbody>

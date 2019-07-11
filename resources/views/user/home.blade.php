@@ -31,7 +31,6 @@
       </div>
       <div class="card-body text-dark">
         <button class="btn btn-success btn-block" href="javascript:;" data-toggle="modal" data-target="#clean" id='btn_clean'><i class="fa-fw fas fa-broom"></i> 立即擦灰</button>
-        <a class="btn btn-secondary btn-block" href="{{ action('UserController@badges') }}" target="_self"><i class="fa-fw fas fa-certificate"></i> 佩戴勋章</a>
       </div>
     </div>
   </div>

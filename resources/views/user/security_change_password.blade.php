@@ -60,7 +60,7 @@
       return false;
     }
     $('#btn').attr('disabled', 'disabled');
-    let ajax = $.ajax({
+    $.ajax({
       url: '/api/user/security/password',
       type: 'post',
       dataType: 'json',
