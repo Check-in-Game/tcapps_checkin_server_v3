@@ -147,7 +147,7 @@ class APIUser extends Controller {
                 ->sharedLock()
                 ->value('point');
       // 余额不足
-      if ($balance === false) {
+      if ($balance === false || $balance === null) {
         $json = $this->JSON(2503, 'Insuffcient funds.', null);
         return response($json);
       }
@@ -371,6 +371,7 @@ class APIUser extends Controller {
         return response($json);
       }
     }
+
     // 可莫尔合成
     public function recycle() {
       $uid    = request()->cookie('uid');
@@ -414,7 +415,7 @@ class APIUser extends Controller {
       // 扣除资源
       $items[$iid]['count'] -= $count;
       if ($items[$iid]['count'] === 0) {
-        unset($items[$iid]['count']);
+        unset($items[$iid]);
       }
       $data = array(
         'items' => json_encode($items)
@@ -429,6 +430,16 @@ class APIUser extends Controller {
       }
       // 计算积分增量
       $point_add = $recycle_item->recycle_value * $count;
+      // 写入回收记录
+      $data = array(
+        'uid' => $uid,
+        'iid' => $iid,
+        'item_count'  => $count,
+        'value' => $point_add,
+        'recycle_time'  => date('Y-m-d H:i:s'),
+        'status'  => 1,
+      );
+      $db = DB::table('v3_recycle_records')->sharedLock()->insert($data);
       // 查询用户积分
       $point = DB::table('v3_user_point')->where('uid', $uid)->lockForUpdate()->value('point');
       // 无记录
@@ -446,6 +457,53 @@ class APIUser extends Controller {
         return response($json);
       }else{
         $json = $this->JSON(4105, 'An error occurred.', null);
+        return response($json);
+      }
+    }
+
+    // Worker兑换
+    public function worker_redeem() {
+      $uid    = request()->cookie('uid');
+      // 查询兑换券数量 IID 13
+      $worker_ticket = DB::table('v3_user_items')
+                  ->where('uid', $uid)
+                  ->sharedLock()
+                  ->value('items->13->count');
+      if (!$worker_ticket) {
+        $json = $this->JSON(4201, 'Insufficient Worker ticket.', null);
+        return response($json);
+      }
+      // 兑换Worker
+      $worker_ticket -= 1;
+      if ($worker_ticket === 0) {
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(['items'=> DB::raw('JSON_REMOVE(items, "$.\"13\"")')]);
+      }else{
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(['items->13->count' => $worker_ticket]);
+      }
+      if (!$db) {
+        $json = $this->JSON(4202, 'Failed to redeem worker.', null);
+        return response($json);
+      }
+      // 注册Worker
+      $data = array(
+        'uid'   => $uid,
+        'fid'   => 0,
+        'level' => 1,
+        'update_time' => date('Y-m-d H:i:s'),
+        'status'  => 1,
+      );
+      $db = DB::table('v3_user_workers')->insert($data);
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+        return response($json);
+      }else{
+        $json = $this->JSON(4203, 'An error occurred.', null);
         return response($json);
       }
     }

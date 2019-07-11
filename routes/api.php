@@ -42,12 +42,8 @@ Route::post('/blend', 'APIUser@blend')
 Route::post('/recycle', 'APIUser@recycle')
       ->middleware('apicheck.auth');
 
-// Wear Badge
-  // wear
-Route::post('/user/badge/wear', 'APIUser@badge_wear')
-      ->middleware('apicheck.auth');
-  // take off
-Route::post('/user/badge/takeoff', 'APIUser@badge_takeoff')
+// Worker
+Route::get('/worker/redeem', 'APIUser@worker_redeem')
       ->middleware('apicheck.auth');
 
 // =======ADMIN=======

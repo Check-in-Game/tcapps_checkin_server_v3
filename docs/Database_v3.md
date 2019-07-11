@@ -31,7 +31,7 @@ INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `descript
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (10, '一起加倍吧！（1.2倍纪念版）', 1, '/cdn/v2/badges/5.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (11, '一起加倍吧！（1.3倍纪念版）', 1, '/cdn/v2/badges/6.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (12, 'v2勋章', 1, '/cdn/v2/badges/7.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 2000, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (13, 'Worker', 1, '/cdn/v3/basic_resources/worker.svg', '基础资源的一种，可用于产出可莫尔资源', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (13, 'Worker兑换券', 1, '/cdn/v3/basic_resources/worker.svg', '一种基础资源的兑换券，兑换后可用于产出资源', 1000, 1);
 
 #物品类型列表v3
 create table tcapps_checkin_v3_items_types(
@@ -43,6 +43,29 @@ INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (2, '基本�
 INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (3, '重要资源');
 INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (4, '特殊资源');
 INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (5, 'Worker');
+
+#Worker注册表v3
+#1为正常状态，2为寄售
+create table tcapps_checkin_v3_user_workers(
+  wid int unsigned primary key auto_increment not null comment "WorkerID",
+  uid int unsigned not null comment "所有者UID",
+  fid int unsigned not null comment "区域ID",
+  level int unsigned not null comment "等级",
+  update_time datetime not null comment "更新时间",
+  status tinyint not null default 1 comment "状态"
+)comment="Worker注册表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#Worker产区表v3
+create table tcapps_checkin_v3_user_workers_field(
+  fid int unsigned primary key auto_increment not null comment "产区ID",
+  fname varchar(32) unique not null comment "产区名称",
+  iid int unsigned not null comment "产出资源ID",
+  speed float unsigned default 0.1 not null comment "产出速度/h",
+  times float unsigned default 1 not null comment "产出倍率",
+  limi_count int unsigned default 0 not null comment "限制数量",
+  limi_level int unsigned default 1 not null comment "限制等级",
+  status tinyint not null default 1 comment "状态"
+)comment="Worker产区表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #积分系统v3
 create table tcapps_checkin_v3_user_point(
@@ -102,6 +125,17 @@ create table tcapps_checkin_v3_purchase_records(
   purchase_time datetime not null comment "购买时间",
   status tinyint not null default 1 comment "状态"
 )comment="购买记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#回收记录v3
+create table tcapps_checkin_v3_recycle_records(
+  rid int unsigned auto_increment primary key not null comment "回收ID",
+  uid int unsigned not null comment "用户ID",
+  iid int unsigned not null comment "物品ID",
+  item_count int unsigned not null comment "回收数量",
+  value int unsigned not null default 0 comment "价值",
+  recycle_time datetime not null comment "回收时间",
+  status tinyint not null default 1 comment "状态"
+)comment="回收记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #管理员等级表
 create table tcapps_checkin_admin_level(

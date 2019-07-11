@@ -54,7 +54,7 @@
             <li class="dropdown">
               <a href="javascript:;" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa-fw fas fa-square"></i> <span>可莫尔</span></a>
               <ul class="dropdown-menu">
-                <!-- <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-tools"></i> Workers</a></li> -->
+                <li><a class="nav-link" href="{{ action('UserController@worker') }}"><i class="fa-fw fas fa-tools"></i> Worker</a></li>
                 <li><a class="nav-link" href="{{ action('UserController@blend') }}"><i class="fa-fw fas fa-mortar-pestle"></i> 合成中心</a></li>
               </ul>
               <li><a class="nav-link" href="{{ action('UserController@recycle') }}"><i class="fa-fw fas fa-recycle"></i> <span>回收中心</span></a></li>

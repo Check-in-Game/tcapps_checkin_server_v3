@@ -223,4 +223,34 @@ class UserController extends Controller {
       );
       return view('user.blend_center', $data);
     }
+
+    // 合成中心
+    public function worker() {
+      $uid = request()->cookie('uid');
+      $resources = DB::table('v3_user_items')
+                  ->where('uid', $uid)
+                  ->sharedLock()
+                  ->value('items');
+      if ($resources) {
+        $resources = json_decode($resources, true);
+        // 查询WORKER兑换券数量 IID 13
+        $worker_ticket = isset($resources[13]['count']) ? $resources[13]['count'] : 0;
+      }
+      // 查询Worker数量
+      $worker_count = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->sharedLock()
+                    ->count();
+      // 查询产区情况
+      $field = DB::table('v3_user_workers_field')
+              ->join('v3_items', 'v3_user_workers_field.iid', '=', 'v3_items.iid')
+              ->where('v3_user_workers_field.status', 1)
+              ->get();
+      $data = array(
+        'worker_ticket'       => $worker_ticket,
+        'worker_count'        => $worker_count,
+        'field'               => $field,
+      );
+      return view('user.worker', $data);
+    }
 }
