@@ -31,6 +31,7 @@ INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `descript
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (10, '一起加倍吧！（1.2倍纪念版）', 1, '/cdn/v2/badges/5.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (11, '一起加倍吧！（1.3倍纪念版）', 1, '/cdn/v2/badges/6.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (12, 'v2勋章', 1, '/cdn/v2/badges/7.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 2000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (13, 'Worker', 1, '/cdn/v3/basic_resources/worker.svg', '基础资源的一种，可用于产出可莫尔资源', 1000, 1);
 
 #物品类型列表v3
 create table tcapps_checkin_v3_items_types(
@@ -87,6 +88,8 @@ INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `si
 INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('2', '20', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '20', 'Worker可产出的基础资源', '1');
 INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('3', '20', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '20', 'Worker可产出的基础资源', '1');
 INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('4', '20', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '20', 'Worker可产出的基础资源', '1');
+INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('13', '5000', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '5000', '可用于产出可莫尔资源', '1');
+INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('13', '1', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '1', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '5000', '可用于产出可莫尔资源', '1');
 
 #购买记录v3
 create table tcapps_checkin_v3_purchase_records(
