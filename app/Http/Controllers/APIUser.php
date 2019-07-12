@@ -24,12 +24,16 @@ class APIUser extends Controller {
         return response($json);
       }
       $password    = base64_decode($b64password);
-      if (mb_strlen($username) > 16 || mb_strlen($username) < 5 || mb_strlen($password) > 16 || mb_strlen($password) < 8) {
+      if (mb_strlen($username) > 16 || mb_strlen($username) < 5
+        || mb_strlen($password) > 16 || mb_strlen($password) < 8) {
         $json = $this->JSON(2301, 'Incorrect username or password.', null);
         return response($json);
       }
       // 获取用户名密码
-      $user = DB::table('user_accounts')->where('username', $username)->lockForUpdate()->first();
+      $user = DB::table('user_accounts')
+            ->where('username', $username)
+            ->lockForUpdate()
+            ->first();
       if (!$user) {
         $json = $this->JSON(2302, 'Incorrect username or password.', null);
         return response($json);
@@ -162,10 +166,11 @@ class APIUser extends Controller {
       }
       // 注册购买信息
       // 查询用户资源
-      $user_package = DB::table('v3_user_items')
+      $user_items = DB::table('v3_user_items')
                     ->where('uid', $user->uid)
-                    ->value('items');
-      if (!$user_package) {
+                    ->sharedLock()
+                    ->exists();
+      if (!$user_items) {
         // 首次注册购买信息
         $items = array(
           $good->iid  => array(
@@ -179,17 +184,34 @@ class APIUser extends Controller {
         $db = DB::table('v3_user_items')->lockForUpdate()->insert($data);
       }else{
         // 更新购买信息
-        $items = json_decode($user_package, true);
-        if (isset($items[$good->iid]['count'])) {
-          $items[$good->iid]['count'] += $item_count;
+        // 查询是否有对应IID的记录
+        $db = DB::table('v3_user_items')
+            ->sharedLock()
+            ->value("items->{$good->iid}->count");
+        if ($db) {
+          // 存在对应IID记录
+          $db = DB::table('v3_user_items')
+                ->where('uid', $user->uid)
+                ->lockForUpdate()
+                ->update(["items->{$good->iid}->count" => $item_count + $db]);
         }else{
-          $items[$good->iid]['count'] = $item_count;
+          // 创建对应记录
+          $db = DB::table('v3_user_items')
+                ->where('uid', $user->uid)
+                ->lockForUpdate()
+                ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$good->iid}\":{\"count\": {$item_count}}}')")]);
         }
-        $data = array(
-          'uid' => $user->uid,
-          'items' => json_encode($items)
-        );
-        $db = DB::table('v3_user_items')->where('uid', $user->uid)->sharedLock()->update($data);
+        // $items = json_decode($user_package, true);
+        // if (isset($items[$good->iid]['count'])) {
+        //   $items[$good->iid]['count'] += $item_count;
+        // }else{
+        //   $items[$good->iid]['count'] = $item_count;
+        // }
+        // $data = array(
+        //   'uid' => $user->uid,
+        //   'items' => json_encode($items)
+        // );
+        // $db = DB::table('v3_user_items')->where('uid', $user->uid)->sharedLock()->update($data);
       }
       if ($db) {
         $json = $this->JSON(0, null, ['msg' => 'Success!']);
@@ -209,7 +231,7 @@ class APIUser extends Controller {
       }
       // 获取用户uid
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      $user = DB::table('user_accounts')->where('uid', $uid)->sharedLock()->first();
       // 顺便验证签权状态
       if (!$user) {
         $json = $this->JSON(2702, 'Invaild user.', null);
@@ -266,7 +288,7 @@ class APIUser extends Controller {
     public function security_change_username() {
       // 获取用户uid
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      $user = DB::table('user_accounts')->where('uid', $uid)->sharedLock->first();
       if (!$user) {
         $json = $this->JSON(3502, 'Invaild user.', null);
         return response($json);
@@ -344,25 +366,35 @@ class APIUser extends Controller {
       }
       // 扣除碎片
       for ($i=1; $i <= 4; $i++) {
-        if ($items[$i]['count'] - $count <= 0) {
-          unset($items[$i]);
+        $c = $items[$i]['count'] - $count;
+        if ($c <= 0) {
+          $db = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->lockForUpdate()
+              ->update(['items'=> DB::raw("JSON_REMOVE(items, '$.\"{$i}\"')")]);
         }else{
-          $items[$i]['count'] -= $count;
+          $db = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->lockForUpdate()
+              ->update(["items->{$i}->count"  => $c]);
+        }
+        if (!$db) {
+          $json = $this->JSON(4003, 'Failed to blend.', null);
+          return response($json);
         }
       }
       // 增加可莫尔
       if (isset($items[5]['count'])) {
-        $items[5]['count'] += $count;
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(["items->5->count"  => $items[5]['count'] + $count]);
       }else{
-        $items[5]['count'] = $count;
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"5\":{\"count\": {$count}}}')")]);
       }
-      $data = array(
-        'items' => json_encode($items)
-      );
-      $db = DB::table('v3_user_items')
-          ->where('uid', $uid)
-          ->lockForUpdate()
-          ->update($data);
       if (!$db) {
         $json = $this->JSON(4003, 'Failed to blend.', null);
         return response($json);
@@ -372,7 +404,7 @@ class APIUser extends Controller {
       }
     }
 
-    // 可莫尔合成
+    // 资源回收
     public function recycle() {
       $uid    = request()->cookie('uid');
       $iid    = request()->post('iid');
@@ -413,17 +445,18 @@ class APIUser extends Controller {
         return response($json);
       }
       // 扣除资源
-      $items[$iid]['count'] -= $count;
-      if ($items[$iid]['count'] === 0) {
-        unset($items[$iid]);
+      $c = $items[$iid]['count'] - $count;
+      if ($c <= 0) {
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(['items'=> DB::raw("JSON_REMOVE(items, '$.\"{$iid}\"')")]);
+      }else{
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(["items->{$iid}->count"  => $c]);
       }
-      $data = array(
-        'items' => json_encode($items)
-      );
-      $db = DB::table('v3_user_items')
-          ->where('uid', $uid)
-          ->lockForUpdate()
-          ->update($data);
       if (!$db) {
         $json = $this->JSON(4104, 'Failed to recycle resources.', null);
         return response($json);
