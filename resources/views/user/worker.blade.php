@@ -1,9 +1,16 @@
 @extends('user/master')
+@section('meta')
+<link rel="stylesheet" href="https://cdn.staticfile.org/izitoast/1.4.0/css/iziToast.min.css">
+<script src="https://cdn.staticfile.org/izitoast/1.4.0/js/iziToast.min.js" charset="utf-8"></script>
+@endsection
 @section('header')
 Worker管理
 @endsection
 @section('body')
 <!-- 基本信息 -->
+<div class="alert alert-primary">
+  Worker是此游戏最基础、最重要的部分，玩家需要充分理解Worker的运行机制才能获得最高收益。机制详解请移步左侧查看游戏手册->Worker部分。
+</div>
 <div class="row">
   <div class="col-md-4 col-sm-12 mb-3 text-center">
     <div class="card border-dark mb-3">
@@ -31,9 +38,7 @@ Worker管理
       <div class="card-header">
         <h4>{{$f->fname}}</h4>
         <div class="card-header-action">
-          <a href="javascript:assign({{ $f->fid }});" class="btn btn-primary">投入</a>
-          <a href="javascript:resign({{ $f->fid }});" class="btn btn-danger">撤出</a>
-          <a href="javascript:harvest({{ $f->fid }});" class="btn btn-success">收获</a>
+          <button onclick="javascript:query_modal({{ $f->fid }});" class="btn btn-info" id="btn_query_{{ $f->fid }}"> <i class="fa fa-fw fa-tools"></i> </button>
         </div>
       </div>
       <div class="card-body">
@@ -63,7 +68,7 @@ Worker管理
             @if ($f->limi_count === 0)
               无限制
             @else
-              {{ $f->limi_count }}
+              <span class="text-danger font-weight-bold">{{ $f->limi_count }}</span>
             @endif
           </div>
           <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
@@ -72,15 +77,333 @@ Worker管理
           <div class="col-6 text-left mb-1">
             {{ $f->limi_level }} 级
           </div>
+          <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
+            <strong>Worker总数：</strong>
+          </div>
+          <div class="col-6 text-left mb-1">
+            {{ $field_workers[ $f->fid] }}
+          </div>
+          <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
+            <strong>我的Worker：</strong>
+          </div>
+          <div class="col-6 text-left mb-1">
+            {{ $field_workers_mine[ $f->fid] }}
+          </div>
         </div>
+      </div>
+      <div class="card-footer text-center">
+        <a href="javascript:assign_modal({{ $f->fid }});" class="btn btn-primary" id="btn_assign_{{ $f->fid }}">投入</a>
+        <a href="javascript:harvest({{ $f->fid }});" class="btn btn-success">收获</a>
       </div>
     </div>
   </div>
   @endforeach
 </div>
 @endsection
+@section('extraModalContent')
+<!-- 投入 -->
+<div class="modal fade" id="_assign" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="_assign_title">投入矿区</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="_assign_body">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th scope="col">WID</th>
+              <th scope="col">等级</th>
+              <th scope="col">更新</th>
+              <th scope="col">操作</th>
+            </tr>
+          </thead>
+          <tbody id="_assign_body_table">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 查询 -->
+<div class="modal fade" id="_query" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="_query_title">查看矿区</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="_query_body">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th scope="col">WID</th>
+              <th scope="col">等级</th>
+              <th scope="col">更新</th>
+              <th scope="col">操作</th>
+            </tr>
+          </thead>
+          <tbody id="_query_body_table">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+@endsection
 @section('script')
+<script type="text/template" id="tpl_assign_table">
+<tr id="worker_assign_table_==6==">
+  <th scope="row">==1==</th>
+  <td>==2==</td>
+  <td>==3==</td>
+  <td><a href="javascript:;" onclick="javascript:assign(==4==, ==5==);" id="worker_assign_btn_==7==">投入</a></td>
+</tr>
+</script>
+<script type="text/template" id="tpl_query_table">
+<tr id="worker_query_table_==6==">
+  <th scope="row">==1==</th>
+  <td>==2==</td>
+  <td>==3==</td>
+  <td><a class="text-danger" href="javascript:;" onclick="javascript:withdraw(==4==);" id="worker_withdraw_btn_==7==">撤出</a></td>
+</tr>
+</script>
 <script type="text/javascript">
+  function assign_modal(fid) {
+    iziToast.info({
+      id: 'loading-workers',
+      message: '请稍候，加载Workers中...',
+      position: 'topRight',
+      timeout: 10000
+    });
+    $('#btn_assign_' + fid).attr('disabled', 'disabled');
+    $.ajax({
+      url: '/api/worker',
+      type: 'post',
+      dataType: 'json',
+      data: {
+        'fid': 0
+      },
+      timeout: 10000,
+      complete: function(XMLHttpRequest, status){
+        iziToast.hide({}, document.querySelector('#loading-workers'));
+        $('#btn_assign_' + fid).removeAttr('disabled');
+        if (status === 'timeout') {
+          m_alert('响应超时，请稍候再试！');
+        }
+      },
+      success: function(data){
+        if (data.errno === 0) {
+          if( data.body.data.length === 0) {
+            m_alert('无空闲Worker，请撤出后再投入！');
+            return false;
+          }
+          let workers = data.body.data;
+          let node = $('#_assign_body_table');
+          node.text('');
+          $.each(workers, function(key, worker) {
+            console.log(worker);
+            let tpl = $('#tpl_assign_table').text();
+            tpl = tpl.replace('==1==', worker.wid);
+            tpl = tpl.replace('==2==', worker.level);
+            tpl = tpl.replace('==3==', worker.update_time);
+            tpl = tpl.replace('==4==', worker.wid);
+            tpl = tpl.replace('==5==', fid);
+            tpl = tpl.replace('==6==', worker.wid);
+            tpl = tpl.replace('==7==', worker.wid);
+            node.append(tpl);
+          });
+          $('#_assign').modal();
+        }else{
+          if (data.errno === 4301) {
+            m_alert('查找失败，请稍候再试！');
+          }else{
+            m_alert('网络状态不佳，请稍候再试！');
+          }
+        }
+      }
+    });
+  }
+  function assign(wid, fid) {
+    iziToast.info({
+      id: 'loading-workers-assign',
+      message: '请稍候，投放中...',
+      position: 'topRight',
+      timeout: 10000
+    });
+    // 清除按钮效果
+    let btn_attr_onclick = $('#worker_assign_btn_' + wid).attr('onclick');
+    $('#worker_assign_btn_' + wid).attr('onclick', '');
+    $.ajax({
+      url: '/api/worker/assign',
+      type: 'post',
+      dataType: 'json',
+      data: {
+        'wid': wid,
+        'fid': fid
+      },
+      timeout: 10000,
+      complete: function(XMLHttpRequest, status){
+        iziToast.hide({}, document.querySelector('#loading-workers-assign'));
+        $('#worker_assign_btn_' + wid).attr('onclick', btn_attr_onclick);
+        if (status === 'timeout') {
+          iziToast.danger({
+            id: 'loading-workers',
+            message: '响应超时，请稍候再试！',
+            position: 'topRight',
+            timeout: 10000
+          });
+        }
+      },
+      success: function(data){
+        if (data.errno === 0) {
+          iziToast.info({
+            message: '分配Worker(wid:' + wid + ')成功！',
+            position: 'topRight',
+            timeout: 10000
+          });
+          $('#worker_assign_table_' + wid).remove();
+        }else{
+          if (data.errno === 4401) {
+            iziToast.danger({
+              message: '此Worker暂时无法进行分配，请稍候再试！',
+              position: 'topRight',
+              timeout: 10000
+            });
+          }else if(data.errno === 4402){
+            iziToast.warning({
+              message: '该产区异常！',
+              position: 'topRight',
+              timeout: 10000
+            });
+          }else if(data.errno === 4403){
+            iziToast.warning({
+              message: '该Worker等级不足，无法投入！',
+              position: 'topRight',
+              timeout: 10000
+            });
+          }else{
+            iziToast.warning({
+              message: '未知错误！',
+              position: 'topRight',
+              timeout: 10000
+            });
+          }
+        }
+      }
+    });
+  }
+  function query_modal(fid) {
+    iziToast.info({
+      id: 'loading-workers',
+      message: '请稍候，加载Workers中...',
+      position: 'topRight',
+      timeout: 10000
+    });
+    $('#btn_query_' + fid).attr('disabled', 'disabled');
+    $.ajax({
+      url: '/api/worker',
+      type: 'post',
+      dataType: 'json',
+      data: {
+        'fid': fid
+      },
+      timeout: 10000,
+      complete: function(XMLHttpRequest, status){
+        iziToast.hide({}, document.querySelector('#loading-workers'));
+        $('#btn_query_' + fid).removeAttr('disabled');
+        if (status === 'timeout') {
+          m_alert('响应超时，请稍候再试！');
+        }
+      },
+      success: function(data){
+        if (data.errno === 0) {
+          let workers = data.body.data;
+          let node = $('#_query_body_table');
+          node.text('');
+          $.each(workers, function(key, worker) {
+            console.log(worker);
+            let tpl = $('#tpl_query_table').text();
+            tpl = tpl.replace('==1==', worker.wid);
+            tpl = tpl.replace('==2==', worker.level);
+            tpl = tpl.replace('==3==', worker.update_time);
+            tpl = tpl.replace('==4==', worker.wid);
+            tpl = tpl.replace('==6==', worker.wid);
+            tpl = tpl.replace('==7==', worker.wid);
+            node.append(tpl);
+          });
+          $('#_query').modal();
+        }else{
+          if (data.errno === 4301) {
+            m_alert('查找失败，请稍候再试！');
+          }else{
+            m_alert('网络状态不佳，请稍候再试！');
+          }
+        }
+      }
+    });
+  }
+  function withdraw(wid) {
+    iziToast.info({
+      id: 'loading-workers-assign',
+      message: '请稍候，投放中...',
+      position: 'topRight',
+      timeout: 10000
+    });
+    // 清除按钮效果
+    let btn_attr_onclick = $('#worker_withdraw_btn_' + wid).attr('onclick');
+    $('#worker_withdraw_btn_' + wid).attr('onclick', '');
+    $.ajax({
+      url: '/api/worker/withdraw',
+      type: 'post',
+      dataType: 'json',
+      data: {
+        'wid': wid
+      },
+      timeout: 10000,
+      complete: function(XMLHttpRequest, status){
+        iziToast.hide({}, document.querySelector('#loading-workers-assign'));
+        $('#worker_withdraw_btn_' + wid).attr('onclick', btn_attr_onclick);
+        if (status === 'timeout') {
+          iziToast.danger({
+            id: 'loading-workers',
+            message: '响应超时，请稍候再试！',
+            position: 'topRight',
+            timeout: 10000
+          });
+        }
+      },
+      success: function(data){
+        if (data.errno === 0) {
+          iziToast.info({
+            message: '撤出Worker(wid:' + wid + ')成功！',
+            position: 'topRight',
+            timeout: 10000
+          });
+          $('#worker_query_table_' + wid).remove();
+        }else{
+          if (data.errno === 4501) {
+            iziToast.danger({
+              message: '此Worker暂时无法进行撤出，请稍候再试！',
+              position: 'topRight',
+              timeout: 10000
+            });
+          }else{
+            iziToast.warning({
+              message: '未知错误！',
+              position: 'topRight',
+              timeout: 10000
+            });
+          }
+        }
+      }
+    });
+  }
   function redeem() {
     m_loading();
     $.getJSON('/api/worker/redeem', function(data){

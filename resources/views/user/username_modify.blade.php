@@ -50,8 +50,9 @@
       m_alert('用户名长度要求至少5位，最多16位！');
       return false;
     }
+    m_loading();
     $('#btn').attr('disabled', 'disabled');
-    let ajax = $.ajax({
+    $.ajax({
       url: '/api/user/security/username',
       type: 'post',
       dataType: 'json',
@@ -60,6 +61,7 @@
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
+        m_loading(false);
         $('#btn').removeAttr('disabled');
         if (status === 'timeout') {
           m_alert('响应超时，请稍候再试！');

@@ -43,7 +43,17 @@ Route::post('/recycle', 'APIUser@recycle')
       ->middleware('apicheck.auth');
 
 // Worker
+  // redeem worker
 Route::get('/worker/redeem', 'APIUser@worker_redeem')
+      ->middleware('apicheck.auth');
+  // get worker list
+Route::post('/worker', 'APIUser@worker')
+      ->middleware('apicheck.auth');
+  // assign worker to a field
+Route::post('/worker/assign', 'APIUser@worker_assign')
+      ->middleware('apicheck.auth');
+  // withdraw worker from a field
+Route::post('/worker/withdraw', 'APIUser@worker_withdraw')
       ->middleware('apicheck.auth');
 
 // =======ADMIN=======

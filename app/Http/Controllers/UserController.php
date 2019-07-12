@@ -246,10 +246,35 @@ class UserController extends Controller {
               ->join('v3_items', 'v3_user_workers_field.iid', '=', 'v3_items.iid')
               ->where('v3_user_workers_field.status', 1)
               ->get();
+      // 统计各产区Worker数量
+      $field_workers_data = DB::table('v3_user_workers')
+                          ->where('fid', '<>', 0)
+                          ->where('status', 1)
+                          ->groupBy('fid')
+                          ->select(DB::raw('fid, count(wid) as c'))
+                          ->get();
+      $field_workers = [];
+      foreach ($field_workers_data as $key => $value) {
+        $field_workers[$value->fid] = $value->c;
+      }
+      // 统计各产区用户Worker数量
+      $field_workers_mine_data = DB::table('v3_user_workers')
+                          ->where('fid', '<>', 0)
+                          ->where('uid', $uid)
+                          ->where('status', 1)
+                          ->groupBy('fid')
+                          ->select(DB::raw('fid, count(wid) as c'))
+                          ->get();
+      $field_workers_mine = [];
+      foreach ($field_workers_mine_data as $key => $value) {
+        $field_workers_mine[$value->fid] = $value->c;
+      }
       $data = array(
         'worker_ticket'       => $worker_ticket,
         'worker_count'        => $worker_count,
         'field'               => $field,
+        'field_workers'       => $field_workers,
+        'field_workers_mine'  => $field_workers_mine,
       );
       return view('user.worker', $data);
     }

@@ -14,7 +14,7 @@ class APIUser extends Controller {
       $username    = request()->post('username');
       $b64password = request()->post('password');
       $captcha     = request()->post('captcha');
-      if (!$username || !$b64password || !$captcha) {
+      if (is_null($username) || is_null($b64password) || is_null($captcha)) {
         $json = $this->JSON(2307, 'Lost some infomation.', null);
         return response($json);
       }
@@ -201,17 +201,6 @@ class APIUser extends Controller {
                 ->lockForUpdate()
                 ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$good->iid}\":{\"count\": {$item_count}}}')")]);
         }
-        // $items = json_decode($user_package, true);
-        // if (isset($items[$good->iid]['count'])) {
-        //   $items[$good->iid]['count'] += $item_count;
-        // }else{
-        //   $items[$good->iid]['count'] = $item_count;
-        // }
-        // $data = array(
-        //   'uid' => $user->uid,
-        //   'items' => json_encode($items)
-        // );
-        // $db = DB::table('v3_user_items')->where('uid', $user->uid)->sharedLock()->update($data);
       }
       if ($db) {
         $json = $this->JSON(0, null, ['msg' => 'Success!']);
@@ -334,6 +323,10 @@ class APIUser extends Controller {
     public function blend() {
       $uid    = request()->cookie('uid');
       $count  = request()->post('count');
+      if (is_null($count)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
       // 检查数量是否正确
       if (!preg_match('/^[1-9][0-9]*$/', $count)) {
         $json = $this->JSON(4001, 'Bad request.', null);
@@ -409,6 +402,10 @@ class APIUser extends Controller {
       $uid    = request()->cookie('uid');
       $iid    = request()->post('iid');
       $count  = request()->post('count');
+      if (is_null($iid) || is_null($count)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
       // 检查数量是否正确
       if (!preg_match('/^[1-9][0-9]*$/', $count)) {
         $json = $this->JSON(4101, 'Bad request.', null);
@@ -537,6 +534,119 @@ class APIUser extends Controller {
         return response($json);
       }else{
         $json = $this->JSON(4203, 'An error occurred.', null);
+        return response($json);
+      }
+    }
+
+    // Worker查询
+    public function worker() {
+      $uid    = request()->cookie('uid');
+      $fid    = request()->post('fid');
+      if (is_null($fid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      $db = DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('fid', $fid)
+          ->where('status', 1)
+          ->orderBy('level', 'desc')
+          ->lockForUpdate()
+          ->get();
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $db]);
+        return response($json);
+      }else{
+        $json = $this->JSON(4301, 'Failed to find workers.', null);
+        return response($json);
+      }
+    }
+
+    // Worker投放
+    public function worker_assign() {
+      $uid    = request()->cookie('uid');
+      $wid    = request()->post('wid');
+      $fid    = request()->post('fid');
+      if (is_null($fid) || is_null($wid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 获取Worker信息
+      $worker = DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('wid', $wid)
+          ->where('status', 1)
+          ->lockForUpdate()
+          ->first();
+      if (!$worker) {
+        $json = $this->JSON(4401, 'Inoperable worker.', null);
+        return response($json);
+      }
+      // 获取指定产区信息
+      $field = DB::table('v3_user_workers_field')
+          ->where('fid', $fid)
+          ->where('status', 1)
+          ->first();
+      if (!$field) {
+        $json = $this->JSON(4402, 'Invaild worker field.', null);
+        return response($json);
+      }
+      // 检查等级限制
+      if ($worker->level < $field->limi_level) {
+        $json = $this->JSON(4403, 'Higher level needed.', null);
+        return response($json);
+      }
+      // 检查总数量限制
+      $count = DB::table('v3_user_workers')
+            ->where('fid', $fid)
+            ->where('status', 1)
+            ->count();
+      if ($count && $field->limi_count != 0 && $count >= $field->limi_count) {
+        $json = $this->JSON(4404, 'No free slots.', null);
+        return response($json);
+      }
+      $data = array(
+        'fid' => $fid,
+        'update_time' => date('Y-m-d H:i:s')
+      );
+      $db = DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('wid', $wid)
+          ->where('status', 1)
+          ->lockForUpdate()
+          ->update($data);
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $db]);
+        return response($json);
+      }else{
+        $json = $this->JSON(4401, 'Inoperable worker.', null);
+        return response($json);
+      }
+    }
+
+    // Worker投放
+    public function worker_withdraw() {
+      $uid    = request()->cookie('uid');
+      $wid    = request()->post('wid');
+      if (is_null($wid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      $data = array(
+        'fid' => 0,
+        'update_time' => date('Y-m-d H:i:s')
+      );
+      $db = DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('wid', $wid)
+          ->where('status', 1)
+          ->lockForUpdate()
+          ->update($data);
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $db]);
+        return response($json);
+      }else{
+        $json = $this->JSON(4501, 'Inoperable worker.', null);
         return response($json);
       }
     }
