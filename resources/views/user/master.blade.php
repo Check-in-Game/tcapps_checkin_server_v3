@@ -74,6 +74,13 @@
               <i class="fas fa-book"></i> 手册 / Manual
             </a>
           </div>
+          @if(isset($_admin) && $_admin && $_admin->level > 0)
+          <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
+            <a href="{{ action('AdminController@index') }}" target="_self" class="btn btn-danger btn-lg btn-block btn-icon-split">
+              <i class="fas fa-plane"></i> 管理中心
+            </a>
+          </div>
+          @endif
         </aside>
       </div>
 

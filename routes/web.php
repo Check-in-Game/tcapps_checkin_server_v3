@@ -37,19 +37,20 @@ Route::get('/user/security/username', 'UserController@username_modify')         
 Route::get('/user/resources', 'UserController@user_resources')                    ->middleware('check.auth', 'notice:27');
 
 // 管理中心
-Route::get('/admin', 'AdminController@index')                           ->middleware('check.auth', 'check.admin.auth', 'notice:11');
-Route::get('/admin/compensate', 'AdminController@compensate')           ->middleware('check.auth', 'check.admin.auth', 'notice:12');
-Route::get('/admin/activity', 'AdminController@activity')               ->middleware('check.auth', 'check.admin.auth', 'notice:20');
-Route::get('/admin/activity_manage', 'AdminController@activity_manage') ->middleware('check.auth', 'check.admin.auth', 'notice:13');
-Route::get('/admin/goods', 'AdminController@goods')                     ->middleware('check.auth', 'check.admin.auth', 'notice:27');
-Route::get('/admin/goods_manage', 'AdminController@goods_manage')       ->middleware('check.auth', 'check.admin.auth', 'notice:14');
-Route::get('/admin/optimize', 'AdminController@optimize')               ->middleware('check.auth', 'check.admin.auth', 'notice:15');
-Route::get('/admin/notices', 'AdminController@notices')                 ->middleware('check.auth', 'check.admin.auth', 'notice:16');
-Route::get('/admin/notices/manage', 'AdminController@notices_manage')   ->middleware('check.auth', 'check.admin.auth', 'notice:17');
-Route::get('/admin/users', 'AdminController@users_list')                ->middleware('check.auth', 'check.admin.auth', 'notice:18');
-Route::get('/admin/users/manage', 'AdminController@users_manage')       ->middleware('check.auth', 'check.admin.auth', 'notice:19');
-Route::get('/admin/manage', 'AdminController@admins_manage')            ->middleware('check.auth', 'check.admin.auth', 'notice:20');
-Route::get('/admin/badges', 'AdminController@badges')                   ->middleware('check.auth', 'check.admin.auth', 'notice:21');
-Route::get('/admin/badges/manage', 'AdminController@badges_manage')     ->middleware('check.auth', 'check.admin.auth', 'notice:22');
-Route::get('/admin/effects', 'AdminController@effects')                 ->middleware('check.auth', 'check.admin.auth', 'notice:23');
-Route::get('/admin/effects/manage', 'AdminController@effects_manage')   ->middleware('check.auth', 'check.admin.auth', 'notice:24');
+Route::get('/admin', 'AdminController@index')                                     ->middleware('check.auth', 'check.admin.auth', 'notice:11');
+Route::get('/admin/update', 'AdminController@update')                             ->middleware('check.auth', 'check.admin.auth', 'notice:12');
+// Route::get('/admin/compensate', 'AdminController@compensate')           ->middleware('check.auth', 'check.admin.auth', 'notice:12');
+// Route::get('/admin/activity', 'AdminController@activity')               ->middleware('check.auth', 'check.admin.auth', 'notice:20');
+// Route::get('/admin/activity_manage', 'AdminController@activity_manage') ->middleware('check.auth', 'check.admin.auth', 'notice:13');
+// Route::get('/admin/goods', 'AdminController@goods')                     ->middleware('check.auth', 'check.admin.auth', 'notice:27');
+// Route::get('/admin/goods_manage', 'AdminController@goods_manage')       ->middleware('check.auth', 'check.admin.auth', 'notice:14');
+// Route::get('/admin/optimize', 'AdminController@optimize')               ->middleware('check.auth', 'check.admin.auth', 'notice:15');
+// Route::get('/admin/notices', 'AdminController@notices')                 ->middleware('check.auth', 'check.admin.auth', 'notice:16');
+// Route::get('/admin/notices/manage', 'AdminController@notices_manage')   ->middleware('check.auth', 'check.admin.auth', 'notice:17');
+// Route::get('/admin/users', 'AdminController@users_list')                ->middleware('check.auth', 'check.admin.auth', 'notice:18');
+// Route::get('/admin/users/manage', 'AdminController@users_manage')       ->middleware('check.auth', 'check.admin.auth', 'notice:19');
+// Route::get('/admin/manage', 'AdminController@admins_manage')            ->middleware('check.auth', 'check.admin.auth', 'notice:20');
+// Route::get('/admin/badges', 'AdminController@badges')                   ->middleware('check.auth', 'check.admin.auth', 'notice:21');
+// Route::get('/admin/badges/manage', 'AdminController@badges_manage')     ->middleware('check.auth', 'check.admin.auth', 'notice:22');
+// Route::get('/admin/effects', 'AdminController@effects')                 ->middleware('check.auth', 'check.admin.auth', 'notice:23');
+// Route::get('/admin/effects/manage', 'AdminController@effects_manage')   ->middleware('check.auth', 'check.admin.auth', 'notice:24');

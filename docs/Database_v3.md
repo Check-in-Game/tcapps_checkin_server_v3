@@ -28,8 +28,8 @@ INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `descript
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (7, '公测勋章', 1, '/cdn/v2/badges/2.png', '传说中的勋章之一', 0, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (8, '佬勋章', 1, '/cdn/v2/badges/3.svg', '传说中的勋章之一', 0, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (9, '萌勋章', 1, '/cdn/v2/badges/4.svg', '传说中的勋章之一', 0, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (10, '一起加倍吧！（1.2倍纪念版）', 1, '/cdn/v2/badges/5.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (11, '一起加倍吧！（1.3倍纪念版）', 1, '/cdn/v2/badges/6.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (10, '一起加倍吧！（1.2倍纪念版）', 1, '/cdn/v2/badges/5.png', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (11, '一起加倍吧！（1.3倍纪念版）', 1, '/cdn/v2/badges/6.png', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (12, 'v2勋章', 1, '/cdn/v2/badges/7.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 2000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (13, 'Worker兑换券', 1, '/cdn/v3/basic_resources/worker.svg', '一种基础资源的兑换券，兑换后可用于产出资源', 1000, 1);
 

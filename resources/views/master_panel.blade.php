@@ -38,44 +38,6 @@
           </li>
           @endif
           @if(isset($_admin) && $_admin && $_admin->level > 0)
-          <!-- 管理中心 -->
-          <!-- <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="javascript:;" id="admin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="fa-fw fas fa-magic"></i> 管理
-            </a>
-            <div class="dropdown-menu" aria-labelledby="admin">
-              <a class="dropdown-item" href="{{ action('AdminController@index') }}"><i class="fa-fw fas fa-hat-wizard"></i> 管理中心</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">积分</h6>
-              <a class="dropdown-item" href="{{ action('AdminController@compensate') }}"><i class="fa-fw fas fa-coins"></i> 增加积分</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">活动</h6>
-              <a class="dropdown-item" href="{{ action('AdminController@activity') }}"><i class="fa-fw fab fa-slack"></i> 活动一览</a>
-              <a class="dropdown-item" href="{{ action('AdminController@activity_manage') }}"><i class="fa-fw fab fa-slack-hash"></i> 管理活动</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">商店</h6>
-              <a class="dropdown-item" href="{{ action('AdminController@goods') }}"><i class="fa-fw fab fa-elementor"></i>  商品一览</a>
-              <a class="dropdown-item" href="{{ action('AdminController@goods_manage') }}"><i class="fa-fw fas fa-gifts"></i>  管理商品</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">用户</h6>
-              <a class="dropdown-item" href="{{ action('AdminController@users_list') }}"><i class="fa-fw fas fa-users"></i> 用户一览</a>
-              <a class="dropdown-item" href="{{ action('AdminController@users_manage') }}"><i class="fa-fw fas fa-user-edit"></i> 用户管理</a>
-              <a class="dropdown-item" href="{{ action('AdminController@admins_manage') }}"><i class="fa-fw fas fa-user-cog"></i> 管理提权</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">勋章</h6>
-              <a class="dropdown-item" href="{{ action('AdminController@badges') }}"><i class="fa-fw fas fa-certificate"></i> 勋章一览</a>
-              <a class="dropdown-item" href="{{ action('AdminController@badges_manage') }}"><i class="fa-fw fas fa-spray-can"></i> 管理勋章</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">效果</h6>
-              <a class="dropdown-item" href="{{ action('AdminController@effects') }}"><i class="fa-fw fas fa-magic"></i> 效果一览</a>
-              <a class="dropdown-item" href="{{ action('AdminController@effects_manage') }}"><i class="fa-fw fas fa-magic"></i> 管理效果</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">系统</h6>
-              <a class="dropdown-item" href="{{ action('AdminController@notices') }}"><i class="fa-fw fas fa-th-list"></i> 公告一览</a>
-              <a class="dropdown-item" href="{{ action('AdminController@notices_manage') }}"><i class="fa-fw fas fa-edit"></i> 公告管理</a>
-              <a class="dropdown-item" href="{{ action('AdminController@optimize') }}"><i class="fa-fw fas fa-toolbox"></i> 系统优化</a>
-           </div>
-          </li> -->
           <li class="nav-item">
             <a class="nav-link" href="{{ action('AdminController@index') }}"><i class="fa-fw fas fa-magic"></i> 管理</a>
           </li>
