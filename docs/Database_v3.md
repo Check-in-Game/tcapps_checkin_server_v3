@@ -66,6 +66,7 @@ create table tcapps_checkin_v3_user_workers_field(
   limi_level int unsigned default 1 not null comment "限制等级",
   status tinyint not null default 1 comment "状态"
 )comment="Worker产区表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+INSERT INTO `checkin_tcapps`.`tcapps_checkin_v3_user_workers_field` (`fid`, `fname`, `iid`, `speed`, `times`, `limi_count`, `limi_level`, `status`) VALUES (NULL, '粉色可莫尔（普通）', '1', '0.1', '1', '0', '1', '1');
 
 #积分系统v3
 create table tcapps_checkin_v3_user_point(

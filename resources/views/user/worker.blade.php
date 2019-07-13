@@ -77,13 +77,13 @@ Worker管理
             <strong>Worker总数：</strong>
           </div>
           <div class="col-6 text-left mb-1">
-            {{ $field_workers[ $f->fid] }}
+            {{ isset($field_workers[$f->fid]) ? $field_workers[$f->fid] : 0 }}
           </div>
           <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
             <strong>我的Worker：</strong>
           </div>
           <div class="col-6 text-left mb-1">
-            {{ $field_workers_mine[ $f->fid] }}
+            {{ isset($field_workers_mine[$f->fid]) ? $field_workers_mine[$f->fid] : 0 }}
           </div>
         </div>
       </div>
