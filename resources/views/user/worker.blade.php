@@ -446,6 +446,9 @@ Worker管理
     });
   }
   function query_harvest(fid) {
+    // 刷新验证码
+    $('#captcha_img').click();
+    $('#captcha').val('');
     iziToast.info({
       id: 'loading-fields',
       message: '请稍候，加载区域信息中...',
@@ -499,9 +502,6 @@ Worker管理
   }
   function harvest(fid) {
     $('#_harvest').modal('hide');
-    // 刷新验证码
-    $('#captcha_img').click();
-    $('#captcha').val('');
     let captcha  = $('#captcha').val();
     m_loading();
     $.ajax({
