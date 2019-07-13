@@ -186,6 +186,7 @@ class APIUser extends Controller {
         // 更新购买信息
         // 查询是否有对应IID的记录
         $db = DB::table('v3_user_items')
+            ->where('uid', $user->uid)
             ->sharedLock()
             ->value("items->{$good->iid}->count");
         if ($db) {
@@ -647,6 +648,169 @@ class APIUser extends Controller {
         return response($json);
       }else{
         $json = $this->JSON(4501, 'Inoperable worker.', null);
+        return response($json);
+      }
+    }
+
+    // Worker 查询收获预计收益
+    public function worker_harvest_query() {
+      $uid    = request()->cookie('uid');
+      $fid    = request()->post('fid');
+      if (is_null($fid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 查询Worker数量
+      $worker_count = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->where('fid', $fid)
+                    ->where('status', 1)
+                    ->lockForUpdate()
+                    ->count();
+      // 查询最新日期
+      $update_time = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->where('fid', $fid)
+                    ->where('status', 1)
+                    ->orderBy('update_time', 'desc')
+                    ->lockForUpdate()
+                    ->value('update_time');
+      // 查询区域信息
+      $field_info = DB::table('v3_user_workers_field')
+                ->join('v3_items', 'v3_user_workers_field.iid', '=', 'v3_items.iid')
+                ->where('v3_user_workers_field.fid', $fid)
+                ->where('v3_user_workers_field.status', 1)
+                ->select([
+                  'v3_user_workers_field.fid',
+                  'v3_user_workers_field.fname',
+                  'v3_user_workers_field.iid',
+                  'v3_user_workers_field.speed',
+                  'v3_user_workers_field.times',
+                  'v3_items.iname',
+                ])
+                ->first();
+      if (!$worker_count || !$update_time || !$field_info) {
+        $json = $this->JSON(4601, 'Incorrect field.', null);
+        return response($json);
+      }else{
+        $data = array(
+          'worker_count'       => $worker_count,
+          'update_time'        => $update_time,
+          'update_time_unix'   => strtotime($update_time),
+          'field_info'         => $field_info
+        );
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $data]);
+        return response($json);
+      }
+    }
+
+    // Worker 查询收获预计收益
+    public function worker_harvest() {
+      $uid      = request()->cookie('uid');
+      $fid      = request()->post('fid');
+      $captcha  = request()->post('captcha');
+      if (is_null($fid) || is_null($captcha)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 匹配验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(4703, 'Bad captcha.', null);
+        return response($json);
+      }
+      // 查询Worker数量
+      $worker_count = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->where('fid', $fid)
+                    ->where('status', 1)
+                    ->lockForUpdate()
+                    ->count();
+      // 查询最新日期
+      $update_time = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->where('fid', $fid)
+                    ->where('status', 1)
+                    ->orderBy('update_time', 'desc')
+                    ->lockForUpdate()
+                    ->value('update_time');
+      // 查询区域信息
+      $field_info = DB::table('v3_user_workers_field')
+                ->join('v3_items', 'v3_user_workers_field.iid', '=', 'v3_items.iid')
+                ->where('v3_user_workers_field.fid', $fid)
+                ->where('v3_user_workers_field.status', 1)
+                ->select([
+                  'v3_user_workers_field.fid',
+                  'v3_user_workers_field.fname',
+                  'v3_user_workers_field.iid',
+                  'v3_user_workers_field.speed',
+                  'v3_user_workers_field.times',
+                  'v3_items.iname',
+                ])
+                ->first();
+      if (!$worker_count || !$update_time || !$field_info) {
+        $json = $this->JSON(4701, 'Incorrect field.', null);
+        return response($json);
+      }
+      // 计算投放时间
+      $time_delta = (time() - strtotime($update_time)) / 60 / 60;
+      // 计算收益
+      $profits = floor($time_delta * $field_info->speed * $field_info->times * $worker_count);
+      $profits = $profits > 24 ? 24 : $profits;
+      if ($profits != 0) {
+        // 发放收益
+        $iid = $field_info->iid;
+        // 查询记录是否存在
+        $exists = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->sharedLock()
+            ->exists();
+        if (!$exists) {
+          // 插入记录
+          $data = array(
+            'uid' => $uid,
+            'items' => json_encode(array($iid=>array('count'=>$profits)))
+          );
+          $db = DB::table('v3_user_items')->sharedLock()->insert($data);
+        }else{
+          // 更新记录
+          $db = DB::table('v3_user_items')
+                  ->sharedLock()
+                  ->value("items->{$iid}->count");
+          if ($db) {
+            // 存在对应IID记录
+            $db = DB::table('v3_user_items')
+                    ->where('uid', $uid)
+                    ->lockForUpdate()
+                    ->update(["items->{$iid}->count" => $profits + $db]);
+          }else{
+            // 创建对应记录
+            $db = DB::table('v3_user_items')
+                    ->where('uid', $uid)
+                    ->lockForUpdate()
+                    ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$iid}\":{\"count\": {$profits}}}')")]);
+          }
+        }
+      }else{
+        $db = true;
+      }
+      if (!$db) {
+        $json = $this->JSON(4702, 'Failed to pay bounds.', null);
+        return response($json);
+      }else{
+        // 更新时间
+        $data = array(
+          'update_time' => date('Y-m-d H:i:s')
+        );
+        DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('fid', $fid)
+          ->where('status', 1)
+          ->lockForUpdate()
+          ->update($data);
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => array(
+          'profits' => $profits,
+          'iname'   => $field_info->iname
+        )]);
         return response($json);
       }
     }

@@ -235,6 +235,8 @@ class UserController extends Controller {
         $resources = json_decode($resources, true);
         // 查询WORKER兑换券数量 IID 13
         $worker_ticket = isset($resources[13]['count']) ? $resources[13]['count'] : 0;
+      }else{
+        $worker_ticket = 0;
       }
       // 查询Worker数量
       $worker_count = DB::table('v3_user_workers')

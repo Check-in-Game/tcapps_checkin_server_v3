@@ -55,6 +55,12 @@ Route::post('/worker/assign', 'APIUser@worker_assign')
   // withdraw worker from a field
 Route::post('/worker/withdraw', 'APIUser@worker_withdraw')
       ->middleware('apicheck.auth');
+  // query anticipation of harvest
+Route::post('/worker/harvest_query', 'APIUser@worker_harvest_query')
+      ->middleware('apicheck.auth');
+  // harvest
+Route::post('/worker/harvest', 'APIUser@worker_harvest')
+      ->middleware('apicheck.auth');
 
 // =======ADMIN=======
 // Conpensate

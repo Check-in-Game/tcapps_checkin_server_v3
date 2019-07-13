@@ -1,8 +1,4 @@
 @extends('user/master')
-@section('meta')
-<link rel="stylesheet" href="https://cdn.staticfile.org/izitoast/1.4.0/css/iziToast.min.css">
-<script src="https://cdn.staticfile.org/izitoast/1.4.0/js/iziToast.min.js" charset="utf-8"></script>
-@endsection
 @section('header')
 Worker管理
 @endsection
@@ -93,7 +89,7 @@ Worker管理
       </div>
       <div class="card-footer text-center">
         <a href="javascript:assign_modal({{ $f->fid }});" class="btn btn-primary" id="btn_assign_{{ $f->fid }}">投入</a>
-        <a href="javascript:harvest({{ $f->fid }});" class="btn btn-success">收获</a>
+        <a href="javascript:query_harvest({{ $f->fid }});" class="btn btn-success" id="btn_harvest_{{ $f->fid }}">收获</a>
       </div>
     </div>
   </div>
@@ -151,6 +147,51 @@ Worker管理
           <tbody id="_query_body_table">
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 收获 -->
+<div class="modal fade" tabindex="-1" role="dialog" id="_harvest">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">收获确认</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          <strong>操作区域：</strong> <span id="_harvest_field">-</span> <br />
+          <strong>区域名称：</strong> <span id="_harvest_field_name">-</span> <br />
+          <strong>产出速度：</strong> <span id="_harvest_field_speed">-</span> <br />
+          <strong>产出倍率：</strong> <span id="_harvest_field_times">-</span> <br />
+          <strong>Worker总数：</strong> <span id="_harvest_worker_count">-</span> <br />
+          <strong>开始时间：</strong> <span id="_harvest_update_time">-</span> <br />
+          <strong>时间小计：</strong> <span id="_harvest_audit_time">-</span> 小时<br />
+        </p>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">验证码</span>
+          </div>
+          <input type="text" class="form-control" placeholder="Captcha" id="captcha" maxlength="6">
+          <div class="input-group-append">
+            <img src="{{ captcha_src() }}" alt="captcha" onclick="this.src='{{ captcha_src() }}' + Math.random();" id="captcha_img">
+          </div>
+        </div>
+        <p>
+          <strong>本次收获预计到账 <span id="_harvest_anticipate_count">0</span> <span id="_harvest_iname">-</span></strong>
+        </p>
+        <p class="text-mutes">
+          *确认收获视为自动放弃未满1小时或超过24小时部分收益。
+          <br>
+          *预计到账与实际到账可能略有差异，以实际到账为准
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="javascript:;" id="btn_harvest_comfirm">确认收获</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
       </div>
     </div>
   </div>
@@ -399,6 +440,97 @@ Worker管理
               position: 'topRight',
               timeout: 10000
             });
+          }
+        }
+      }
+    });
+  }
+  function query_harvest(fid) {
+    iziToast.info({
+      id: 'loading-fields',
+      message: '请稍候，加载区域信息中...',
+      position: 'topRight',
+      timeout: 10000
+    });
+    $('#btn_harvest_' + fid).attr('disabled', 'disabled');
+    $.ajax({
+      url: '/api/worker/harvest_query',
+      type: 'post',
+      dataType: 'json',
+      data: {
+        'fid': fid
+      },
+      timeout: 10000,
+      complete: function(XMLHttpRequest, status){
+        iziToast.hide({}, document.querySelector('#loading-fields'));
+        $('#btn_harvest_' + fid).removeAttr('disabled');
+        if (status === 'timeout') {
+          m_alert('响应超时，请稍候再试！');
+        }
+      },
+      success: function(data){
+        if (data.errno === 0) {
+          let workers = data.body.data;
+          $('#_harvest_field').text(data.body.data.field_info.fid);
+          $('#_harvest_field_name').text(data.body.data.field_info.fname);
+          $('#_harvest_field_speed').text(data.body.data.field_info.speed);
+          $('#_harvest_field_times').text(data.body.data.field_info.times);
+          $('#_harvest_worker_count').text(data.body.data.worker_count);
+          $('#_harvest_update_time').text(data.body.data.update_time);
+          let time_delta_sec = $.now() / 1000 - data.body.data.update_time_unix;
+          let time_hr = Math.floor(time_delta_sec / 60 / 60);
+          time_hr = time_hr > 24 ? 24 : time_hr;
+          $('#_harvest_audit_time').text(time_hr);
+          $('#_harvest_iname').text(data.body.data.field_info.iname);
+          $('#_harvest_anticipate_count').text(Math.floor(data.body.data.field_info.speed * data.body.data.field_info.times * data.body.data.worker_count * time_hr));
+          $('#btn_harvest_comfirm').attr('onclick', 'javascript:harvest(' + fid + ');');
+          $('#_harvest').modal({
+            backdrop: 'static'
+          });
+        }else{
+          if (data.errno === 4601) {
+            m_alert('获取该区域信息失败，请稍候再试！');
+          }else{
+            m_alert('网络状态不佳，请稍候再试！');
+          }
+        }
+      }
+    });
+  }
+  function harvest(fid) {
+    $('#_harvest').modal('hide');
+    // 刷新验证码
+    $('#captcha_img').click();
+    $('#captcha').val('');
+    let captcha  = $('#captcha').val();
+    m_loading();
+    $.ajax({
+      url: '/api/worker/harvest',
+      type: 'post',
+      dataType: 'json',
+      data: {
+        'fid': fid,
+        'captcha': captcha
+      },
+      timeout: 10000,
+      complete: function(XMLHttpRequest, status){
+        m_loading(false);
+        if (status === 'timeout') {
+          m_alert('响应超时，请稍候再试！', 'danger');
+        }
+      },
+      success: function(data){
+        if (data.errno === 0) {
+          m_alert('成功收获 ' + data.body.data.profits + ' ' + data.body.data.iname, 'success');
+        }else{
+          if (data.errno === 4701) {
+            m_alert('获取该区域信息失败，请稍候再试！', 'danger');
+          }else if(data.errno === 4702){
+            m_alert('发放收益失败，请稍候再试！', 'danger');
+          }else if(data.errno === 4703){
+            m_alert('验证码错误', 'warning');
+          }else{
+            m_alert('网络情况不佳，请稍候再试！', 'danger');
           }
         }
       }

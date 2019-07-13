@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="{{ asset('css/stisla.css') }}">
   <script src="{{ asset('js/app.js') }}" charset="utf-8"></script>
   <script src="{{ asset('js/stisla.js') }}" charset="utf-8"></script>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/izitoast/1.4.0/css/iziToast.min.css">
+  <script src="https://cdn.staticfile.org/izitoast/1.4.0/js/iziToast.min.js" charset="utf-8"></script>
   @yield('meta')
 </head>
 
