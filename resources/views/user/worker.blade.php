@@ -126,7 +126,7 @@ Worker管理
 </div>
 <!-- 查询 -->
 <div class="modal fade" id="_query" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="_query_title">查看矿区</h5>
@@ -503,6 +503,10 @@ Worker管理
   function harvest(fid) {
     $('#_harvest').modal('hide');
     let captcha  = $('#captcha').val();
+    if (captcha === '') {
+      m_alert('验证码错误', 'warning');
+      return false;
+    }
     m_loading();
     $.ajax({
       url: '/api/worker/harvest',
