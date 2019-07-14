@@ -199,6 +199,6 @@ create table tcapps_checkin_system(
 )comment="系统设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('register_available', 'true', '是否开通注册通道');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('badges_wear_limit', 1, '用户佩戴勋章数量限制');
-INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('cdn_prefix', 'https://checkin-static.twocola.com', 'CDN域名');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('cdn_prefix', 'https://cdn.jsdelivr.net/gh/jokin1999/checkin-static', 'CDN');
 
 ```
