@@ -471,17 +471,21 @@ class APIUser extends Controller {
         'status'  => 1,
       );
       $db = DB::table('v3_recycle_records')->sharedLock()->insert($data);
-      // 查询用户积分
-      $point = DB::table('v3_user_point')->where('uid', $uid)->lockForUpdate()->value('point');
-      // 无记录
-      if ($point === false || $point === null) {
-        $data = array(
-          'uid'   => $uid,
-          'point' => $point_add
-        );
-        $db = DB::table('v3_user_point')->insert($data);
+      if ($point_add === 0) {
+        // 查询用户积分
+        $point = DB::table('v3_user_point')->where('uid', $uid)->lockForUpdate()->value('point');
+        // 无记录
+        if ($point === false || $point === null) {
+          $data = array(
+            'uid'   => $uid,
+            'point' => $point_add
+          );
+          $db = DB::table('v3_user_point')->insert($data);
+        }else{
+          $db = DB::table('v3_user_point')->where('uid', $uid)->lockForUpdate()->increment('point', $point_add);
+        }
       }else{
-        $db = DB::table('v3_user_point')->where('uid', $uid)->lockForUpdate()->increment('point', $point_add);
+        $db = true;
       }
       if ($db) {
         $json = $this->JSON(0, null, ['msg'  => 'Success!']);
@@ -774,6 +778,7 @@ class APIUser extends Controller {
         }else{
           // 更新记录
           $db = DB::table('v3_user_items')
+                  ->where('uid', $uid)
                   ->sharedLock()
                   ->value("items->{$iid}->count");
           if ($db) {
