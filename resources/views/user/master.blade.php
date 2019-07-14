@@ -9,9 +9,17 @@
   <link href="https://cdn.bootcss.com/font-awesome/5.8.1/css/all.min.css" rel="stylesheet">
   <title>Check-in Game</title>
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/stisla@2.3.0/assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/stisla@2.3.0/assets/css/components.min.css">
   <link rel="stylesheet" href="{{ asset('css/stisla.css') }}">
   <script src="{{ asset('js/app.js') }}" charset="utf-8"></script>
-  <script src="{{ asset('js/stisla.js') }}" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-lazy@1.7.10/jquery.lazy.min.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery.nicescroll@3.7.6/jquery.nicescroll.min.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stisla@2.3.0/assets/js/stisla.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stisla@2.3.0/assets/js/scripts.js" charset="utf-8"></script>
   <link rel="stylesheet" href="https://cdn.staticfile.org/izitoast/1.4.0/css/iziToast.min.css">
   <script src="https://cdn.staticfile.org/izitoast/1.4.0/js/iziToast.min.js" charset="utf-8"></script>
   @yield('meta')
