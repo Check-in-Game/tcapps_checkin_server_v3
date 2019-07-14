@@ -8,7 +8,7 @@
     <tr>
       <th scope="col">图标</th>
       <th scope="col">名称</th>
-      <th scope="col">描述</th>
+      <th scope="col" class="d-none d-lg-table-cell">描述</th>
       <th scope="col">数量</th>
     </tr>
   </thead>
@@ -17,7 +17,7 @@
     <tr>
       <td><img class="lazy" src="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}{{ $item->image }}" alt="{{ $item->iname }}" height="18x;"></td>
       <td>{{ $item->iname }}</td>
-      <td class="text-truncate" title="{{ $item->description }}">{{ $item->description }}</td>
+      <td class="d-none d-lg-table-cell text-truncate" title="{{ $item->description }}">{{ $item->description }}</td>
       <td>{{ isset($user_items[$item->iid]['count']) ? $user_items[$item->iid]['count'] : 0 }}</td>
     </tr>
     @endforeach
