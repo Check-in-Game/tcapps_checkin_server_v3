@@ -47,7 +47,7 @@
             <span class="input-group-text">回收数量</span>
           </div>
           <input type="hidden" class="form-control" placeholder="回收物品" id="recycle_iid" value="1">
-          <input type="number" class="form-control" placeholder="回收数量" id="recycle_count" value="1" min="1" onchange="calc();" onkeydown="calc();">
+          <input type="number" class="form-control" placeholder="回收数量" id="recycle_count" value="1" min="1" onchange="calc();" onkeyup="calc();">
         </div>
         <p>
           本次回收预计到账 <span id="anticipate_point">0</span> 积分
