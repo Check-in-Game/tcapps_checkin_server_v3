@@ -6,9 +6,9 @@
 <div class="alert alert-success" role="alert">
   <h4 class="alert-heading">注意事项</h4>
   <p>
-    回收中心以积分结算，显示的【单价】是回收单价，点击【回收】后填写回收数量确认回收即可。
+    合成中心以积分结算，显示的【单价】是合成单价，点击【回收】后填写合成数量确认回收即可。
     <br />
-    回收操作不可撤销。
+    合成操作不可撤销。
   </p>
 </div>
 <div class="row">
