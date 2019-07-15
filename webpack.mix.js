@@ -13,7 +13,7 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js/app.js')
 
-// mix.sass('resources/sass/app.scss', 'public/css');
+mix.sass('resources/sass/app.scss', 'public/css');
 
 mix.styles(['resources/css/stisla/custom.css'
 ], 'public/css/stisla.css');
