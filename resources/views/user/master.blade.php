@@ -185,6 +185,48 @@ function m_alert(text, color='primary') {
   $('#modal-alert-content').text(text);
   $('#modal-alert').modal('show');
 }
+function m_tip(text, color='info', id='_tips', position='topRight', timeout=10000) {
+  switch (color) {
+    case 'info':
+      iziToast.info({
+        id: id,
+        message: text,
+        position: 'topRight',
+        timeout: timeout
+      });
+      break;
+    case 'success':
+      iziToast.success({
+        id: id,
+        message: text,
+        position: 'topRight',
+        timeout: timeout
+      });
+      break;
+    case 'warning':
+      iziToast.warning({
+        id: id,
+        message: text,
+        position: 'topRight',
+        timeout: timeout
+      });
+      break;
+    case 'error':
+      iziToast.error({
+        id: id,
+        message: text,
+        position: 'topRight',
+        timeout: timeout
+      });
+      break;
+    default:
+      break;
+    return id;
+  }
+}
+function m_tip_close(id) {
+  iziToast.hide({}, document.querySelector(id));
+}
 function logout() {
   $.getJSON('/api/logout', function(){
     location.href = '/home';

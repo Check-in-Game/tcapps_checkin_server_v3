@@ -65,10 +65,19 @@ class APIUser extends Controller {
     }
 
     // purchase
-    public function purchase(int $cid) {
+    public function purchase() {
+      $cid          = request()->post('cid');
+      $item_count   = request()->post('count');
+      if (is_null($cid) || is_null($item_count)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 检查数量是否正确
+      if (!preg_match('/^[1-9][0-9]*$/', $item_count)) {
+        $json = $this->JSON(2509, 'Bad request.', null);
+        return response($json);
+      }
       $now = date('Y-m-d H:i:s');
-      // 购买数量
-      $item_count = 1;
       // 查询商品信息
       $good = DB::table('v3_shop')
             ->where('cid', $cid)
@@ -111,7 +120,7 @@ class APIUser extends Controller {
         $json = $this->JSON(2508, 'System is busy.', null);
         return response($json);
       }
-      if ($good->all_count !== 0 && $all >= $good->all_count) {
+      if ($good->all_count !== 0 && $good->all_count - $all < $item_count) {
         $json = $this->JSON(2505, 'Insuffcient goods.', null);
         return response($json);
       }
@@ -125,8 +134,8 @@ class APIUser extends Controller {
         $json = $this->JSON(2508, 'System is busy.', null);
         return response($json);
       }
-      if ($good->rebuy !== 0 && $userR >= $good->rebuy) {
-        $json = $this->JSON(2506, 'Purchasing times limited('. $userR .').', null);
+      if ($good->rebuy !== 0 && $userR + $item_count > $good->rebuy) {
+        $json = $this->JSON(2506, 'Purchasing times limited('. $userR .').', ['rest'  => $good->rebuy - $userR]);
         return response($json);
       }
       // 创建购买记录

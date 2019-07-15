@@ -31,7 +31,7 @@ Route::post('/user/security/username', 'APIUser@security_change_username')
       ->middleware('apicheck.auth');
 
 // Purchase
-Route::get('/purchase/{cid}', 'APIUser@purchase')
+Route::post('/purchase', 'APIUser@purchase')
       ->middleware('apicheck.auth');
 
 // Blend
