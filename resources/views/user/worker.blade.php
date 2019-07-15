@@ -492,9 +492,11 @@ Worker管理
           });
         }else{
           if (data.errno === 4601) {
-            m_alert('获取该区域信息失败，请稍候再试！');
+            m_alert('获取该区域信息失败，请稍候再试！', 'danger');
+          }else if (data.errno === 4602){
+            m_alert('该区域没有您的Worker', 'warning');
           }else{
-            m_alert('网络状态不佳，请稍候再试！');
+            m_alert('网络状态不佳，请稍候再试！', 'danger');
           }
         }
       }

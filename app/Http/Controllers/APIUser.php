@@ -679,6 +679,10 @@ class APIUser extends Controller {
                     ->where('status', 1)
                     ->lockForUpdate()
                     ->count();
+      if ($worker_count === 0) {
+        $json = $this->JSON(4602, 'No worker here.', null);
+        return response($json);
+      }
       // 查询最新日期
       $update_time = DB::table('v3_user_workers')
                     ->where('uid', $uid)
@@ -716,7 +720,7 @@ class APIUser extends Controller {
       }
     }
 
-    // Worker 查询收获预计收益
+    // Worker 收获
     public function worker_harvest() {
       $uid      = request()->cookie('uid');
       $fid      = request()->post('fid');
