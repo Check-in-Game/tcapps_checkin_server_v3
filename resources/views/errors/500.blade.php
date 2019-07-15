@@ -7,7 +7,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
   <link href="https://cdn.bootcss.com/font-awesome/5.8.1/css/all.min.css" rel="stylesheet">
-  <title>页面丢失了QAQ</title>
+  <title>发生错误了QAQ</title>
   <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/stisla@2.3.0/assets/css/style.css">
@@ -30,9 +30,9 @@
       <div class="container mt-5">
         <div class="page-error">
           <div class="page-inner">
-            <h1>404</h1>
+            <h1>500</h1>
             <div class="page-description">
-              页面找不到了呢 QAQ
+              服务君跑着跑着就摔跤了 QAQ
             </div>
             <div class="my-4">
               <button class="btn btn-primary btn-lg" onclick="javascript: history.back(-1);">
