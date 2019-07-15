@@ -62,6 +62,7 @@ class APIAdminCheckAuth
           }
         }
       }
+      set_time_limit(0);
       // 传递参数到控制器
       $data['_admin'] =  $admin;
       $request->attributes->add($data);

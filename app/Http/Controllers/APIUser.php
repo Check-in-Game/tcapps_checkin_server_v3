@@ -14,7 +14,7 @@ class APIUser extends Controller {
       $username    = request()->post('username');
       $b64password = request()->post('password');
       $captcha     = request()->post('captcha');
-      if (!$username || !$b64password || !$captcha) {
+      if (is_null($username) || is_null($b64password) || is_null($captcha)) {
         $json = $this->JSON(2307, 'Lost some infomation.', null);
         return response($json);
       }
@@ -24,12 +24,16 @@ class APIUser extends Controller {
         return response($json);
       }
       $password    = base64_decode($b64password);
-      if (mb_strlen($username) > 16 || mb_strlen($username) < 5 || mb_strlen($password) > 16 || mb_strlen($password) < 8) {
+      if (mb_strlen($username) > 16 || mb_strlen($username) < 5
+        || mb_strlen($password) > 16 || mb_strlen($password) < 8) {
         $json = $this->JSON(2301, 'Incorrect username or password.', null);
         return response($json);
       }
       // 获取用户名密码
-      $user = DB::table('user_accounts')->where('username', $username)->first();
+      $user = DB::table('user_accounts')
+            ->where('username', $username)
+            ->lockForUpdate()
+            ->first();
       if (!$user) {
         $json = $this->JSON(2302, 'Incorrect username or password.', null);
         return response($json);
@@ -61,85 +65,158 @@ class APIUser extends Controller {
     }
 
     // purchase
-    public function purchase(int $gid) {
+    public function purchase() {
+      $cid          = request()->post('cid');
+      $item_count   = request()->post('count');
+      if (is_null($cid) || is_null($item_count)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 检查数量是否正确
+      if (!preg_match('/^[1-9][0-9]*$/', $item_count)) {
+        $json = $this->JSON(2509, 'Bad request.', null);
+        return response($json);
+      }
       $now = date('Y-m-d H:i:s');
       // 查询商品信息
-      $good = DB::table('shop')
-            ->where('gid', $gid)
+      $good = DB::table('v3_shop')
+            ->where('cid', $cid)
             ->where('status', 1)
+            ->sharedLock()
             ->first();
       // 商品不存在
       if (!$good) {
-        $json = $this->JSON(2501, 'Invaild gid.', null);
+        $json = $this->JSON(2501, 'Invaild iid.', null);
         return response($json);
       }
       $uid = Cookie::get('uid');
       // 获取用户信息
       $user = DB::table('user_accounts')
               ->where('uid', $uid)
+              ->sharedLock()
               ->first();
       if ($user->status !== 1) {
         $json = $this->JSON(2502, 'Invaild user status.', null);
         return response($json);
       }
-      // 查询用户余额
-      $all_worth = DB::table('lists_v2')
-                ->where('uid', $user->uid)
-                ->sum('worth');
-      $cost = DB::table('purchase_records')
-            ->where('uid', $user->uid)
-            ->sum('cost');
-      $balance = $all_worth - $cost;
-      // 余额不足
-      if ($good->cost > $balance) {
-        $json = $this->JSON(2503, 'Insuffcient funds.', null);
-        return response($json);
+      // 计算花费
+      // 查询促销状态
+      if ($good->onsale === 1 && $now >= $good->sale_starttime && $now <= $good->sale_endtime) {
+        $cost = $good->sale_cost;
+      }else{
+        $cost = $good->cost;
       }
       // 判断购买时间是否合法
-      if ($good->endtime !== '1970-01-01 00:00:00' && strtotime($good->endtime) < time()) {
+      if ($good->endtime !== '1970-01-01 00:00:00' && $now > $good->endtime) {
         $json = $this->JSON(2504, 'Invaild time.', null);
         return response($json);
       }
-      // 检查用户购买状态
-      $pur_status = DB::table('purchase_records')
-                  ->where('uid', $user->uid)
-                  ->where('status', 0)
-                  ->first();
-      // 该用户有其他商品处于购买状态
-      if ($pur_status) {
-        $json = $this->JSON(2508, 'Other goods are checking out.', null);
+      // 检查物品存量
+      $all = DB::table('v3_purchase_records')
+            ->where('cid', $good->cid)
+            ->sharedLock()
+            ->sum('item_count');
+      if ($all === false) {
+        $json = $this->JSON(2508, 'System is busy.', null);
         return response($json);
       }
-      // 查询商品购买信息
-      $all = DB::table('purchase_records')
-            ->where('gid', $gid)
-            ->count();
-      $userR = DB::table('purchase_records')
-            ->where('gid', $gid)
-            ->where('uid', $user->uid)
-            ->count();
-      if ($all >= $good->all_count && $good->all_count !== 0) {
+      if ($good->all_count !== 0 && $good->all_count - $all < $item_count) {
         $json = $this->JSON(2505, 'Insuffcient goods.', null);
         return response($json);
       }
-      if ($userR >= $good->rebuy && $good->rebuy !== 0) {
-        $json = $this->JSON(2506, 'Purchasing times limited('. $userR .').', null);
+      // 检查购买限制
+      $userR = DB::table('v3_purchase_records')
+            ->where('cid', $good->cid)
+            ->where('uid', $user->uid)
+            ->sharedLock()
+            ->sum('item_count');
+      if ($userR === false || $userR === null) {
+        $json = $this->JSON(2508, 'System is busy.', null);
+        return response($json);
+      }
+      if ($good->rebuy !== 0 && $userR + $item_count > $good->rebuy) {
+        $json = $this->JSON(2506, 'Purchasing times limited('. $userR .').', ['rest'  => $good->rebuy - $userR]);
         return response($json);
       }
       // 创建购买记录
       $data = [
         'uid'           => $user->uid,
-        'gid'           => $good->gid,
-        'cost'          => $good->cost,
+        'cid'           => $good->cid,
+        'iid'           => $good->iid,
+        'item_count'    => $item_count,
+        'cost'          => $cost,
         'purchase_time' => date('Y-m-d H:i:s'),
         'status'        => 1
       ];
-      $pid = DB::table('purchase_records')->insertGetId($data);
+      $pid = DB::table('v3_purchase_records')->sharedLock()->insert($data);
       if (!$pid) {
         $json = $this->JSON(2507, 'Unknown error.', null);
         return response($json);
+      }
+      // 查询用户余额
+      $balance = DB::table('v3_user_point')
+                ->where('uid', $user->uid)
+                ->where('point', '>=', $cost)
+                ->sharedLock()
+                ->value('point');
+      // 余额不足
+      if ($balance === false || $balance === null) {
+        $json = $this->JSON(2503, 'Insuffcient funds.', null);
+        return response($json);
+      }
+      // 扣除积分
+      $db = DB::table('v3_user_point')
+          ->where('uid', $user->uid)
+          ->lockForUpdate()
+          ->decrement('point', $cost);
+      if (!$db) {
+        $json = $this->JSON(2507, 'Unknown error.', null);
+        return response($json);
+      }
+      // 注册购买信息
+      // 查询用户资源
+      $user_items = DB::table('v3_user_items')
+                    ->where('uid', $user->uid)
+                    ->sharedLock()
+                    ->exists();
+      if (!$user_items) {
+        // 首次注册购买信息
+        $items = array(
+          $good->iid  => array(
+            'count'   => $item_count
+          )
+        );
+        $data = array(
+          'uid' => $user->uid,
+          'items' => json_encode($items)
+        );
+        $db = DB::table('v3_user_items')->lockForUpdate()->insert($data);
       }else{
+        // 更新购买信息
+        // 查询是否有对应IID的记录
+        $item_db = DB::table('v3_user_items')
+                    ->where('uid', $user->uid)
+                    ->sharedLock()
+                    ->value("items->{$good->iid}->count");
+        if ($item_db || $item_db === 0) {
+          // 存在对应IID记录
+          $db = DB::table('v3_user_items')
+                ->where('uid', $user->uid)
+                ->lockForUpdate()
+                ->update(["items->{$good->iid}->count" => $item_count + $item_db]);
+        }else{
+          // 创建对应记录
+          $db = DB::table('v3_user_items')
+                ->where('uid', $user->uid)
+                ->lockForUpdate()
+                ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$good->iid}\":{\"count\": {$item_count}}}')")]);
+        }
+      }
+      if ($db) {
         $json = $this->JSON(0, null, ['msg' => 'Success!']);
+        return response($json);
+      }else{
+        $json = $this->JSON(2507, 'Unknown error.', null);
         return response($json);
       }
     }
@@ -153,7 +230,7 @@ class APIUser extends Controller {
       }
       // 获取用户uid
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      $user = DB::table('user_accounts')->where('uid', $uid)->sharedLock()->first();
       // 顺便验证签权状态
       if (!$user) {
         $json = $this->JSON(2702, 'Invaild user.', null);
@@ -162,6 +239,12 @@ class APIUser extends Controller {
       $old_password = Request()->post('old_password');
       $new_password = Request()->post('new_password');
       $comfirm_password = Request()->post('comfirm_password');
+      $captcha = Request()->post('captcha');
+      // 检查验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(2706, 'Bad captcha.', null);
+        return response($json);
+      }
       // 解析密码
       $old_password = base64_decode($old_password);
       $new_password = base64_decode($new_password);
@@ -187,6 +270,7 @@ class APIUser extends Controller {
       ];
       $res = DB::table('user_accounts')
                 ->where('uid', $user->uid)
+                ->lockForUpdate()
                 ->update($data);
       if ($res) {
         $json = $this->JSON(0, null, ['msg'  => 'Success!']);
@@ -203,7 +287,7 @@ class APIUser extends Controller {
     public function security_change_username() {
       // 获取用户uid
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      $user = DB::table('user_accounts')->where('uid', $uid)->sharedLock->first();
       if (!$user) {
         $json = $this->JSON(3502, 'Invaild user.', null);
         return response($json);
@@ -227,9 +311,8 @@ class APIUser extends Controller {
         ];
       }else{
         // 其他情况不修改状态
-        $data = [
-          'username'  => $username,
-        ];
+        $json = $this->JSON(3503, 'Failed to change username.', null);
+        return response($json);
       }
       // 修改用户名
       $res = DB::table('user_accounts')
@@ -246,124 +329,514 @@ class APIUser extends Controller {
       }
     }
 
-    // 佩戴勋章
-    public function badge_wear() {
+    // 可莫尔合成
+    public function blend() {
       $uid    = request()->cookie('uid');
-      $bid    = request()->post('bid');
-      // 查询佩戴数量限制
-      $limit  = DB::table('system')->where('skey', 'badges_wear_limit')->first();
-      if (!$limit) {
-        $limit = 1;
-      }else{
-        $limit = $limit->svalue;
+      $count  = request()->post('count');
+      if (is_null($count)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
       }
-      // 查询用户是否拥有该勋章
-      $ownership = DB::table('badges')
-                ->join('purchase_records', 'badges.gid', '=', 'purchase_records.gid')
-                ->where('purchase_records.uid', $uid)
-                ->where('purchase_records.status', 1)
-                ->first();
-      if (!$ownership) {
-        $json = $this->JSON(3401, 'The ownership of this badge is abnormal.', null);
+      // 检查数量是否正确
+      if (!preg_match('/^[1-9][0-9]*$/', $count)) {
+        $json = $this->JSON(4001, 'Bad request.', null);
         return response($json);
       }
-      // 查询用户佩戴信息
-      $wore = DB::table('badges_wear')->where('uid', $uid)->first();
-      // 信息不存在直接写入
-      if(!$wore) {
-        $data = [
-          'uid'           => $uid,
-          'bid'           => $bid,
-          'update_time'   => date('Y-m-d H:i:s'),
-        ];
-        $insert = DB::table('badges_wear')->insert($data);
-        if (!$insert) {
-          $json = $this->JSON(3402, 'Failed to wear badge.', null);
-          return response($json);
+      $count = (int) $count;
+      if (!is_numeric($count) || !is_int($count)) {
+        $json = $this->JSON(4001, 'Bad request.', null);
+        return response($json);
+      }
+      // 查询该用户可莫尔数量
+      $user_items = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->sharedLock()
+              ->value('items');
+      if (!$user_items) {
+        $json = $this->JSON(4002, 'Insufficient combers.', null);
+        return response($json);
+      }
+      $items = json_decode($user_items, true);
+      // 检查碎片数量需求
+      if (!isset($items[1]['count'], $items[2]['count'], $items[3]['count'], $items[4]['count'])) {
+        $json = $this->JSON(4002, 'Insufficient combers.', null);
+        return response($json);
+      }
+      $combers = [$items[1]['count'], $items[2]['count'], $items[3]['count'], $items[4]['count']];
+      if (min($combers) < $count) {
+        $json = $this->JSON(4002, 'Insufficient combers.', null);
+        return response($json);
+      }
+      // 扣除碎片
+      for ($i=1; $i <= 4; $i++) {
+        $c = $items[$i]['count'] - $count;
+        if ($c <= 0) {
+          $db = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->lockForUpdate()
+              ->update(['items'=> DB::raw("JSON_REMOVE(items, '$.\"{$i}\"')")]);
         }else{
-          $json = $this->JSON(0, null, ['msg'  => 'Success!']);
-          return response($json);
+          $db = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->lockForUpdate()
+              ->update(["items->{$i}->count"  => $c]);
         }
-      }else if(empty($wore->bid)){
-        $data = [
-          'bid'           => $bid,
-          'update_time'   => date('Y-m-d H:i:s'),
-        ];
-        $insert = DB::table('badges_wear')->where('uid', $uid)->update($data);
-        if (!$insert) {
-          $json = $this->JSON(3402, 'Failed to wear badge.', null);
-          return response($json);
-        }else{
-          $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+        if (!$db) {
+          $json = $this->JSON(4003, 'Failed to blend.', null);
           return response($json);
         }
       }
-      // 检查佩戴数量
-      $wore = explode(',', $wore->bid);
-      $count = count($wore);
-      // 限制1直接更新
-      if ($limit == 1) {
-        $data = [
-          'uid'           => $uid,
-          'bid'           => $bid,
-          'update_time'   => date('Y-m-d H:i:s'),
-        ];
+      // 增加可莫尔
+      if (isset($items[5]['count'])) {
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(["items->5->count"  => $items[5]['count'] + $count]);
       }else{
-        // 限制不为1，查询是否超额佩戴
-        if ($count >= $limit) {
-          $json = $this->JSON(3404, 'The count of wore badges is limited.', null);
-          return response($json);
-        }else{
-          $tmp = $wore;
-          $tmp[] = $bid;
-          $bid = join(',', $tmp);
-          $data = [
-            'uid'           => $uid,
-            'bid'           => $bid,
-            'update_time'   => date('Y-m-d H:i:s'),
-          ];
-        }
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"5\":{\"count\": {$count}}}')")]);
       }
-      $update = DB::table('badges_wear')->where('uid', $uid)->update($data);
-      if (!$update) {
-        $json = $this->JSON(3403, 'Failed to wear badge.', null);
+      if (!$db) {
+        $json = $this->JSON(4003, 'Failed to blend.', null);
         return response($json);
       }else{
-        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'wearing' => $bid]);
+        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
         return response($json);
       }
     }
 
-    // 取消佩戴勋章
-    public function badge_takeoff() {
+    // 资源回收
+    public function recycle() {
       $uid    = request()->cookie('uid');
-      $bid    = request()->post('bid');
-      // 查询用户佩戴信息
-      $wore = DB::table('badges_wear')->where('uid', $uid)->first();
-      if (!$wore) {
-        $json = $this->JSON(3405, 'Failed to query badges.', null);
+      $iid    = request()->post('iid');
+      $count  = request()->post('count');
+      if (is_null($iid) || is_null($count)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 检查数量是否正确
+      if (!preg_match('/^[1-9][0-9]*$/', $count)) {
+        $json = $this->JSON(4101, 'Bad request.', null);
         return response($json);
       }
-      $badges = explode(',', $wore->bid);
-      if (!in_array($bid, $badges)) {
-        $json = $this->JSON(3406, 'This badge is not been wore.', null);
+      $count = (int) $count;
+      if (!is_numeric($count) || !is_int($count)) {
+        $json = $this->JSON(4101, 'Bad request.', null);
         return response($json);
       }
-      // 待删除bid
-      $_bid = array_search($bid, $badges);
-      unset($badges[$_bid]);
-      $badges = join(',', $badges);
-      $data = [
-        'uid'           => $uid,
-        'bid'           => $badges,
-        'update_time'   => date('Y-m-d H:i:s'),
-      ];
-      $update = DB::table('badges_wear')->where('uid', $uid)->update($data);
-      if (!$update) {
-        $json = $this->JSON(3407, 'Failed to take off badge.', null);
+      // 查询该用户指定资源数量
+      $user_items = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->sharedLock()
+              ->value('items');
+      if (!$user_items) {
+        $json = $this->JSON(4102, 'Insufficient resources.', null);
+        return response($json);
+      }
+      $items = json_decode($user_items, true);
+      // 检查资源数量需求
+      if (!isset($items[$iid]['count'])) {
+        $json = $this->JSON(4102, 'Insufficient resources.', null);
+        return response($json);
+      }
+      if ($items[$iid]['count'] < $count) {
+        $json = $this->JSON(4102, 'Insufficient resources.', null);
+        return response($json);
+      }
+      // 查询回收资源信息
+      $recycle_item = DB::table('v3_items')->where('iid', $iid)->first();
+      if (!$recycle_item) {
+        $json = $this->JSON(4103, 'Incorrect iid.', null);
+        return response($json);
+      }
+      // 扣除资源
+      $c = $items[$iid]['count'] - $count;
+      if ($c <= 0) {
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(['items'=> DB::raw("JSON_REMOVE(items, '$.\"{$iid}\"')")]);
+      }else{
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(["items->{$iid}->count"  => $c]);
+      }
+      if (!$db) {
+        $json = $this->JSON(4104, 'Failed to recycle resources.', null);
+        return response($json);
+      }
+      // 计算积分增量
+      $point_add = $recycle_item->recycle_value * $count;
+      // 写入回收记录
+      $data = array(
+        'uid' => $uid,
+        'iid' => $iid,
+        'item_count'  => $count,
+        'value' => $point_add,
+        'recycle_time'  => date('Y-m-d H:i:s'),
+        'status'  => 1,
+      );
+      $db = DB::table('v3_recycle_records')->sharedLock()->insert($data);
+      if ($point_add !== 0) {
+        // 查询用户积分
+        $point = DB::table('v3_user_point')
+                  ->where('uid', $uid)
+                  ->lockForUpdate()
+                  ->exists();
+        // 无记录
+        if (!$point) {
+          $data = array(
+            'uid'   => $uid,
+            'point' => $point_add
+          );
+          $db = DB::table('v3_user_point')
+                  ->sharedLock()
+                  ->insert($data);
+        }else{
+          $db = DB::table('v3_user_point')
+                  ->where('uid', $uid)
+                  ->lockForUpdate()
+                  ->increment('point', $point_add);
+        }
+      }else{
+        $db = true;
+      }
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
         return response($json);
       }else{
+        $json = $this->JSON(4105, 'An error occurred.', null);
+        return response($json);
+      }
+    }
+
+    // Worker兑换
+    public function worker_redeem() {
+      $uid    = request()->cookie('uid');
+      // 查询兑换券数量 IID 13
+      $worker_ticket = DB::table('v3_user_items')
+                  ->where('uid', $uid)
+                  ->sharedLock()
+                  ->value('items->13->count');
+      if (!$worker_ticket) {
+        $json = $this->JSON(4201, 'Insufficient Worker ticket.', null);
+        return response($json);
+      }
+      // 兑换Worker
+      $worker_ticket -= 1;
+      if ($worker_ticket === 0) {
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(['items'=> DB::raw('JSON_REMOVE(items, "$.\"13\"")')]);
+      }else{
+        $db = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(['items->13->count' => $worker_ticket]);
+      }
+      if (!$db) {
+        $json = $this->JSON(4202, 'Failed to redeem worker.', null);
+        return response($json);
+      }
+      // 注册Worker
+      $data = array(
+        'uid'   => $uid,
+        'fid'   => 0,
+        'level' => 1,
+        'update_time' => date('Y-m-d H:i:s'),
+        'status'  => 1,
+      );
+      $db = DB::table('v3_user_workers')->insert($data);
+      if ($db) {
         $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+        return response($json);
+      }else{
+        $json = $this->JSON(4203, 'An error occurred.', null);
+        return response($json);
+      }
+    }
+
+    // Worker查询
+    public function worker() {
+      $uid    = request()->cookie('uid');
+      $fid    = request()->post('fid');
+      if (is_null($fid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      $db = DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('fid', $fid)
+          ->where('status', 1)
+          ->orderBy('level', 'desc')
+          ->lockForUpdate()
+          ->get();
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $db]);
+        return response($json);
+      }else{
+        $json = $this->JSON(4301, 'Failed to find workers.', null);
+        return response($json);
+      }
+    }
+
+    // Worker投放
+    public function worker_assign() {
+      $uid    = request()->cookie('uid');
+      $wid    = request()->post('wid');
+      $fid    = request()->post('fid');
+      if (is_null($fid) || is_null($wid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 获取Worker信息
+      $worker = DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('wid', $wid)
+          ->where('status', 1)
+          ->lockForUpdate()
+          ->first();
+      if (!$worker) {
+        $json = $this->JSON(4401, 'Inoperable worker.', null);
+        return response($json);
+      }
+      // 获取指定产区信息
+      $field = DB::table('v3_user_workers_field')
+          ->where('fid', $fid)
+          ->where('status', 1)
+          ->first();
+      if (!$field) {
+        $json = $this->JSON(4402, 'Invaild worker field.', null);
+        return response($json);
+      }
+      // 检查等级限制
+      if ($worker->level < $field->limi_level) {
+        $json = $this->JSON(4403, 'Higher level needed.', null);
+        return response($json);
+      }
+      // 检查总数量限制
+      $count = DB::table('v3_user_workers')
+            ->where('fid', $fid)
+            ->where('status', 1)
+            ->count();
+      if ($count && $field->limi_count != 0 && $count >= $field->limi_count) {
+        $json = $this->JSON(4404, 'No free slots.', null);
+        return response($json);
+      }
+      $data = array(
+        'fid' => $fid,
+        'update_time' => date('Y-m-d H:i:s')
+      );
+      $db = DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('wid', $wid)
+          ->where('status', 1)
+          ->lockForUpdate()
+          ->update($data);
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $db]);
+        return response($json);
+      }else{
+        $json = $this->JSON(4401, 'Inoperable worker.', null);
+        return response($json);
+      }
+    }
+
+    // Worker投放
+    public function worker_withdraw() {
+      $uid    = request()->cookie('uid');
+      $wid    = request()->post('wid');
+      if (is_null($wid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      $data = array(
+        'fid' => 0,
+        'update_time' => date('Y-m-d H:i:s')
+      );
+      $db = DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('wid', $wid)
+          ->where('status', 1)
+          ->lockForUpdate()
+          ->update($data);
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $db]);
+        return response($json);
+      }else{
+        $json = $this->JSON(4501, 'Inoperable worker.', null);
+        return response($json);
+      }
+    }
+
+    // Worker 查询收获预计收益
+    public function worker_harvest_query() {
+      $uid    = request()->cookie('uid');
+      $fid    = request()->post('fid');
+      if (is_null($fid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 查询Worker数量
+      $worker_count = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->where('fid', $fid)
+                    ->where('status', 1)
+                    ->lockForUpdate()
+                    ->count();
+      if ($worker_count === 0) {
+        $json = $this->JSON(4602, 'No worker here.', null);
+        return response($json);
+      }
+      // 查询最新日期
+      $update_time = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->where('fid', $fid)
+                    ->where('status', 1)
+                    ->orderBy('update_time', 'desc')
+                    ->lockForUpdate()
+                    ->value('update_time');
+      // 查询区域信息
+      $field_info = DB::table('v3_user_workers_field')
+                ->join('v3_items', 'v3_user_workers_field.iid', '=', 'v3_items.iid')
+                ->where('v3_user_workers_field.fid', $fid)
+                ->where('v3_user_workers_field.status', 1)
+                ->select([
+                  'v3_user_workers_field.fid',
+                  'v3_user_workers_field.fname',
+                  'v3_user_workers_field.iid',
+                  'v3_user_workers_field.speed',
+                  'v3_user_workers_field.times',
+                  'v3_items.iname',
+                ])
+                ->first();
+      if (!$worker_count || !$update_time || !$field_info) {
+        $json = $this->JSON(4601, 'Incorrect field.', null);
+        return response($json);
+      }else{
+        $data = array(
+          'worker_count'       => $worker_count,
+          'update_time'        => $update_time,
+          'update_time_unix'   => strtotime($update_time),
+          'field_info'         => $field_info
+        );
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $data]);
+        return response($json);
+      }
+    }
+
+    // Worker 收获
+    public function worker_harvest() {
+      $uid      = request()->cookie('uid');
+      $fid      = request()->post('fid');
+      $captcha  = request()->post('captcha');
+      if (is_null($fid) || is_null($captcha)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 匹配验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(4703, 'Bad captcha.', null);
+        return response($json);
+      }
+      // 查询Worker数量
+      $worker_count = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->where('fid', $fid)
+                    ->where('status', 1)
+                    ->lockForUpdate()
+                    ->count();
+      // 查询最新日期
+      $update_time = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->where('fid', $fid)
+                    ->where('status', 1)
+                    ->orderBy('update_time', 'desc')
+                    ->lockForUpdate()
+                    ->value('update_time');
+      // 查询区域信息
+      $field_info = DB::table('v3_user_workers_field')
+                ->join('v3_items', 'v3_user_workers_field.iid', '=', 'v3_items.iid')
+                ->where('v3_user_workers_field.fid', $fid)
+                ->where('v3_user_workers_field.status', 1)
+                ->select([
+                  'v3_user_workers_field.fid',
+                  'v3_user_workers_field.fname',
+                  'v3_user_workers_field.iid',
+                  'v3_user_workers_field.speed',
+                  'v3_user_workers_field.times',
+                  'v3_items.iname',
+                ])
+                ->first();
+      if (!$worker_count || !$update_time || !$field_info) {
+        $json = $this->JSON(4701, 'Incorrect field.', null);
+        return response($json);
+      }
+      // 计算投放时间
+      $time_delta = (time() - strtotime($update_time)) / 60 / 60;
+      // 计算收益
+      $profits = floor($time_delta * $field_info->speed * $field_info->times * $worker_count);
+      $profits = $profits > 24 ? 24 : $profits;
+      if ($profits != 0) {
+        // 发放收益
+        $iid = $field_info->iid;
+        // 查询记录是否存在
+        $exists = DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->sharedLock()
+            ->exists();
+        if (!$exists) {
+          // 插入记录
+          $data = array(
+            'uid' => $uid,
+            'items' => json_encode(array($iid=>array('count'=>$profits)))
+          );
+          $db = DB::table('v3_user_items')->sharedLock()->insert($data);
+        }else{
+          // 更新记录
+          $db = DB::table('v3_user_items')
+                  ->where('uid', $uid)
+                  ->sharedLock()
+                  ->value("items->{$iid}->count");
+          if ($db) {
+            // 存在对应IID记录
+            $db = DB::table('v3_user_items')
+                    ->where('uid', $uid)
+                    ->lockForUpdate()
+                    ->update(["items->{$iid}->count" => $profits + $db]);
+          }else{
+            // 创建对应记录
+            $db = DB::table('v3_user_items')
+                    ->where('uid', $uid)
+                    ->lockForUpdate()
+                    ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$iid}\":{\"count\": {$profits}}}')")]);
+          }
+        }
+      }else{
+        $db = true;
+      }
+      if (!$db) {
+        $json = $this->JSON(4702, 'Failed to pay bounds.', null);
+        return response($json);
+      }else{
+        // 更新时间
+        $data = array(
+          'update_time' => date('Y-m-d H:i:s')
+        );
+        DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('fid', $fid)
+          ->where('status', 1)
+          ->lockForUpdate()
+          ->update($data);
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => array(
+          'profits' => $profits,
+          'iname'   => $field_info->iname
+        )]);
         return response($json);
       }
     }

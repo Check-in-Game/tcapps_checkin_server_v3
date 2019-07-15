@@ -1,26 +1,9 @@
 @extends('user/master')
-@section('before_nav')
+@section('header')
+用户面板
 @endsection
-
-@section('container')
-<!-- 公告-5 -->
-@foreach($_notices as $notice)
-<div class="alert alert-{{ $notice['color'] }}" role="alert">
-  @if (!empty($notice['title']))
-  <h4 class="alert-heading">{{ $notice['title'] }}</h4>
-  @endif
-  {{ $notice['content'] }}
-</div>
-@endforeach
-
-@if($count <= 200)
-<div class="alert alert-success">
-  您当前处于新手模式，前200次签到时若积分小于100分有{{ $buff }}倍新手加成。
-</div>
-@endif
-
+@section('body')
 <div class="row">
-
   <!-- 基本信息 -->
   <div class="col-md-4 col-sm-12 mb-3 text-center">
     <div class="card border-dark mb-3">
@@ -28,9 +11,14 @@
         基本信息
       </div>
       <div class="card-body text-dark">
-        <p class="card-text">UID： <span class="badge badge-primary">{{ $uid }}</span></p>
-        <p class="card-text">签到积分： <span class="badge badge-primary">{{ $all_worth }}</span></p>
-        <p class="card-text">可用积分： <span class="badge badge-primary">{{ $all_worth - $cost }}</span></p>
+        <div class="row">
+          <!-- UID -->
+          <div class="col-6 text-right mb-1 font-weight-bold">UID：</div>
+          <div class="col-6 text-left mb-1">{{ $uid }}</div>
+          <!-- 积分 -->
+          <div class="col-6 text-right mb-1 font-weight-bold">积分：</div>
+          <div class="col-6 text-left mb-1">{{ $point }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -39,12 +27,10 @@
   <div class="col-md-4 col-sm-12 mb-3 text-center">
     <div class="card border-dark mb-3">
       <div class="card-header">
-        获取积分
+        获取资源
       </div>
       <div class="card-body text-dark">
-        <a class="btn btn-primary btn-block" href="{{ action('PublicController@webCheckin') }}" target="_blank"><i class="fa-fw fas fa-clipboard-check"></i> 在线签到</a>
         <button class="btn btn-success btn-block" href="javascript:;" data-toggle="modal" data-target="#clean" id='btn_clean'><i class="fa-fw fas fa-broom"></i> 立即擦灰</button>
-        <a class="btn btn-secondary btn-block" href="{{ action('UserController@badges') }}" target="_self"><i class="fa-fw fas fa-certificate"></i> 佩戴勋章</a>
       </div>
     </div>
   </div>
@@ -63,13 +49,33 @@
 
 </div>
 
-<div class="alert alert-success" role="alert">
+<!-- Combers -->
+<div class="row">
+  @foreach($combers as $comber)
+  <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+    <div class="card card-statistic-1">
+      <div class="card-icon bg-white lazy" style="background: url('{{ asset('img/loading.svg') }}') no-repeat center center;" data-src="{{ $_system['cdn_prefix'] }}{{ $comber->image }}">
+      </div>
+      <div class="card-wrap">
+        <div class="card-header">
+          <h4>{{ $comber->iname }}</h4>
+        </div>
+        <div class="card-body">
+          {{ isset($items[$comber->iid]['count']) ? $items[$comber->iid]['count'] : 0 }} C
+        </div>
+      </div>
+    </div>
+  </div>
+  @endforeach
+</div>
+
+<div class="alert alert-info" role="alert">
   <h4 class="alert-heading">更快的获取积分</h4>
   <p>
-    您可以在<a href="{{ action('PublicController@index') }}" target="_self">首页</a>加入QQ交流群获取一手活动预告信息，您也可以在用户中心的活动中心查询活动一览以更好的把握时机。
+    您可以在<a class="alert-link" href="{{ action('PublicController@index') }}" target="_self">首页</a>加入QQ交流群获取一手活动预告信息，您也可以在用户中心的活动中心查询活动一览以更好的把握时机。
   </p>
   <p>
-    如果您在使用过程中发现Bug或由其他的意见和建议，加入QQ群向群主反映（Bug请私聊），会有丰厚的积分奖励。
+    如果您在使用过程中发现Bug或由其他的意见和建议，加入QQ群向群主反映（Bug请私聊），会有丰厚的礼包奖励。
   </p>
   <p>
     QQ群会不定时发放礼包，礼包内容包含一系列增益道具、直接积分奖励等。
@@ -77,8 +83,6 @@
   <p>
     游戏是在不断更新的，更多玩法正在紧锣密鼓的布置中，为了更好的游戏体验，欢迎加入QQ群共同讨论、建设、开发。
   </p>
-  <hr>
-  <p class="mb-0">兑换中心将于近日上线。</p>
 </div>
 @endsection
 @section('extraModalContent')
@@ -152,7 +156,28 @@
         $('#captcha_img').click();
         $('#captcha').val('');
         if (data.errno === 0) {
-          location.href = '/user';
+          $('#btn_clean').attr('disabled', 'disabled');
+          $('#btn_clean').text('已经签到过啦~');
+          msg = '签到成功：获得' + data.body.data.point + '积分';
+          if (data.body.data.comber != -1) {
+            switch (data.body.data.comber) {
+              case 1:
+                comber_color = '粉色';
+                break;
+              case 2:
+                comber_color = '蓝色';
+                break;
+              case 3:
+                comber_color = '绿色';
+                break;
+              case 4:
+                comber_color = '黄色';
+                break;
+            }
+            msg += '，与1个' + comber_color + '可莫尔碎片';
+          }
+          msg += '！';
+          m_alert(msg, 'success');
         }else if(data.errno === 3901 || data.errno === 3902){
           m_alert('签权可能过期了哟，重新登录下吧~', 'warning');
         }else if(data.errno === 3903){

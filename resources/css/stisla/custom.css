@@ -1,0 +1,58 @@
+/**
+ *
+ * You can write your CSS code here, DO NOT touch the default JavaScript file
+ * because it will make it harder for you to update.
+ *
+ */
+
+/*# sourceMappingURL=custom.css.map */
+.alert-success {
+  background-color: #28a745 !important;
+}
+
+.btn-success {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+  box-shadow: 0 2px 6px #28a745 !important;
+}
+
+.btn-success:hover {
+  background-color: #218838 !important;
+  border-color: #1e7e34 !important;
+}
+
+.card-success {
+  border-top: 2px solid #28a745 !important;
+}
+
+.popover-body {
+  box-shadow: 5px 5px 10px #454545 !important;
+}
+
+.dropdown-menu {
+  box-shadow: 0 0 30px rgba(68,68,68,.35);
+}
+
+.alert-info {
+  color: #0c5460 !important;
+  background-color: #d1ecf1 !important;
+  border-color: #bee5eb !important;
+}
+
+.alert-link {
+  color: #062c33 !important;
+  font-weight: 700;
+}
+/* 3.12 Button */
+.btn-success, .btn-success.disabled {
+  box-shadow: 0 2px 6px #a8f5b4;
+  background-color: #28a745;
+  border-color: #28a745;
+  color: #fff; }
+  .btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.disabled:hover, .btn-success.disabled:focus, .btn-success.disabled:active {
+    background-color: #28a745 !important;
+    color: #fff !important; }
+
+.btn-outline-success:hover, .btn-outline-success:focus, .btn-outline-success:active, .btn-outline-success.disabled:hover, .btn-outline-success.disabled:focus, .btn-outline-success.disabled:active {
+  background-color: #28a745 !important;
+  color: #fff !important; }

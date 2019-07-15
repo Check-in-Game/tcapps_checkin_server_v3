@@ -13,38 +13,33 @@ class UserController extends Controller {
       $username = $user->username;
       // 查询积分
       $db_prefix = env('DB_PREFIX');
-      $all_worth = DB::table('lists_v2')
+      $point = DB::table('v3_user_point')
               ->where('uid', $user->uid)
-              ->sum('worth');
-      $count = DB::table('lists_v2')
+              ->value('point');
+      $point = $point ? $point : 0;
+      // 基础资源信息 comber
+      $combers = DB::table('v3_items')
+                ->whereIn('iid', [1,2,3,4,5])
+                ->get();
+      // 查询资源物品
+      $items = DB::table('v3_user_items')
               ->where('uid', $user->uid)
-              ->count();
-      $buff = DB::table('system')
-              ->where('skey', 'newhand_support_pre_200')
-              ->first();
-      $buff = $buff ? $buff->svalue : 1;
-      $cost = DB::table('purchase_records')
-            ->where('uid', $user->uid)
-            ->sum('cost');
+              ->value('items');
       // 清灰时间结算
-      $clean = DB::table('lists_v2')
+      $clean = DB::table('v3_clean_list')
             ->where('uid', $user->uid)
-            ->where('tid', 7)
-            ->where('check_time', '>=', date('Y-m-d 00:00:00'))
-            ->where('check_time', '<=', date('Y-m-d 23:59:59'))
             ->first();
-      if (!$clean) {
-        $clean = 0;
-      }else{
+      if ($clean && $clean->check_time >= date('Y-m-d 00:00:00')) {
         $clean = strtotime(date('Y-m-d 23:59:59')) - time();
+      }else{
+        $clean = 0;
       }
       $data = [
         'uid'          => $uid,
         'username'     => $username,
-        'all_worth'    => $all_worth,
-        'count'        => $count,
-        'buff'         => $buff,
-        'cost'         => $cost,
+        'combers'      => $combers,
+        'point'        => $point,
+        'items'        => json_decode($items, true),
         'clean'        => $clean
       ];
       return view('user.home', $data);
@@ -57,38 +52,55 @@ class UserController extends Controller {
       $username = $user->username;
       $db_prefix = env('DB_PREFIX');
       // 读取商品
-      $shop = DB::table('shop')
+      $cols = [
+        'v3_shop.cid',
+        'v3_shop.iid',
+        'v3_shop.cost',
+        'v3_shop.starttime',
+        'v3_shop.endtime',
+        'v3_shop.sid',
+        'v3_shop.all_count',
+        'v3_shop.rebuy',
+        'v3_shop.onsale',
+        'v3_shop.sale_starttime',
+        'v3_shop.sale_endtime',
+        'v3_shop.sale_cost',
+        'v3_shop.description',
+        'v3_shop.status',
+        'v3_items.iname',
+        'v3_items.tid',
+        'v3_items.image',
+        'v3_items.description as item_description',
+      ];
+      $shop = DB::table('v3_shop')
+              ->join('v3_items', 'v3_shop.iid', '=', 'v3_items.iid')
               ->where('starttime' ,'<=', date('Y-m-d H:i:s'))
               ->where('endtime' ,'>=', date('Y-m-d H:i:s'))
               ->orWhere('endtime' ,'=', '1970-01-01 00:00:00')
               ->where('starttime' ,'<=', date('Y-m-d H:i:s'))
-              ->where('status', 1)
-              ->orderBy('gid', 'desc')
+              ->where('v3_shop.status', 1)
+              ->orderBy('v3_shop.cid', 'asc')
+              ->select($cols)
               ->get()
               ->map(function ($value) {return (array)$value;})
               ->toArray();
       foreach ($shop as $key => $value) {
-        $all = DB::table('purchase_records')
-              ->where('gid', $value['gid'])
-              ->count();
-        $userR = DB::table('purchase_records')
-              ->where('gid', $value['gid'])
+        // 总销售量
+        $all = DB::table('v3_purchase_records')
+              ->where('cid', $value['cid'])
+              ->sum('item_count');
+        // 当前用户购买量
+        $userR = DB::table('v3_purchase_records')
+              ->where('cid', $value['cid'])
               ->where('uid', $user->uid)
-              ->count();
+              ->sum('item_count');
         $shop[$key]['all_bought'] = $all;
         $shop[$key]['user_bought'] = $userR;
       }
-      $all_worth = DB::table('lists_v2')
-                ->where('uid', $user->uid)
-                ->sum('worth');
-      $cost = DB::table('purchase_records')
-            ->where('uid', $user->uid)
-            ->sum('cost');
       $data = [
         'uid'             => $uid,
         'username'        => $username,
         'goods'           => $shop,
-        'balance'         => $all_worth - $cost
       ];
       return view('user.shop', $data);
     }
@@ -101,59 +113,6 @@ class UserController extends Controller {
         'username'        => $user->username
       ];
       return view('user.security_change_password', $data);
-    }
-
-    // 签到历史查询
-    public function history_checkin() {
-      $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      // 读取系统设置
-      $limit = DB::table('system')
-                ->where('skey', 'checkin_history_limit')
-                ->first();
-      $unit = DB::table('system')
-                ->where('skey', 'checkin_history_limit_unit')
-                ->first();
-      $earliest = date('Y-m-d 00:00:00', strtotime("-{$limit->svalue} {$unit->svalue}"));
-      $charts = DB::table('lists_v2')
-              ->where('uid', $user->uid)
-              ->where('check_time', '>', $earliest)
-              ->orderBy('check_time', 'desc')
-              ->paginate(25);
-      $data = [
-        'limit'   => $limit->svalue,
-        'unit'    => $unit->svalue,
-        'charts'  => $charts
-      ];
-      return view('user.history_checkin', $data);
-    }
-
-    // 积分账单
-    public function bill() {
-      $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      $charts = DB::table('purchase_records')
-              ->where('uid', $user->uid)
-              ->orderBy('purchase_time', 'desc')
-              ->paginate(25);
-      $data = [
-        'charts'  => $charts
-      ];
-      return view('user.bill', $data);
-    }
-
-    // 活动一览
-    public function activity() {
-      $charts = DB::table('activity')
-          ->where('endtime', '>=', date('Y-m-d H:i:s', strtotime('-7 day')))
-          ->where('starttime', '<=', date('Y-m-d H:i:s', strtotime('+7 day')))
-          ->where('status', 1)
-          ->orderBy('starttime', 'desc')
-          ->paginate(25);
-      $data = [
-        'charts'  => $charts
-      ];
-      return view('user.activity', $data);
     }
 
     // 勋章一览
@@ -193,5 +152,132 @@ class UserController extends Controller {
     // 修改用户名
     public function username_modify() {
       return view('user.username_modify');
+    }
+
+    // 我的资源
+    public function user_resources() {
+      $uid = request()->cookie('uid');
+      // 查询资源
+      $resources = DB::table('v3_user_items')
+                  ->where('uid', $uid)
+                  ->sharedLock()
+                  ->value('items');
+      $items = [];
+      if ($resources) {
+        $resources = json_decode($resources, true);
+        // 获取所有物品id
+        $user_items_id = array_keys($resources);
+        // 查询所需要的物品
+        $items = DB::table('v3_items')
+        ->whereIn('iid', $user_items_id)
+        ->sharedLock()
+        ->get();
+      }
+      $data = array(
+        'user_items'  => $resources,
+        'items'       => $items
+      );
+      return view('user.user_resources', $data);
+    }
+
+    // 回收中心
+    public function recycle() {
+      $uid = request()->cookie('uid');
+      // 查询资源
+      $resources = DB::table('v3_user_items')
+                  ->where('uid', $uid)
+                  ->sharedLock()
+                  ->value('items');
+      $items = [];
+      if ($resources) {
+        $resources = json_decode($resources, true);
+        // 获取所有物品id
+        $user_items_id = array_keys($resources);
+        // 查询所需要的物品
+        $items = DB::table('v3_items')
+                  ->whereIn('iid', $user_items_id)
+                  ->sharedLock()
+                  ->get();
+      }
+      $data = array(
+        'user_items'  => $resources,
+        'items'       => $items
+      );
+      return view('user.recycle_center', $data);
+    }
+
+    // 合成中心
+    public function blend() {
+      $uid = request()->cookie('uid');
+      // 基础资源信息 comber
+      $combers = DB::table('v3_items')
+                ->whereIn('iid', [1,2,3,4])
+                ->get();
+      // 查询资源物品
+      $items = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->value('items');
+      $data = array(
+        'combers'  => $combers,
+        'items'    => json_decode($items, true)
+      );
+      return view('user.blend_center', $data);
+    }
+
+    // 合成中心
+    public function worker() {
+      $uid = request()->cookie('uid');
+      $resources = DB::table('v3_user_items')
+                  ->where('uid', $uid)
+                  ->sharedLock()
+                  ->value('items');
+      if ($resources) {
+        $resources = json_decode($resources, true);
+        // 查询WORKER兑换券数量 IID 13
+        $worker_ticket = isset($resources[13]['count']) ? $resources[13]['count'] : 0;
+      }else{
+        $worker_ticket = 0;
+      }
+      // 查询Worker数量
+      $worker_count = DB::table('v3_user_workers')
+                    ->where('uid', $uid)
+                    ->sharedLock()
+                    ->count();
+      // 查询产区情况
+      $field = DB::table('v3_user_workers_field')
+              ->join('v3_items', 'v3_user_workers_field.iid', '=', 'v3_items.iid')
+              ->where('v3_user_workers_field.status', 1)
+              ->get();
+      // 统计各产区Worker数量
+      $field_workers_data = DB::table('v3_user_workers')
+                          ->where('fid', '<>', 0)
+                          ->where('status', 1)
+                          ->groupBy('fid')
+                          ->select(DB::raw('fid, count(wid) as c'))
+                          ->get();
+      $field_workers = [];
+      foreach ($field_workers_data as $key => $value) {
+        $field_workers[$value->fid] = $value->c;
+      }
+      // 统计各产区用户Worker数量
+      $field_workers_mine_data = DB::table('v3_user_workers')
+                          ->where('fid', '<>', 0)
+                          ->where('uid', $uid)
+                          ->where('status', 1)
+                          ->groupBy('fid')
+                          ->select(DB::raw('fid, count(wid) as c'))
+                          ->get();
+      $field_workers_mine = [];
+      foreach ($field_workers_mine_data as $key => $value) {
+        $field_workers_mine[$value->fid] = $value->c;
+      }
+      $data = array(
+        'worker_ticket'       => $worker_ticket,
+        'worker_count'        => $worker_count,
+        'field'               => $field,
+        'field_workers'       => $field_workers,
+        'field_workers_mine'  => $field_workers_mine,
+      );
+      return view('user.worker', $data);
     }
 }

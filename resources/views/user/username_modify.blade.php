@@ -1,18 +1,8 @@
 @extends('user/master')
-@section('before_nav')
+@section('header')
+修改用户名
 @endsection
-
-@section('container')
-  <!-- 公告-26 -->
-  @foreach($_notices as $notice)
-  <div class="alert alert-{{ $notice['color'] }}" role="alert">
-    @if (!empty($notice['title']))
-    <h4 class="alert-heading">{{ $notice['title'] }}</h4>
-    @endif
-    {{ $notice['content'] }}
-  </div>
-  @endforeach
-
+@section('body')
   <div class="alert alert-danger" role="alert">
     <h4 class="alert-heading">修改用户名需知</h4>
     您需要使用<strong>新的用户名</strong>参与登录、签到等活动，其他数据不会被影响。
@@ -23,8 +13,7 @@
   </div>
 
   @if( $_user->status === 0 )
-  <h2>修改用户名 / Modify Username</h2>
-  
+
   <div class="input-group mb-3">
     <div class="input-group-prepend">
       <span class="input-group-text">UID</span>
@@ -58,11 +47,12 @@
     let username = $('#username').val();
     // 检查密码长度
     if (username.length < 5 || username.length > 16 ){
-      alert('用户名长度要求至少5位，最多16位！');
+      m_alert('用户名长度要求至少5位，最多16位！');
       return false;
     }
+    m_loading();
     $('#btn').attr('disabled', 'disabled');
-    let ajax = $.ajax({
+    $.ajax({
       url: '/api/user/security/username',
       type: 'post',
       dataType: 'json',
@@ -71,24 +61,25 @@
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
+        m_loading(false);
         $('#btn').removeAttr('disabled');
         if (status === 'timeout') {
-          alert('响应超时，请稍候再试！');
+          m_alert('响应超时，请稍候再试！');
         }
       },
       success: function(data){
         if (data.errno === 0) {
-          alert('修改成功！');
+          m_alert('修改成功！');
           location.href = '/user';
         }else{
           if (data.errno === 3501) {
-            alert('不合法的用户名！');
+            m_alert('不合法的用户名！');
           }else if(data.errno === 3502) {
-            alert('用户状态异常，请联系管理员！');
+            m_alert('用户状态异常，请联系管理员！');
           }else if(data.errno === 3503) {
-            alert('您的用户状态正常，无需修改用户名！');
+            m_alert('修改失败，请刷新页面后重试！');
           }else{
-            alert('网络状态不佳，请稍候再试');
+            m_alert('网络状态不佳，请稍候再试');
           }
         }
       }

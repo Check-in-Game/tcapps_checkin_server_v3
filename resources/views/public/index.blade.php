@@ -1,89 +1,108 @@
 @extends('public.master')
 @section('headerExtraContent')
-  <!-- 幕布 -->
-  <div class="jumbotron pb-2">
-    <div class="container">
-      <h1 class="display-4">Check-in Game</h1>
-      <p class="lead">签到排行榜实时更新，只需简单注册即可开始游戏！</p>
-      <hr class="my-4">
-      <p class="lead">
-        <a class="btn btn-success" href="{{ action('PublicController@register') }}" target="_blank" role="button">注册账户</a>
-        <a class="btn btn-primary" href="{{ action('UserController@user') }}" target="_self" role="button">用户中心</a>
-        <a class="btn btn-primary" href="{{ action('PublicController@webCheckin') }}" target="_self" role="button">在线端</a>
-        <a class="btn btn-secondary" href="https://github.com/jokin1999/tcapps-checkin" target="_blank" role="button">Python客户端</a>
-        <a class="btn btn-info" href="https://jq.qq.com/?_wv=1027&k=5ax4j23" target="_blank" role="button">加入交流QQ群：887304185</a>
-      </p>
-    </div>
-  </div>
+<!-- 幕布 -->
+<div class="mb-0 py-4 pb-0 text-center bg-light">
   <div class="container">
+    <div class="text-center">
+      <img class="lazy" src="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}/cdn/common/icons/logo_256.png" alt="logo">
+    </div>
+    <h1 class="display-4">Check-in Game</h1>
+    <p class="lead">有参与感的收菜游戏。</p>
+    <hr class="my-4">
+    <p class="lead">
+      @if(isset($_COOKIE['auth']))
+      <a class="btn btn-primary mb-1" href="{{ action('UserController@user') }}" target="_self" role="button">用户中心</a>
+      @else
+      <a class="btn btn-primary mb-1" href="{{ action('PublicController@login') }}" target="_self" role="button">登录</a>
+      <a class="btn btn-success mb-1" href="{{ action('PublicController@register') }}" target="_self" role="button">注册账户</a>
+      @endif
+      <br />
+      <a class="btn btn-secondary mb-1" href="https://jq.qq.com/?_wv=1027&k=5ax4j23" target="_blank" role="button">加入交流QQ群：887304185</a>
+    </p>
+  </div>
+</div>
 @endsection
 @section('container')
 
-    <!-- 公告-1 -->
-    @foreach($_notices as $notice)
-    <div class="alert alert-{{ $notice['color'] }}" role="alert">
-      @if (!empty($notice['title']))
-      <h4 class="alert-heading">{{ $notice['title'] }}</h4>
-      @endif
-      {{ $notice['content'] }}
+<div class="container">
+  @foreach($_notices as $notice)
+  <div class="alert alert-{{ $notice['color'] }}" role="alert">
+    @if (!empty($notice['title']))
+    <h4 class="alert-heading">{{ $notice['title'] }}</h4>
+    @endif
+    {{ $notice['content'] }}
+  </div>
+  @endforeach
+</div>
+
+<!-- Features -->
+<section class="mt-0">
+  <div class="container-fluid p-0">
+    <div class="row no-gutters">
+      <!-- 自由交易 -->
+      <div class="col-md-6 text-white d-none d-md-block lazy" data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/home/deal.jpg" style="background: no-repeat center center;background-image: url('{{ asset('img/loading.svg') }}');height: 480px;"></div>
+      <div class="col-md-6 my-auto py-auto text-center" style="padding: 7rem;">
+        <h2>自由交易</h2>
+        <p class="lead mb-0">游戏中几乎所有的货币、道具都能进行交易。玩家的所有资源都由您自己掌握。</p>
+      </div>
+
+      <!-- 多元货币 -->
+      <div class="col-md-6 my-auto py-auto text-center" style="padding: 7rem;">
+        <h2>多元货币</h2>
+        <p class="lead mb-0">除去官方发行的货币外，玩家可自行使用其他道具作为货币。</p>
+      </div>
+      <div class="col-md-6 text-white d-none d-md-block lazy" data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/home/currencies.jpg" style="background: no-repeat center center;background-image: url('{{ asset('img/loading.svg') }}');height: 480px;"></div>
+
+      <!-- 国度进化 -->
+      <div class="col-md-6 text-white d-none d-md-block lazy" data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/home/co-workers.jpg" style="background: no-repeat center center;background-image: url('{{ asset('img/loading.svg') }}');height: 480px;"></div>
+      <div class="col-md-6 my-auto py-auto text-center" style="padding: 7rem;">
+        <h2>国度进化</h2>
+        <p class="lead mb-0">游戏会预先开发更多功能，玩家需要团结一致，共同推进发展研究，解锁新功能与道具。</p>
+      </div>
     </div>
-    @endforeach
+  </div>
+</section>
 
-    <!-- 排行榜 -->
-    <h2>周活跃榜</h2>
+<section class="py-4 text-center bg-dark text-light">
+  <div class="container my-4 py-4">
+    <h2 class="my-4">准备好了吗？</h2>
+    <a type="button" class="btn btn-primary btn-lg" href="{{ action('PublicController@register') }}">立刻注册</a>
+  </div>
+</section>
 
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th scope="col">排名</th>
-          <th scope="col">用户名</th>
-          <th scope="col">签到积分</th>
-        </tr>
-      </thead>
-      <tbody>
-          @foreach ($charts as $key => $chart)
-            <tr style="line-height:26px;">
-              <th scope="row">
-                # {{ $key+1 }}
-              </th>
-              <th scope="row">
-                {{ $chart->username }}
-                @if( isset($badges[$chart->uid]) && !empty($badges[$chart->uid]))
-                  @foreach(explode(',', $badges[$chart->uid]) as $bid)
-                    @if( !empty($allBadges[$bid]['image']) )
-                    <img src="{{ $allBadges[$bid]['image'] }}" alt="{{ $allBadges[$bid]['bname'] }}勋章" height="26px" data-toggle="tooltip"  title="{{ $allBadges[$bid]['bname'] }}勋章" name="badge">
-                    @else
-                    <span class="badge badge-dark" style="color: {{ $allBadges[$bid]['fgcolor'] }};background-color: {{ $allBadges[$bid]['bgcolor'] }};" data-toggle="tooltip" title="{{ $allBadges[$bid]['bname'] }}勋章" name="badge">{{ $allBadges[$bid]['bname'] }}</span>
-                    @endif
-                  @endforeach
-                @endif
-              </th>
-              <th scope="row">
-                {{ $chart->allWorth }}
-              </th>
-            </tr>
-          @endforeach
-        </tr>
-      </tbody>
-    </table>
-
-    <hr />
-
-    <div class="alert alert-info" role="alert">
-      <h4 class="alert-heading">联系我们</h4>
-      <p>
-        官方QQ群：887304185
-        <br />
-        意见或建议提交：jokin@twocola.com
-      </p>
-      <hr />
-      <p class="mb-0">感谢支持！</p>
+<footer class="py-4 px-4 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 col-md-4">
+        <h4>联系我们</h4>
+        <p>
+          官方QQ群：887304185
+          <br />
+          意见或建议提交：jokin@twocola.com
+        </p>
+      </div>
+      <div class="col-sm-12 col-md-4">
+        <h4>友情链接</h4>
+        <p>
+          <a class="text-dark" href="http://tcapps.twocola.com/" target="_blank">可乐趣玩</a>
+        </p>
+      </div>
+      <div class="col-sm-12 col-md-4">
+        <h4>鸣谢</h4>
+        <p>
+          <a class="text-dark" href="https://netlify.com" target="_blank">Netlify</a>
+          <br>
+          <a class="text-dark" href="https://jsDelivr.com" target="_blank">jsDelivr</a>
+        </p>
+      </div>
     </div>
-@endsection
-@section('script')
-<script type="text/javascript">
-  $(function(){
-    $('[name=badge]').tooltip('enable');
-  });
-</script>
+    <div class="text-muted">
+      <small>&copy; Copyright 2019 Check-in Game Team.</small>
+      <br>
+      <small class="text-small">
+        <a class="text-muted" href="http://www.beian.miit.gov.cn" target="_blank">沪ICP备18039982号-1</a>
+      </small>
+    </div>
+  </div>
+</footer>
 @endsection

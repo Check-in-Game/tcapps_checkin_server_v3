@@ -1,42 +1,45 @@
 @extends('public.master')
 @section('container')
-
-  <!-- 公告-2 -->
-  @foreach($_notices as $notice)
+<!-- 公告-2 -->
+@foreach($_notices as $notice)
+<div class="container">
   <div class="alert alert-{{ $notice['color'] }}" role="alert">
     @if (!empty($notice['title']))
     <h4 class="alert-heading">{{ $notice['title'] }}</h4>
     @endif
     {{ $notice['content'] }}
   </div>
-  @endforeach
+</div>
+@endforeach
 
-  <div class="alert alert-success mt-4" role="alert">
-    中文名称不能直接注册，可以使用签到累计的积分向管理员提交改名申请。
-  </div>
-
-  @if(isset($reg_status) && $reg_status===false)
+@if(isset($reg_status) && $reg_status===false)
+<div class="container">
   <div class="alert alert-danger mt-4" role="alert">
     {{ $reg_error }}
   </div>
-  @endif
+</div>
+@endif
 
-  <h1>注册用户</h1>
-
+<!-- 登录 -->
+<div class="mt-4 text-center">
+  <img src="{{ $_system['cdn_prefix'] }}/cdn/common/icons/logo_256.png" alt="logo" width="100px">
+</div>
+<div class="mx-auto my-4 text-center" style="max-width:400px;">
+  <h2>注册 / Register</h2>
   <form class="" action="{{ action('PublicController@register') }}" method="post" id="form">
     @csrf
     <div class="input-group mb-3">
       <div class="input-group-prepend">
         <span class="input-group-text">用户名</span>
       </div>
-      <input type="text" class="form-control" placeholder="Username" name="username" id="username">
+      <input type="text" class="form-control" placeholder="Username" aria-label="Username" name="username" id="username">
     </div>
 
     <div class="input-group mb-3">
       <div class="input-group-prepend">
         <span class="input-group-text">密码</span>
       </div>
-      <input type="password" class="form-control" placeholder="Password" name="password" id="password">
+      <input type="password" class="form-control" placeholder="Password" aria-label="Password" name="password" id="password">
     </div>
 
     <div class="input-group mb-3">
@@ -56,10 +59,12 @@
       </div>
     </div>
 
-    <p>
-      <input class="btn btn-primary float-right" type="button" value="马上注册" onclick="javascript:register();">
+    <p class="clearfix">
+      <input class="btn btn-primary btn-block" type="button" value="立刻注册" onclick="javascript:register();">
+      <button class="btn btn-secondary btn-block" id="btn" name="button" onclick="javascript:location.href='{{ action('PublicController@login') }}';">有帐号？</button>
     </p>
   </form>
+</div>
 @endsection
 @section('script')
 <script type="text/javascript">

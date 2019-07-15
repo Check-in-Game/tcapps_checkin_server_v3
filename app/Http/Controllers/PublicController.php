@@ -10,41 +10,7 @@ use Illuminate\Http\Request;
 class PublicController extends Controller {
 
     public function index() {
-      $db_prefix = env('DB_PREFIX');
-      $charts = DB::table('lists_v2')
-              ->join('user_accounts', 'lists_v2.uid', '=', 'user_accounts.uid')
-              ->select(DB::raw("{$db_prefix}user_accounts.uid,{$db_prefix}user_accounts.username,sum({$db_prefix}lists_v2.worth) as allWorth"))
-              ->where('lists_v2.check_time', '>', date('Y-m-d H:i:s', strtotime('-1 week')))
-              ->where('lists_v2.tid', '<>', 3)
-              ->where('lists_v2.tid', '<>', 5)
-              ->where('lists_v2.status', 1)
-              ->where('user_accounts.status', 1)
-              ->groupBy('user_accounts.username')
-              ->orderBy('allWorth', 'desc')
-              ->limit(100)
-              ->get();
-      // 全部勋章
-      $allBadges_r = DB::table('badges')->get()->map(function($value){return (Array)$value;})->toArray();
-      $allBadges   = [];
-      foreach ($allBadges_r as $key => $value) {
-        $allBadges[$value['bid']] = $value;
-      }
-      // 佩戴勋章
-      $badges = [];
-      foreach ($charts as $key => $value) {
-        $badge = DB::table('badges_wear')
-            ->where('badges_wear.uid', $value->uid)
-            ->first();
-        if( $badge ) {
-          $badges[$value->uid] = $badge->bid;
-        }
-      }
-      $data = [
-        'charts'      => $charts,
-        'badges'      => $badges,
-        'allBadges'   => $allBadges,
-      ];
-      return view('public.index', $data);
+      return view('public.index');
     }
 
     public function register() {
@@ -126,11 +92,6 @@ class PublicController extends Controller {
       }
     }
 
-    // 在线签到器
-    public function webCheckin() {
-      return view('public.webCheckin');
-    }
-
     // 登录
     public function login() {
       return view('public.login');
@@ -140,43 +101,4 @@ class PublicController extends Controller {
     public function alert($error, $content) {
       return view('public.alert', ['error' => $error, 'content' => $content]);
     }
-
-    // 鸣谢页面
-    public function credit() {
-      return view('public.credit');
-    }
-
-    // 鸣谢页面
-    public function leaderboard() {
-      $type = request()->get('type');
-      $db_prefix = env('DB_PREFIX');
-      if ($type === 'week') {
-        $typeName = '7日活跃榜';
-        $timeLimitation = date('Y-m-d H:i:s', strtotime('-1 week'));
-      }else if($type === 'month') {
-        $typeName = '31日活跃榜';
-        $timeLimitation = date('Y-m-d H:i:s', strtotime('-1 month'));
-      }else{
-        $typeName = '天梯榜';
-        $timeLimitation = date('Y-m-d H:i:s', 0);
-      }
-      $charts = DB::table('lists_v2')
-      ->join('user_accounts', 'lists_v2.uid', '=', 'user_accounts.uid')
-      ->select(DB::raw("{$db_prefix}user_accounts.uid,{$db_prefix}user_accounts.username,sum({$db_prefix}lists_v2.worth) as allWorth"))
-      ->where('lists_v2.check_time', '>', $timeLimitation)
-      ->where('lists_v2.tid', '<>', 3)
-      ->where('lists_v2.tid', '<>', 5)
-      ->where('lists_v2.status', 1)
-      ->where('user_accounts.status', 1)
-      ->groupBy('user_accounts.username')
-      ->orderBy('allWorth', 'desc')
-      ->limit(100)
-      ->get();
-      $data = [
-        'charts'    => $charts,
-        'typeName'  => $typeName,
-      ];
-      return view('public.leaderboard', $data);
-    }
-
 }
