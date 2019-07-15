@@ -471,18 +471,26 @@ class APIUser extends Controller {
         'status'  => 1,
       );
       $db = DB::table('v3_recycle_records')->sharedLock()->insert($data);
-      if ($point_add === 0) {
+      if ($point_add !== 0) {
         // 查询用户积分
-        $point = DB::table('v3_user_point')->where('uid', $uid)->lockForUpdate()->value('point');
+        $point = DB::table('v3_user_point')
+                  ->where('uid', $uid)
+                  ->lockForUpdate()
+                  ->exists();
         // 无记录
-        if ($point === false || $point === null) {
+        if (!$point) {
           $data = array(
             'uid'   => $uid,
             'point' => $point_add
           );
-          $db = DB::table('v3_user_point')->insert($data);
+          $db = DB::table('v3_user_point')
+                  ->sharedLock()
+                  ->insert($data);
         }else{
-          $db = DB::table('v3_user_point')->where('uid', $uid)->lockForUpdate()->increment('point', $point_add);
+          $db = DB::table('v3_user_point')
+                  ->where('uid', $uid)
+                  ->lockForUpdate()
+                  ->increment('point', $point_add);
         }
       }else{
         $db = true;
