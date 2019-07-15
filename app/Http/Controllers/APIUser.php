@@ -185,16 +185,16 @@ class APIUser extends Controller {
       }else{
         // 更新购买信息
         // 查询是否有对应IID的记录
-        $db = DB::table('v3_user_items')
-            ->where('uid', $user->uid)
-            ->sharedLock()
-            ->value("items->{$good->iid}->count");
-        if ($db) {
+        $item_db = DB::table('v3_user_items')
+                    ->where('uid', $user->uid)
+                    ->sharedLock()
+                    ->value("items->{$good->iid}->count");
+        if ($item_db || $item_db === 0) {
           // 存在对应IID记录
           $db = DB::table('v3_user_items')
                 ->where('uid', $user->uid)
                 ->lockForUpdate()
-                ->update(["items->{$good->iid}->count" => $item_count + $db]);
+                ->update(["items->{$good->iid}->count" => $item_count + $item_db]);
         }else{
           // 创建对应记录
           $db = DB::table('v3_user_items')
