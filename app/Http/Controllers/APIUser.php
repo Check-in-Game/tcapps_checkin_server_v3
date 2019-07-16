@@ -138,21 +138,6 @@ class APIUser extends Controller {
         $json = $this->JSON(2506, 'Purchasing times limited('. $userR .').', ['rest'  => $good->rebuy - $userR]);
         return response($json);
       }
-      // 创建购买记录
-      $data = [
-        'uid'           => $user->uid,
-        'cid'           => $good->cid,
-        'iid'           => $good->iid,
-        'item_count'    => $item_count,
-        'cost'          => $cost,
-        'purchase_time' => date('Y-m-d H:i:s'),
-        'status'        => 1
-      ];
-      $pid = DB::table('v3_purchase_records')->sharedLock()->insert($data);
-      if (!$pid) {
-        $json = $this->JSON(2507, 'Unknown error.', null);
-        return response($json);
-      }
       // 查询用户余额
       $balance = DB::table('v3_user_point')
                 ->where('uid', $user->uid)
@@ -174,6 +159,20 @@ class APIUser extends Controller {
         return response($json);
       }
       // 注册购买信息
+      $data = [
+        'uid'           => $user->uid,
+        'cid'           => $good->cid,
+        'iid'           => $good->iid,
+        'item_count'    => $item_count,
+        'cost'          => $cost,
+        'purchase_time' => date('Y-m-d H:i:s'),
+        'status'        => 1
+      ];
+      $pid = DB::table('v3_purchase_records')->sharedLock()->insert($data);
+      if (!$pid) {
+        $json = $this->JSON(2507, 'Unknown error.', null);
+        return response($json);
+      }
       // 查询用户资源
       $user_items = DB::table('v3_user_items')
                     ->where('uid', $user->uid)
