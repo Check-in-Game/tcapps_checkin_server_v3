@@ -102,9 +102,9 @@ class APIUser extends Controller {
       // 计算花费
       // 查询促销状态
       if ($good->onsale === 1 && $now >= $good->sale_starttime && $now <= $good->sale_endtime) {
-        $cost = $good->sale_cost;
+        $cost = $good->sale_cost * $item_count;
       }else{
-        $cost = $good->cost;
+        $cost = $good->cost * $item_count;
       }
       // 判断购买时间是否合法
       if ($good->endtime !== '1970-01-01 00:00:00' && $now > $good->endtime) {
