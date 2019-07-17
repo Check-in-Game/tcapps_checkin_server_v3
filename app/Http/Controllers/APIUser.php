@@ -839,4 +839,65 @@ class APIUser extends Controller {
         return response($json);
       }
     }
+    // Worker 升级查询
+    public function worker_upgrade_query() {
+      $uid      = request()->cookie('uid');
+      $wid      = request()->post('wid');
+      if (is_null($wid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 查询此Worker信息
+      $worker = DB::table('v3_user_workers')
+                  ->where('uid', $uid)
+                  ->where('wid', $wid)
+                  ->where('status', 1)
+                  ->first();
+      if (!$worker) {
+        $json = $this->JSON(4901, 'Worker not exists.', null);
+        return response($json);
+      }
+      // 查询最高等级限制
+      $max_level = $this->sysconfig('worker_max_level');
+      if ($worker->level + 1 > $max_level) {
+        $json = $this->JSON(4902, 'Highest level now.', null);
+        return response($json);
+      }
+      // 查询额外需求
+      $extra = DB::table('v3_user_workers_upgrade')
+                ->where('level', $worker->level)
+                ->where('status', 1)
+                ->first();
+      if (!$extra) {
+        $json = $this->JSON(4903, 'Highest level now.', null);
+        return response($json);
+      }
+      // 计算基础需求：（等级+1）*10 的可莫尔
+      $demands = [
+        '5' => ($worker->level + 1) * 10
+      ];
+      // 叠加额外需求
+      $extra_point = $extra->point;
+      $extra_resources = json_decode($extra->resources, true);
+      if (count($extra_resources) !== 0) {
+        $demands = $demands + $extra_resources;
+      }
+      $_demands_detail = DB::table('v3_items')
+                          ->whereIn('iid', array_keys($demands))
+                          ->get();
+      if (!$_demands_detail) {
+        $json = $this->JSON(4904, 'Failed to get items info.', null);
+        return response($json);
+      }
+      // 整理需求详细
+      foreach ($_demands_detail as $key => $value) {
+        $demands_detail[$value->iid] = $value;
+      }
+      $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => array(
+        'demands'        => $demands,
+        'items'          => $demands_detail,
+        'point'          => $extra_point,
+      )]);
+      return response($json);
+    }
 }

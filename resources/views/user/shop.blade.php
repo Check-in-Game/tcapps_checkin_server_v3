@@ -3,6 +3,9 @@
 资源商城
 @endsection
 @section('body')
+<div class="alert alert-primary">
+  当前积分：{{ $point }}
+</div>
 <div class="row">
   @if($goods)
   @foreach($goods as $key => $value)

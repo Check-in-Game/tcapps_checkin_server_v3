@@ -61,6 +61,9 @@ Route::post('/worker/harvest_query', 'APIUser@worker_harvest_query')
   // harvest
 Route::post('/worker/harvest', 'APIUser@worker_harvest')
       ->middleware('apicheck.auth');
+  // query worker upgrade demands
+Route::post('/worker/upgrade_query', 'APIUser@worker_upgrade_query')
+      ->middleware('apicheck.auth');
 
 // =======ADMIN=======
 // 数据迁移

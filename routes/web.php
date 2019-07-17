@@ -32,6 +32,7 @@ Route::get('/user/security/password', 'UserController@security_change_password')
 Route::get('/user/recycle', 'UserController@recycle')                             ->middleware('check.auth', 'notice:8');
 Route::get('/user/blend', 'UserController@blend')                                 ->middleware('check.auth', 'notice:9');
 Route::get('/user/worker', 'UserController@worker')                               ->middleware('check.auth', 'notice:10');
+Route::get('/user/worker_upgrade', 'UserController@worker_upgrade')               ->middleware('check.auth', 'notice:13');
 // Route::get('/user/badges', 'UserController@badges')                               ->middleware('check.auth', 'notice:25');
 Route::get('/user/security/username', 'UserController@username_modify')           ->middleware('check.auth', 'notice:26');
 Route::get('/user/resources', 'UserController@user_resources')                    ->middleware('check.auth', 'notice:27');

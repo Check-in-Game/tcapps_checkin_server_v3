@@ -97,10 +97,14 @@ class UserController extends Controller {
         $shop[$key]['all_bought'] = $all;
         $shop[$key]['user_bought'] = $userR;
       }
+      $point = DB::table('v3_user_point')
+              ->where('uid', $user->uid)
+              ->value('point');
       $data = [
         'uid'             => $uid,
         'username'        => $username,
         'goods'           => $shop,
+        'point'           => $point ? $point : 0,
       ];
       return view('user.shop', $data);
     }
@@ -279,5 +283,20 @@ class UserController extends Controller {
         'field_workers_mine'  => $field_workers_mine,
       );
       return view('user.worker', $data);
+    }
+
+    // Worker升级
+    public function worker_upgrade() {
+      $uid = request()->cookie('uid');
+      $workers = DB::table('v3_user_workers')
+                  ->where('uid', $uid)
+                  ->where('status', 1)
+                  ->orderBy('level', 'desc')
+                  ->lockForUpdate()
+                  ->paginate(25);
+      $data = array(
+        'workers'        => $workers,
+      );
+      return view('user.worker_upgrade', $data);
     }
 }

@@ -68,6 +68,18 @@ create table tcapps_checkin_v3_user_workers_field(
 )comment="Worker产区表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 INSERT INTO `checkin_tcapps`.`tcapps_checkin_v3_user_workers_field` (`fid`, `fname`, `iid`, `speed`, `times`, `limi_count`, `limi_level`, `status`) VALUES (NULL, '粉色可莫尔（普通）', '1', '0.1', '1', '0', '1', '1');
 
+#Worker升级额外需求表v3
+create table tcapps_checkin_v3_user_workers_upgrade(
+  level int unsigned primary key not null comment "原始等级",
+  point int unsigned not null default 0 comment "积分需求",
+  resources json not null comment "需求物品",
+  status tinyint not null default 1 comment "状态"
+)comment="Worker升级额外需求表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+INSERT INTO `tcapps_checkin_v3_user_workers_upgrade` (`level`, `point`, `resources`, `status`) VALUES (1, 0, '{}', 1);
+INSERT INTO `tcapps_checkin_v3_user_workers_upgrade` (`level`, `point`, `resources`, `status`) VALUES (2, 100, '{}', 1);
+INSERT INTO `tcapps_checkin_v3_user_workers_upgrade` (`level`, `point`, `resources`, `status`) VALUES (3, 250, '{"13": 1}', 1);
+INSERT INTO `tcapps_checkin_v3_user_workers_upgrade` (`level`, `point`, `resources`, `status`) VALUES (4, 600, '{"13": 8}', 1);
+
 #积分系统v3
 create table tcapps_checkin_v3_user_point(
   uid int unsigned primary key not null comment "用户ID",
@@ -200,5 +212,6 @@ create table tcapps_checkin_system(
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('register_available', 'true', '是否开通注册通道');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('badges_wear_limit', 1, '用户佩戴勋章数量限制');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('cdn_prefix', 'https://cdn.jsdelivr.net/gh/jokin1999/checkin-static', 'CDN');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('worker_max_level', 5, '最高Worker等级');
 
 ```

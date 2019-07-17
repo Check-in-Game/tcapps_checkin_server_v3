@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -24,11 +25,19 @@ class Controller extends BaseController
     }
 
     // 生成返回JSON
-    public function JSON($errno, $error, $body) {
+    public function JSON(string $errno, $error, $body) {
       return [
         'errno'     => $errno,
         'error'     => $error,
         'body'      => $body
       ];
+    }
+
+    // 查询系统设置
+    public function sysconfig(string $name) {
+      $sys = DB::table('system')
+              ->where('skey', $name)
+              ->value('svalue');
+      return $sys;
     }
 }
