@@ -99,7 +99,7 @@ Worker管理
 @section('extraModalContent')
 <!-- 投入 -->
 <div class="modal fade" id="_assign" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="_assign_title">投入矿区</h5>
@@ -224,11 +224,11 @@ Worker管理
     });
     $('#btn_assign_' + fid).attr('disabled', 'disabled');
     $.ajax({
-      url: '/api/worker',
+      url: '/api/worker/assign_query',
       type: 'post',
       dataType: 'json',
       data: {
-        'fid': 0
+        'fid': fid
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){

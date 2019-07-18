@@ -583,6 +583,38 @@ class APIUser extends Controller {
       }
     }
 
+    // Worker查询
+    public function worker_assign_query() {
+      $uid    = request()->cookie('uid');
+      $fid    = request()->post('fid');
+      if (is_null($fid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      $level = DB::table('v3_user_workers_field')
+                ->where('fid', $fid)
+                ->value('limi_level');
+      if ($level === null || $level === false) {
+        $json = $this->JSON(4301, 'Failed to find workers.', null);
+        return response($json);
+      }
+      $db = DB::table('v3_user_workers')
+          ->where('uid', $uid)
+          ->where('fid', 0)
+          ->where('level', '>=', $level)
+          ->where('status', 1)
+          ->orderBy('level', 'desc')
+          ->lockForUpdate()
+          ->get();
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $db]);
+        return response($json);
+      }else{
+        $json = $this->JSON(4301, 'Failed to find workers.', null);
+        return response($json);
+      }
+    }
+
     // Worker投放
     public function worker_assign() {
       $uid    = request()->cookie('uid');
@@ -839,6 +871,7 @@ class APIUser extends Controller {
         return response($json);
       }
     }
+
     // Worker 升级查询
     public function worker_upgrade_query() {
       $uid      = request()->cookie('uid');
@@ -899,5 +932,140 @@ class APIUser extends Controller {
         'point'          => $extra_point,
       )]);
       return response($json);
+    }
+
+    // Worker 升级
+    public function worker_upgrade() {
+      $uid      = request()->cookie('uid');
+      $wid      = request()->post('wid');
+      if (is_null($wid)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 查询此Worker信息
+      $worker = DB::table('v3_user_workers')
+                  ->where('uid', $uid)
+                  ->where('wid', $wid)
+                  ->where('status', 1)
+                  ->first();
+      if (!$worker) {
+        $json = $this->JSON(5001, 'Worker not exists.', null);
+        return response($json);
+      }
+      // 查询最高等级限制
+      $max_level = $this->sysconfig('worker_max_level');
+      if ($worker->level + 1 > $max_level) {
+        $json = $this->JSON(5002, 'Highest level now.', null);
+        return response($json);
+      }
+      // 查询额外需求
+      $extra = DB::table('v3_user_workers_upgrade')
+                ->where('level', $worker->level)
+                ->where('status', 1)
+                ->first();
+      if (!$extra) {
+        $json = $this->JSON(5003, 'Highest level now.', null);
+        return response($json);
+      }
+      // 计算基础需求：（等级+1）*10 的可莫尔
+      $demands = [
+        '5' => ($worker->level + 1) * 10
+      ];
+      // 叠加额外需求
+      $extra_point = $extra->point;
+      $extra_resources = json_decode($extra->resources, true);
+      if (count($extra_resources) !== 0) {
+        $demands = $demands + $extra_resources;
+      }
+      // 检查积分是否富裕
+      $db_point = DB::table('v3_user_point')
+                    ->where('uid', $uid)
+                    ->where('point', '>=', $extra_point)
+                    ->lockForUpdate()
+                    ->value('point');
+      if (!$db_point) {
+        $json = $this->JSON(5004, 'Point is insufficient.', null);
+        return response($json);
+      }
+      // 检查物品是否充裕
+      $has_items = [];  // 记录各个物品的存有数量
+      foreach ($demands as $iid => $demand) {
+        $db = DB::table('v3_user_items')
+                ->where('uid', $uid)
+                ->where("items->{$iid}->count", '>=', $demand)
+                ->value("items->{$iid}->count");
+        if ($db === null || $db === false) {
+          $json = $this->JSON(5005, 'Resource is insufficient.', $iid);
+          return response($json);
+        }
+        $has_items[$iid]  = $db;
+      }
+      // 扣除积分
+      if ($extra_point !== 0) {
+        $_point = $db_point;  // 原始积分
+        $db_point = DB::table('v3_user_point')
+        ->where('uid', $uid)
+        ->where('point', '>=', $extra_point)
+        ->lockForUpdate()
+        ->decrement('point', $extra_point);
+        if (!$db_point) {
+          // 回复原始积分
+          DB::table('v3_user_point')
+          ->where('uid', $uid)
+          ->lockForUpdate()
+          ->update(['point' => $_point]);
+          $json = $this->JSON(5004, 'Point is insufficient.', null);
+          return response($json);
+        }
+      }
+      // 查询原始物品
+      $_items = DB::table('v3_user_items')
+                  ->where('uid', $uid)
+                  ->sharedLock()
+                  ->value('items');
+      if (!$_items) {
+        $json = $this->JSON(5005, 'Resource is insufficient.', $iid);
+        return response($json);
+      }
+      // 扣除物品
+      foreach($demands as $iid => $demand) {
+        // 计算物品扣除后的剩余数量
+        $rest = $has_items[$iid] - $demand;
+        if ($rest<= 0) {
+          // 删除该物品记录
+          $db = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->lockForUpdate()
+              ->update(['items'=> DB::raw("JSON_REMOVE(items, '$.\"{$iid}\"')")]);
+        }else{
+          // 扣除相应数量
+          $db = DB::table('v3_user_items')
+              ->where('uid', $uid)
+              ->lockForUpdate()
+              ->update(["items->{$iid}->count"  => $rest]);
+        }
+        if (!$db) {
+          // 恢复原始物品
+          DB::table('v3_user_items')
+            ->where('uid', $uid)
+            ->lockForUpdate()
+            ->update(["items"  => $_items]);
+          $json = $this->JSON(5005, 'Failed to update resources amounts.', null);
+          return response($json);
+        }
+      }
+      // 升级Worker
+      $worker = DB::table('v3_user_workers')
+                  ->where('uid', $uid)
+                  ->where('wid', $wid)
+                  ->where('status', 1)
+                  ->increment('level');
+      if (!$worker) {
+        $json = $this->JSON(5006, 'Failed to upgrade worker.', null);
+        return response($json);
+      }else{
+        $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $db]);
+        return response($json);
+      }
     }
 }

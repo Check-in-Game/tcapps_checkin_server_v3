@@ -49,6 +49,9 @@ Route::get('/worker/redeem', 'APIUser@worker_redeem')
   // get worker list
 Route::post('/worker', 'APIUser@worker')
       ->middleware('apicheck.auth');
+  // get specific worker list
+Route::post('/worker/assign_query', 'APIUser@worker_assign_query')
+      ->middleware('apicheck.auth');
   // assign worker to a field
 Route::post('/worker/assign', 'APIUser@worker_assign')
       ->middleware('apicheck.auth');
@@ -63,6 +66,9 @@ Route::post('/worker/harvest', 'APIUser@worker_harvest')
       ->middleware('apicheck.auth');
   // query worker upgrade demands
 Route::post('/worker/upgrade_query', 'APIUser@worker_upgrade_query')
+      ->middleware('apicheck.auth');
+  // worker upgrade
+Route::post('/worker/upgrade', 'APIUser@worker_upgrade')
       ->middleware('apicheck.auth');
 
 // =======ADMIN=======

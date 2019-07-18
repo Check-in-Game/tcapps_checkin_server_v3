@@ -52,7 +52,7 @@ Worker升级
         </table>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success" onclick="javascript:;" id="btn_harvest_comfirm">确认升级</button>
+        <button type="button" class="btn btn-success" onclick="javascript:;" id="btn_upgrade_comfirm">确认升级</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
       </div>
     </div>
@@ -79,6 +79,7 @@ Worker升级
 </tr>
 </script>
 <script type="text/javascript">
+  let items = [];
   function upgrade_query(wid) {
     let attr = $('#worker_upgrade_btn_' + wid).attr('onclick');
     $('#worker_upgrade_btn_' + wid).removeAttr('onclick');
@@ -101,7 +102,7 @@ Worker升级
       },
       success: function(data){
         if (data.errno == 0) {
-          let items = data.body.data.items;
+          items = data.body.data.items;
           let demands = data.body.data.demands;
           let point = data.body.data.point;
           let table = '';
@@ -115,6 +116,7 @@ Worker升级
             table += _d;
           });
           $('#_upgrade_body_table').append(table);
+          $('#btn_upgrade_comfirm').attr('onclick', 'javascript:upgrade('+wid+');');
           $('#_upgrade').modal({
             backdrop: 'static'
           });
@@ -140,20 +142,15 @@ Worker升级
     });
   }
   function upgrade(wid) {
-    $('#_harvest').modal('hide');
-    let captcha  = $('#captcha').val();
-    if (captcha === '') {
-      m_alert('验证码错误', 'warning');
-      return false;
-    }
+    $('#btn_upgrade_comfirm').attr('onclick', 'javascript:;');
+    $('#_upgrade').modal('hide');
     m_loading();
     $.ajax({
-      url: '/api/worker/harvest',
+      url: '/api/worker/upgrade',
       type: 'post',
       dataType: 'json',
       data: {
-        'fid': fid,
-        'captcha': captcha
+        'wid': wid
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
@@ -164,16 +161,23 @@ Worker升级
       },
       success: function(data){
         if (data.errno == 0) {
-          m_alert('成功收获 ' + data.body.data.profits + ' ' + data.body.data.iname, 'success');
+          $('#w_level_' + wid).text(parseInt($('#w_level_' + wid).text()) + 1);
+          m_tip('升级成功', 'success');
         }else{
-          if (data.errno == 4701) {
-            m_alert('获取该区域信息失败，请稍候再试！', 'danger');
-          }else if(data.errno == 4702){
-            m_alert('发放收益失败，请稍候再试！', 'danger');
-          }else if(data.errno == 4703){
-            m_alert('验证码错误', 'warning');
+          if (data.errno == 5001) {
+            m_alert('获取Worker信息失败，请稍候再试！', 'danger');
+          }else if (data.errno == 5002){
+            m_alert('已经是最高等级啦！', 'warning');
+          }else if (data.errno == 5003){
+            m_alert('已经是最高等级啦！', 'warning');
+          }else if (data.errno == 5004){
+            m_alert('积分不足！', 'danger');
+          }else if (data.errno == 5005){
+            m_alert(items[data.body]['iname'] + '不满足需求', 'danger');
+          }else if (data.errno == 5006){
+            m_alert('升级失败！', 'danger');
           }else{
-            m_alert('网络情况不佳，请稍候再试！', 'danger');
+            m_alert('网络状态不佳，请稍候再试！', 'danger');
           }
         }
       }
