@@ -261,7 +261,7 @@ Worker管理
           });
           $('#_assign').modal();
         }else{
-          if (data.errno === 4301) {
+          if (data.errno == 4301) {
             m_alert('查找失败，请稍候再试！');
           }else{
             m_alert('网络状态不佳，请稍候再试！');
@@ -302,7 +302,7 @@ Worker管理
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           iziToast.info({
             message: '分配Worker(wid:' + wid + ')成功！',
             position: 'topRight',
@@ -310,19 +310,19 @@ Worker管理
           });
           $('#worker_assign_table_' + wid).remove();
         }else{
-          if (data.errno === 4401) {
+          if (data.errno == 4401) {
             iziToast.danger({
               message: '此Worker暂时无法进行分配，请稍候再试！',
               position: 'topRight',
               timeout: 10000
             });
-          }else if(data.errno === 4402){
+          }else if(data.errno == 4402){
             iziToast.warning({
               message: '该产区异常！',
               position: 'topRight',
               timeout: 10000
             });
-          }else if(data.errno === 4403){
+          }else if(data.errno == 4403){
             iziToast.warning({
               message: '该Worker等级不足，无法投入！',
               position: 'topRight',
@@ -363,7 +363,7 @@ Worker管理
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           let workers = data.body.data;
           let node = $('#_query_body_table');
           node.text('');
@@ -380,7 +380,7 @@ Worker管理
           });
           $('#_query').modal();
         }else{
-          if (data.errno === 4301) {
+          if (data.errno == 4301) {
             m_alert('查找失败，请稍候再试！');
           }else{
             m_alert('网络状态不佳，请稍候再试！');

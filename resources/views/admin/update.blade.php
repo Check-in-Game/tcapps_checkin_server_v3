@@ -20,7 +20,7 @@
     m_loading();
     $.getJSON('/api/admin/migrate/' + migrate, function(data){
       m_loading(false);
-      if (data.errno === 0) {
+      if (data.errno == 0) {
         m_alert('迁移成功！', 'success');
       }else{
         m_alert(data.errno + ':' + data.error, 'danger');

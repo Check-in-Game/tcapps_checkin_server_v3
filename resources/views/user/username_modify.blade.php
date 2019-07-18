@@ -68,15 +68,15 @@
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           m_alert('修改成功！');
           location.href = '/user';
         }else{
-          if (data.errno === 3501) {
+          if (data.errno == 3501) {
             m_alert('不合法的用户名！');
-          }else if(data.errno === 3502) {
+          }else if(data.errno == 3502) {
             m_alert('用户状态异常，请联系管理员！');
-          }else if(data.errno === 3503) {
+          }else if(data.errno == 3503) {
             m_alert('修改失败，请刷新页面后重试！');
           }else{
             m_alert('网络状态不佳，请稍候再试');

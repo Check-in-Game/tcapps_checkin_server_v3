@@ -124,13 +124,13 @@ Worker升级
           });
           $('img').tooltip();
         }else{
-          if (data.errno === 4901) {
+          if (data.errno == 4901) {
             m_alert('获取Worker信息失败，请稍候再试！', 'danger');
-          }else if (data.errno === 4902){
+          }else if (data.errno == 4902){
             m_alert('已经是最高等级啦！', 'warning');
-          }else if (data.errno === 4903){
+          }else if (data.errno == 4903){
             m_alert('已经是最高等级啦！', 'warning');
-          }else if (data.errno === 4904){
+          }else if (data.errno == 4904){
             m_alert('已经是最高等级啦！', 'warning');
           }else{
             m_alert('网络状态不佳，请稍候再试！', 'danger');
@@ -163,14 +163,14 @@ Worker升级
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           m_alert('成功收获 ' + data.body.data.profits + ' ' + data.body.data.iname, 'success');
         }else{
-          if (data.errno === 4701) {
+          if (data.errno == 4701) {
             m_alert('获取该区域信息失败，请稍候再试！', 'danger');
-          }else if(data.errno === 4702){
+          }else if(data.errno == 4702){
             m_alert('发放收益失败，请稍候再试！', 'danger');
-          }else if(data.errno === 4703){
+          }else if(data.errno == 4703){
             m_alert('验证码错误', 'warning');
           }else{
             m_alert('网络情况不佳，请稍候再试！', 'danger');
