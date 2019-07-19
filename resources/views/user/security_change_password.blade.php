@@ -74,24 +74,24 @@
       complete: function(XMLHttpRequest, status){
         $('#btn').removeAttr('disabled');
         if (status === 'timeout') {
-          m_alert('响应超时，请稍候再试！');
+          m_alert('响应超时，请稍候再试！', 'warning');
         }
       },
       success: function(data){
-        if (data.errno === 0) {
-          m_alert('修改成功！');
+        if (data.errno == 0) {
+          m_alert('修改成功！', 'success');
           location.href = '';
         }else{
           $('#captcha_img').click();
           $('#captcha').val('');
-          if (data.errno === 2702) {
-            m_alert('（2702）用户状态错误！');
-          }else if(data.errno === 2703) {
-            m_alert('请检查您输入的两个新密码是否一致！');
-          }else if(data.errno === 2704) {
-            m_alert('原密码授权失败！');
+          if (data.errno == 2702) {
+            m_alert('（2702）用户状态错误！', 'danger');
+          }else if(data.errno == 2703) {
+            m_alert('请检查您输入的两个新密码是否一致！', 'danger');
+          }else if(data.errno == 2704) {
+            m_alert('原密码授权失败！', 'danger');
           }else{
-            m_alert('网络状态不佳，请稍候再试');
+            m_alert('网络状态不佳，请稍候再试', 'danger');
           }
         }
       }

@@ -100,18 +100,18 @@ function recycle() {
       }
     },
     success: function(data){
-      if (data.errno === 0) {
+      if (data.errno == 0) {
         m_alert('回收成功！', 'success');
         let value = $('#rc_' + iid).text($('#rc_' + iid).text() - count);
       }else{
         let info = '系统繁忙，请稍候再试';
-        if (data.errno === 4102) {
+        if (data.errno == 4102) {
           info = "拥有的资源数量不足！";
-        }else if(data.errno === 4103) {
+        }else if(data.errno == 4103) {
           info = "错误的物品ID！";
-        }else if(data.errno === 4104) {
+        }else if(data.errno == 4104) {
           info = "扣除资源失败！";
-        }else if(data.errno === 4105) {
+        }else if(data.errno == 4105) {
           info = "增加积分失败！";
         }
         m_alert(info, 'danger');

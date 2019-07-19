@@ -155,7 +155,7 @@
       success: function(data){
         $('#captcha_img').click();
         $('#captcha').val('');
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           $('#btn_clean').attr('disabled', 'disabled');
           $('#btn_clean').text('已经签到过啦~');
           msg = '签到成功：获得' + data.body.data.point + '积分';
@@ -178,13 +178,13 @@
           }
           msg += '！';
           m_alert(msg, 'success');
-        }else if(data.errno === 3901 || data.errno === 3902){
+        }else if(data.errno == 3901 || data.errno == 3902){
           m_alert('签权可能过期了哟，重新登录下吧~', 'warning');
-        }else if(data.errno === 3903){
+        }else if(data.errno == 3903){
           m_alert('您的账户状态异常', 'danger');
-        }else if(data.errno === 3904){
+        }else if(data.errno == 3904){
           m_alert('不要急哟，一天只能擦一次哟', 'danger');
-        }else if(data.errno === 3906){
+        }else if(data.errno == 3906){
           m_alert('验证码填写错误辣！', 'danger');
         }else{
           m_alert('未知错误：' + data.errno, 'danger');

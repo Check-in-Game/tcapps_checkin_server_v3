@@ -3,6 +3,9 @@
 资源商城
 @endsection
 @section('body')
+<div class="alert alert-primary">
+  当前积分：{{ $point }}
+</div>
 <div class="row">
   @if($goods)
   @foreach($goods as $key => $value)
@@ -133,23 +136,23 @@
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           m_tip('购买成功！', 'success');
           $('#btn_g_' + cid).removeAttr('disabled');
         }else{
           $('#btn_g_' + cid).removeAttr('disabled');
           let info = '购买失败！请刷新页面后重试！';
-          if (data.errno === 2503) {
+          if (data.errno == 2503) {
             info = '余额不足！';
-          }else if (data.errno === 2504) {
+          }else if (data.errno == 2504) {
             info = '该商品已经停售！';
             $('#btn_g_' + cid).text('已停售');
             $('#btn_g_' + cid).attr('disabled', 'disabled');
-          }else if (data.errno === 2505) {
+          }else if (data.errno == 2505) {
             info = '该商品库存不足！';
-          }else if (data.errno === 2506) {
+          }else if (data.errno == 2506) {
             info = '该商品剩余购买次数不足！剩余购买次数：' + data.body.rest;
-          }else if (data.errno === 2509) {
+          }else if (data.errno == 2509) {
             info = '错误的购买数量';
           }else{
             info = '系统繁忙，请稍候再试';

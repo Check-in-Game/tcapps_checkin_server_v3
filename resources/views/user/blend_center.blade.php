@@ -91,7 +91,7 @@
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           m_alert('合成成功！', 'success');
           $('#comber_1').text($('#comber_1').text() - comber_count);
           $('#comber_2').text($('#comber_2').text() - comber_count);
@@ -103,7 +103,7 @@
           }
         }else{
           let info = '系统繁忙，请稍候再试';
-          if (data.errno === 4002) {
+          if (data.errno == 4002) {
             info = "可莫尔碎片数量不足！";
           }
           m_alert(info, 'danger');

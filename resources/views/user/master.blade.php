@@ -67,12 +67,19 @@
                 <li><a class="nav-link" href="{{ action('UserController@worker') }}"><i class="fa-fw fas fa-tools"></i> Worker</a></li>
                 <li><a class="nav-link" href="{{ action('UserController@blend') }}"><i class="fa-fw fas fa-mortar-pestle"></i> 合成中心</a></li>
               </ul>
-              <li><a class="nav-link" href="{{ action('UserController@recycle') }}"><i class="fa-fw fas fa-recycle"></i> <span>回收中心</span></a></li>
-              <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-money-check"></i> <span>交易市场</span></a></li>
-              <li><a class="nav-link" href="{{ action('UserController@shop') }}"><i class="fa-fw fas fa-store-alt"></i> <span>资源商城</span></a></li>
             </li>
-            <!-- <li class="menu-header">基金会</li>
-            <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-hotel"></i> <span>科技研发</span></a></li>
+            <li><a class="nav-link" href="{{ action('UserController@recycle') }}"><i class="fa-fw fas fa-recycle"></i> <span>回收中心</span></a></li>
+            <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-money-check"></i> <span>交易市场</span></a></li>
+            <li><a class="nav-link" href="{{ action('UserController@shop') }}"><i class="fa-fw fas fa-store-alt"></i> <span>资源商城</span></a></li>
+            <li><a class="nav-link" href="{{ action('UserController@gifts_reedem') }}"><i class="fa-fw fas fa-gift"></i> <span>礼包兑换</span></a></li>
+            <li class="menu-header">基金会</li>
+            <li class="dropdown">
+              <a href="javascript:;" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa-fw fas fa-angle-double-up"></i> <span>科技升级</span></a>
+              <ul class="dropdown-menu">
+                <li><a class="nav-link" href="{{ action('UserController@worker_upgrade') }}"><i class="fa-fw fas fa-tools"></i> Worker升级</a></li>
+              </ul>
+            </li>
+            <!-- <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-hotel"></i> <span>科技研发</span></a></li>
             <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-handshake"></i> <span>会议中心</span></a></li>
             <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-keyboard"></i> <span>办公中心</span></a></li> -->
           </ul>
@@ -221,11 +228,11 @@ function m_tip(text, color='info', id='_tips', position='topRight', timeout=1000
       break;
     default:
       break;
-    return id;
   }
+  return id;
 }
 function m_tip_close(id) {
-  iziToast.hide({}, document.querySelector(id));
+  iziToast.hide({}, document.querySelector('#' + id));
 }
 function logout() {
   $.getJSON('/api/logout', function(){

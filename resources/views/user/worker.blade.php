@@ -99,7 +99,7 @@ Worker管理
 @section('extraModalContent')
 <!-- 投入 -->
 <div class="modal fade" id="_assign" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="_assign_title">投入矿区</h5>
@@ -224,11 +224,11 @@ Worker管理
     });
     $('#btn_assign_' + fid).attr('disabled', 'disabled');
     $.ajax({
-      url: '/api/worker',
+      url: '/api/worker/assign_query',
       type: 'post',
       dataType: 'json',
       data: {
-        'fid': 0
+        'fid': fid
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
@@ -239,8 +239,8 @@ Worker管理
         }
       },
       success: function(data){
-        if (data.errno === 0) {
-          if( data.body.data.length === 0) {
+        if (data.errno == 0) {
+          if( data.body.data.length == 0) {
             m_alert('无空闲Worker，请撤出后再投入！');
             return false;
           }
@@ -261,7 +261,7 @@ Worker管理
           });
           $('#_assign').modal();
         }else{
-          if (data.errno === 4301) {
+          if (data.errno == 4301) {
             m_alert('查找失败，请稍候再试！');
           }else{
             m_alert('网络状态不佳，请稍候再试！');
@@ -302,7 +302,7 @@ Worker管理
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           iziToast.info({
             message: '分配Worker(wid:' + wid + ')成功！',
             position: 'topRight',
@@ -310,19 +310,19 @@ Worker管理
           });
           $('#worker_assign_table_' + wid).remove();
         }else{
-          if (data.errno === 4401) {
+          if (data.errno == 4401) {
             iziToast.danger({
               message: '此Worker暂时无法进行分配，请稍候再试！',
               position: 'topRight',
               timeout: 10000
             });
-          }else if(data.errno === 4402){
+          }else if(data.errno == 4402){
             iziToast.warning({
               message: '该产区异常！',
               position: 'topRight',
               timeout: 10000
             });
-          }else if(data.errno === 4403){
+          }else if(data.errno == 4403){
             iziToast.warning({
               message: '该Worker等级不足，无法投入！',
               position: 'topRight',
@@ -363,7 +363,7 @@ Worker管理
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           let workers = data.body.data;
           let node = $('#_query_body_table');
           node.text('');
@@ -380,7 +380,7 @@ Worker管理
           });
           $('#_query').modal();
         }else{
-          if (data.errno === 4301) {
+          if (data.errno == 4301) {
             m_alert('查找失败，请稍候再试！');
           }else{
             m_alert('网络状态不佳，请稍候再试！');
@@ -420,7 +420,7 @@ Worker管理
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           iziToast.info({
             message: '撤出Worker(wid:' + wid + ')成功！',
             position: 'topRight',
@@ -428,7 +428,7 @@ Worker管理
           });
           $('#worker_query_table_' + wid).remove();
         }else{
-          if (data.errno === 4501) {
+          if (data.errno == 4501) {
             iziToast.danger({
               message: '此Worker暂时无法进行撤出，请稍候再试！',
               position: 'topRight',
@@ -472,7 +472,7 @@ Worker管理
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           let workers = data.body.data;
           $('#_harvest_field').text(data.body.data.field_info.fid);
           $('#_harvest_field_name').text(data.body.data.field_info.fname);
@@ -491,9 +491,9 @@ Worker管理
             backdrop: 'static'
           });
         }else{
-          if (data.errno === 4601) {
+          if (data.errno == 4601) {
             m_alert('获取该区域信息失败，请稍候再试！', 'danger');
-          }else if (data.errno === 4602){
+          }else if (data.errno == 4602){
             m_alert('该区域没有您的Worker', 'warning');
           }else{
             m_alert('网络状态不佳，请稍候再试！', 'danger');
@@ -526,14 +526,14 @@ Worker管理
         }
       },
       success: function(data){
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           m_alert('成功收获 ' + data.body.data.profits + ' ' + data.body.data.iname, 'success');
         }else{
-          if (data.errno === 4701) {
+          if (data.errno == 4701) {
             m_alert('获取该区域信息失败，请稍候再试！', 'danger');
-          }else if(data.errno === 4702){
+          }else if(data.errno == 4702){
             m_alert('发放收益失败，请稍候再试！', 'danger');
-          }else if(data.errno === 4703){
+          }else if(data.errno == 4703){
             m_alert('验证码错误', 'warning');
           }else{
             m_alert('网络情况不佳，请稍候再试！', 'danger');
@@ -546,15 +546,15 @@ Worker管理
     m_loading();
     $.getJSON('/api/worker/redeem', function(data){
       m_loading(false);
-      if (data.errno === 0) {
+      if (data.errno == 0) {
         m_alert('兑换成功！', 'success');
       }else{
         let info = '兑换失败！请刷新页面后重试！';
-        if (data.errno === 4201) {
+        if (data.errno == 4201) {
           info = '兑换券数量不足！';
-        }else if (data.errno === 4202) {
+        }else if (data.errno == 4202) {
           info = '扣除兑换券失败，请联系管理员追回兑换券！';
-        }else if (data.errno === 4203) {
+        }else if (data.errno == 4203) {
           info = '注册Worker失败，请联系管理员追回兑换券！';
         }
         m_alert(info, 'danger');
