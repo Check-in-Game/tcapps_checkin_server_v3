@@ -71,6 +71,7 @@
             <li><a class="nav-link" href="{{ action('UserController@recycle') }}"><i class="fa-fw fas fa-recycle"></i> <span>回收中心</span></a></li>
             <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-money-check"></i> <span>交易市场</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@shop') }}"><i class="fa-fw fas fa-store-alt"></i> <span>资源商城</span></a></li>
+            <li><a class="nav-link" href="{{ action('UserController@gifts_reedem') }}"><i class="fa-fw fas fa-gift"></i> <span>礼包兑换</span></a></li>
             <li class="menu-header">基金会</li>
             <li class="dropdown">
               <a href="javascript:;" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa-fw fas fa-angle-double-up"></i> <span>科技升级</span></a>

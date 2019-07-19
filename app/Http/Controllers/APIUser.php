@@ -66,6 +66,7 @@ class APIUser extends Controller {
 
     // purchase
     public function purchase() {
+      $uid          = request()->cookie('uid');
       $cid          = request()->post('cid');
       $item_count   = request()->post('count');
       if (is_null($cid) || is_null($item_count)) {
@@ -81,6 +82,7 @@ class APIUser extends Controller {
       // 查询商品信息
       $good = DB::table('v3_shop')
             ->where('cid', $cid)
+            ->where('starttime', '<=', date('Y-m-d H:i:s'))
             ->where('status', 1)
             ->sharedLock()
             ->first();
@@ -89,7 +91,6 @@ class APIUser extends Controller {
         $json = $this->JSON(2501, 'Invaild iid.', null);
         return response($json);
       }
-      $uid = Cookie::get('uid');
       // 获取用户信息
       $user = DB::table('user_accounts')
               ->where('uid', $uid)
@@ -1067,5 +1068,148 @@ class APIUser extends Controller {
         $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $db]);
         return response($json);
       }
+    }
+
+
+    // 礼包兑换
+    public function gifts_reedem() {
+      $uid          = request()->cookie('uid');
+      $token        = request()->post('token');
+      $captcha      = request()->post('captcha');
+      if (is_null($token) || is_null($captcha)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 匹配验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(5101, 'Bad captcha.', null);
+        return response($json);
+      }
+      $now = date('Y-m-d H:i:s');
+      // 查询礼包信息
+      $gifts = DB::table('v3_gifts')
+                ->where('token', $token)
+                ->where('starttime', '<=', date('Y-m-d H:i:s'))
+                ->where('status', 1)
+                ->sharedLock()
+                ->first();
+      // 礼物不存在
+      if (!$gifts) {
+        $json = $this->JSON(5102, 'Invaild iid.', null);
+        return response($json);
+      }
+      // 判断兑换时间是否合法
+      if ($gifts->endtime !== '1970-01-01 00:00:00' && $now > $gifts->endtime) {
+        $json = $this->JSON(5103, 'Invaild time.', null);
+        return response($json);
+      }
+      // 检查礼包存量
+      if ($gifts->all_count !== 0) {
+        $all = DB::table('v3_gifts_reedem_records')
+                ->where('pid', $gifts->pid)
+                ->sharedLock()
+                ->count('rid');
+        if ($all === false) {
+          $json = $this->JSON(5104, 'System is busy.', null);
+          return response($json);
+        }
+        if ($gifts->all_count - $all <= 0) {
+          $json = $this->JSON(5105, 'Insuffcient gifts.', null);
+          return response($json);
+        }
+      }
+      // 检查购买限制
+      $specific_users = json_decode($gifts->specific_users, true);
+      if (count($specific_users) !== 0 && !in_array($uid, $specific_users)) {
+        $json = $this->JSON(5106, 'Failed to reedem.', null);
+        return response($json);
+      }
+      // 检查是否已兑换
+      $is_reedemed = DB::table('v3_gifts_reedem_records')
+                      ->where('uid', $uid)
+                      ->where('pid', $gifts->pid)
+                      ->exists();
+      if ($is_reedemed) {
+        $json = $this->JSON(5109, 'Reedemed.', null);
+        return response($json);
+      }
+      // 解析礼物信息
+      $gifts_items = json_decode($gifts->items, true);
+      // 查询用户资源
+      $user_items = DB::table('v3_user_items')
+                    ->where('uid', $uid)
+                    ->sharedLock()
+                    ->exists();
+      if (!$user_items) {
+        // 首次注册购买信息
+        $data = array(
+          'uid' => $uid,
+          'items' => $gifts->items
+        );
+        $db = DB::table('v3_user_items')->lockForUpdate()->insert($data);
+      }else{
+        // 记录用户原物品信息
+        $user_items = DB::table('v3_user_items')
+                      ->where('uid', $uid)
+                      ->sharedLock()
+                      ->value('items');
+        if (!$user_items) {
+          $json = $this->JSON(5107, 'Failed to reedem.', null);
+          return response($json);
+        }
+        // 更新物品信息
+        foreach($gifts_items as $iid => $value) {
+          // 查询是否有对应IID的记录
+          $item_db = DB::table('v3_user_items')
+                        ->where('uid', $uid)
+                        ->sharedLock()
+                        ->value("items->{$iid}->count");
+          if ($item_db || $item_db === 0) {
+            // 存在对应IID记录
+            $db = DB::table('v3_user_items')
+                    ->where('uid', $uid)
+                    ->lockForUpdate()
+                    ->update(["items->{$iid}->count" => $item_db + $value['count']]);
+          }else{
+            // 创建对应记录
+            $db = DB::table('v3_user_items')
+                    ->where('uid', $uid)
+                    ->lockForUpdate()
+                    ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$iid}\":{\"count\": {$value['count']}}}')")]);
+          }
+          // 恢复用户原始物品信息
+          if (!$db) {
+            $user_items = DB::table('v3_user_items')
+                          ->where('uid', $uid)
+                          ->lockForUpdate()
+                          ->update(['items' => $user_items]);
+            $json = $this->JSON(5108, 'Failed to reedem.', null);
+            return response($json);
+          }
+        }
+      }
+      // 写入兑换记录
+      $data = [
+        'uid'     => $uid,
+        'pid'     => $gifts->pid,
+        'reedem_time' => date('Y-m-d H:i:s'),
+        'status'  => 1
+      ];
+      DB::table('v3_gifts_reedem_records')->sharedLock()->insert($data);
+      // 查询物品信息
+      $gifts_items_keys = array_keys($gifts_items);
+      $_items       = DB::table('v3_items')
+                      ->whereIn('iid', $gifts_items_keys)
+                      ->get();
+      $items = [];
+      foreach($_items as $value) {
+        $items[$value->iid] = $value;
+      }
+      $data = [
+        'items' => $items,
+        'gifts' => $gifts_items
+      ];
+      $json = $this->JSON(0, null, $data);
+      return response($json);
     }
 }

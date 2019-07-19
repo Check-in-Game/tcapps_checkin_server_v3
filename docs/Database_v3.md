@@ -86,6 +86,15 @@ create table tcapps_checkin_v3_user_point(
   point int not null comment "积分数量"
 )comment="积分系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
+#背包系统2 v3
+create table tcapps_checkin_v3_user_backpack(
+  uid int unsigned not null comment "用户ID",
+  iid int unsigned not null comment "物品ID",
+  amount int unsigned not null comment "物品数量",
+  frozen int unsigned not null comment "冻结物品数量",
+  status tinyint not null default 1 comment "状态"
+)comment="背包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
 #背包系统v3
 create table tcapps_checkin_v3_user_items(
   uid int unsigned primary key not null comment "用户ID",
@@ -138,6 +147,28 @@ create table tcapps_checkin_v3_purchase_records(
   purchase_time datetime not null comment "购买时间",
   status tinyint not null default 1 comment "状态"
 )comment="购买记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#礼包系统v3
+create table tcapps_checkin_v3_gifts(
+  pid int unsigned primary key auto_increment not null comment "礼包ID",
+  token varchar(64) unique not null comment "礼包兑换口令",
+  items json not null comment "物品信息",
+  specific_users json not null comment "指定用户",
+  starttime datetime not null default '1970-01-01 00:00:00' comment "兑换开始时间",
+  endtime datetime not null default '1970-01-01 00:00:00' comment "兑换结束时间",
+  all_count int unsigned not null default 0 comment "总兑换数量",
+  description text not null comment "礼包描述",
+  status tinyint not null default 1 comment "状态"
+)comment="礼包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#兑换记录v3
+create table tcapps_checkin_v3_gifts_reedem_records(
+  rid int unsigned auto_increment primary key not null comment "兑换ID",
+  uid int unsigned not null comment "用户ID",
+  pid int unsigned not null comment "礼包ID",
+  reedem_time datetime not null comment "兑换时间",
+  status tinyint not null default 1 comment "状态"
+)comment="兑换记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #回收记录v3
 create table tcapps_checkin_v3_recycle_records(

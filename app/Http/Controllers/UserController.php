@@ -299,4 +299,34 @@ class UserController extends Controller {
       );
       return view('user.worker_upgrade', $data);
     }
+
+    // 交易市场
+    public function market() {
+      $uid = request()->cookie('uid');
+      $workers = DB::table('v3_user_workers')
+                  ->where('uid', $uid)
+                  ->where('status', 1)
+                  ->orderBy('level', 'desc')
+                  ->lockForUpdate()
+                  ->paginate(25);
+      $data = array(
+        'workers'        => $workers,
+      );
+      return view('user.market', $data);
+    }
+
+    // 礼物兑换
+    public function gifts_reedem() {
+      $uid = request()->cookie('uid');
+      $workers = DB::table('v3_user_workers')
+                  ->where('uid', $uid)
+                  ->where('status', 1)
+                  ->orderBy('level', 'desc')
+                  ->lockForUpdate()
+                  ->paginate(25);
+      $data = array(
+        'workers'        => $workers,
+      );
+      return view('user.gifts_reedem', $data);
+    }
 }

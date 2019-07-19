@@ -42,6 +42,10 @@ Route::post('/blend', 'APIUser@blend')
 Route::post('/recycle', 'APIUser@recycle')
       ->middleware('apicheck.auth');
 
+// Gift Reedem
+Route::post('/gifts/reedem', 'APIUser@gifts_reedem')
+      ->middleware('apicheck.auth');
+
 // Worker
   // redeem worker
 Route::get('/worker/redeem', 'APIUser@worker_redeem')
