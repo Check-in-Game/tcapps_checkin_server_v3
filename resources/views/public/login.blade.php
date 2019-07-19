@@ -96,11 +96,11 @@
       success: function(data){
         $('#captcha_img').click();
         $('#captcha').val('');
-        if (data.errno === 0) {
+        if (data.errno == 0) {
           location.href = '/user';
-        }else if(data.errno === 2307){
+        }else if(data.errno == 2307){
           m_alert('服务器开小差辣~', 'danger');
-        }else if(data.errno === 2305){
+        }else if(data.errno == 2305){
           m_alert('验证码错误', 'danger');
         }else{
           m_alert('用户名或密码错误');
