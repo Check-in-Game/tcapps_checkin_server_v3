@@ -34,7 +34,6 @@
         </button>
       </div>
       <div class="modal-body">
-        本次升级需要下方表格中的物品，确认后系统将扣除相应的物品与积分。
         <table class="table table-striped table-hover">
           <thead>
             <tr>
