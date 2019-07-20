@@ -287,7 +287,7 @@ class APIUser extends Controller {
     public function security_change_username() {
       // 获取用户uid
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->sharedLock->first();
+      $user = DB::table('user_accounts')->where('uid', $uid)->sharedLock()->first();
       if (!$user) {
         $json = $this->JSON(3502, 'Invaild user.', null);
         return response($json);
