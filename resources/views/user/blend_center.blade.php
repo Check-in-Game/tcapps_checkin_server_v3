@@ -66,7 +66,11 @@
 <script type="text/javascript">
   function comfirm_blend() {
     // 弹出确认提示
-    let comber_count = $('#blend_count').val();
+    let comber_count = parseInt($('#blend_count').val());
+    if (comber_count <= 0) {
+      m_alert('请输入大于0的整数！', 'danger');
+      return false;
+    }
     $('#comber_count').text(comber_count);
     $('#_comfirm').modal({
       backdrop: 'static'
@@ -75,7 +79,7 @@
   function blend() {
     $('#_comfirm').modal('hide');
     m_loading();
-    let comber_count = $('#blend_count').val();
+    let comber_count = parseInt($('#blend_count').val());
     $.ajax({
       url: '/api/blend',
       type: 'post',
