@@ -216,12 +216,7 @@ Worker管理
 </script>
 <script type="text/javascript">
   function assign_modal(fid) {
-    iziToast.info({
-      id: 'loading-workers',
-      message: '请稍候，加载Workers中...',
-      position: 'topRight',
-      timeout: 10000
-    });
+    m_tip('请稍候，加载Workers中...', 'info', 'loading-workers');
     $('#btn_assign_' + fid).attr('disabled', 'disabled');
     $.ajax({
       url: '/api/worker/assign_query',
@@ -232,7 +227,7 @@ Worker管理
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
-        iziToast.hide({}, document.querySelector('#loading-workers'));
+        m_tip_close('loading-workers');
         $('#btn_assign_' + fid).removeAttr('disabled');
         if (status === 'timeout') {
           m_alert('响应超时，请稍候再试！');
@@ -271,12 +266,7 @@ Worker管理
     });
   }
   function assign(wid, fid) {
-    iziToast.info({
-      id: 'loading-workers-assign',
-      message: '请稍候，投放中...',
-      position: 'topRight',
-      timeout: 10000
-    });
+    m_tip('请稍候，投放中...', 'info', 'loading-workers-assign-' + wid);
     // 清除按钮效果
     let btn_attr_onclick = $('#worker_assign_btn_' + wid).attr('onclick');
     $('#worker_assign_btn_' + wid).attr('onclick', '');
@@ -290,62 +280,32 @@ Worker管理
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
-        iziToast.hide({}, document.querySelector('#loading-workers-assign'));
+        m_tip_close('loading-workers-assign-' + wid);
         $('#worker_assign_btn_' + wid).attr('onclick', btn_attr_onclick);
         if (status === 'timeout') {
-          iziToast.danger({
-            id: 'loading-workers',
-            message: '响应超时，请稍候再试！',
-            position: 'topRight',
-            timeout: 10000
-          });
+          m_tip('响应超时，请稍候再试！', 'danger');
         }
       },
       success: function(data){
         if (data.errno == 0) {
-          iziToast.info({
-            message: '分配Worker(wid:' + wid + ')成功！',
-            position: 'topRight',
-            timeout: 10000
-          });
+          m_tip('分配Worker(wid:' + wid + ')成功！', 'success');
           $('#worker_assign_table_' + wid).remove();
         }else{
           if (data.errno == 4401) {
-            iziToast.danger({
-              message: '此Worker暂时无法进行分配，请稍候再试！',
-              position: 'topRight',
-              timeout: 10000
-            });
+            m_tip('此Worker暂时无法进行分配，请稍候再试！', 'danger');
           }else if(data.errno == 4402){
-            iziToast.warning({
-              message: '该产区异常！',
-              position: 'topRight',
-              timeout: 10000
-            });
+            m_tip('该产区异常，请稍候再试！', 'danger');
           }else if(data.errno == 4403){
-            iziToast.warning({
-              message: '该Worker等级不足，无法投入！',
-              position: 'topRight',
-              timeout: 10000
-            });
+            m_tip('该Worker等级不足，无法投入！', 'warning');
           }else{
-            iziToast.warning({
-              message: '未知错误！',
-              position: 'topRight',
-              timeout: 10000
-            });
+            m_tip('未知错误！', 'warning');
           }
         }
       }
     });
   }
   function query_modal(fid) {
-    iziToast.info({
-      id: 'loading-workers',
-      message: '请稍候，加载Workers中...',
-      position: 'topRight',
-      timeout: 10000
-    });
+    m_tip('请稍候，加载Workers中...', 'info', 'loading-workers');
     $('#btn_query_' + fid).attr('disabled', 'disabled');
     $.ajax({
       url: '/api/worker',
@@ -356,7 +316,7 @@ Worker管理
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
-        iziToast.hide({}, document.querySelector('#loading-workers'));
+        m_tip_close('loading-workers');
         $('#btn_query_' + fid).removeAttr('disabled');
         if (status === 'timeout') {
           m_alert('响应超时，请稍候再试！');
@@ -390,12 +350,7 @@ Worker管理
     });
   }
   function withdraw(wid) {
-    iziToast.info({
-      id: 'loading-workers-assign',
-      message: '请稍候，投放中...',
-      position: 'topRight',
-      timeout: 10000
-    });
+    m_tip('请稍候，撤出中...', 'info', 'loading-workers-assign-' + wid);
     // 清除按钮效果
     let btn_attr_onclick = $('#worker_withdraw_btn_' + wid).attr('onclick');
     $('#worker_withdraw_btn_' + wid).attr('onclick', '');
@@ -408,7 +363,7 @@ Worker管理
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
-        iziToast.hide({}, document.querySelector('#loading-workers-assign'));
+        m_tip_close('loading-workers-assign-' + wid);
         $('#worker_withdraw_btn_' + wid).attr('onclick', btn_attr_onclick);
         if (status === 'timeout') {
           iziToast.danger({
@@ -421,25 +376,13 @@ Worker管理
       },
       success: function(data){
         if (data.errno == 0) {
-          iziToast.info({
-            message: '撤出Worker(wid:' + wid + ')成功！',
-            position: 'topRight',
-            timeout: 10000
-          });
+          m_tip('撤出Worker(wid:' + wid + ')成功！', 'success');
           $('#worker_query_table_' + wid).remove();
         }else{
           if (data.errno == 4501) {
-            iziToast.danger({
-              message: '此Worker暂时无法进行撤出，请稍候再试！',
-              position: 'topRight',
-              timeout: 10000
-            });
+            m_tip('此Worker暂时无法进行撤出，请稍候再试！', 'danger');
           }else{
-            iziToast.warning({
-              message: '未知错误！',
-              position: 'topRight',
-              timeout: 10000
-            });
+            m_tip('此Worker暂时无法进行撤出，请稍候再试！', 'warning');
           }
         }
       }
@@ -449,12 +392,7 @@ Worker管理
     // 刷新验证码
     $('#captcha_img').click();
     $('#captcha').val('');
-    iziToast.info({
-      id: 'loading-fields',
-      message: '请稍候，加载区域信息中...',
-      position: 'topRight',
-      timeout: 10000
-    });
+    m_tip('请稍候，加载区域信息中...', 'info', 'loading-fields');
     $('#btn_harvest_' + fid).attr('disabled', 'disabled');
     $.ajax({
       url: '/api/worker/harvest_query',
@@ -465,7 +403,7 @@ Worker管理
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){
-        iziToast.hide({}, document.querySelector('#loading-fields'));
+        m_tip_close('loading-fields');
         $('#btn_harvest_' + fid).removeAttr('disabled');
         if (status === 'timeout') {
           m_alert('响应超时，请稍候再试！');
@@ -547,7 +485,7 @@ Worker管理
     $.getJSON('/api/worker/redeem', function(data){
       m_loading(false);
       if (data.errno == 0) {
-        m_alert('兑换成功！', 'success');
+        m_tip('兑换成功！', 'success');
       }else{
         let info = '兑换失败！请刷新页面后重试！';
         if (data.errno == 4201) {
@@ -557,7 +495,7 @@ Worker管理
         }else if (data.errno == 4203) {
           info = '注册Worker失败，请联系管理员追回兑换券！';
         }
-        m_alert(info, 'danger');
+        m_tip(info, 'danger');
       }
     });
   }

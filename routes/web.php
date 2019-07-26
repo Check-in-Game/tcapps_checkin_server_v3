@@ -38,6 +38,10 @@ Route::get('/user/gifts/reedem', 'UserController@gifts_reedem')                 
 Route::get('/user/security/username', 'UserController@username_modify')           ->middleware('check.auth', 'notice:26');
 Route::get('/user/resources', 'UserController@user_resources')                    ->middleware('check.auth', 'notice:27');
 
+// 基金会
+Route::get('/foundation/recurit', 'FoundationController@recruit')                 ->middleware('check.auth', 'notice:15');
+
+
 // 管理中心
 Route::get('/admin', 'AdminController@index')                                     ->middleware('check.auth', 'check.admin.auth', 'notice:11');
 Route::get('/admin/update', 'AdminController@update')                             ->middleware('check.auth', 'check.admin.auth', 'notice:12');
