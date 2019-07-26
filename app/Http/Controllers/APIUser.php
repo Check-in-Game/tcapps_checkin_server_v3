@@ -1207,7 +1207,8 @@ class APIUser extends Controller {
       }
       $data = [
         'items' => $items,
-        'gifts' => $gifts_items
+        'gifts' => $gifts_items,
+        'description' => $gifts->description
       ];
       $json = $this->JSON(0, null, $data);
       return response($json);
