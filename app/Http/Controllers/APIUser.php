@@ -122,7 +122,7 @@ class APIUser extends Controller {
         return response($json);
       }
       if ($good->all_count !== 0 && $good->all_count - $all < $item_count) {
-        $json = $this->JSON(2505, 'Insuffcient goods.', null);
+        $json = $this->JSON(2505, 'Insufficient goods.', null);
         return response($json);
       }
       // 检查购买限制
