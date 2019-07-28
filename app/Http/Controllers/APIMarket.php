@@ -356,7 +356,7 @@ class APIMarket extends Controller {
             ->where('uid', $uid)
             ->where('update_time', $item->update_time)
             ->sharedLock()
-            ->update(['count' => 0, 'update_time' => date('Y-m-d H:i:s')]);
+            ->update(['update_time' => date('Y-m-d H:i:s'), 'status' => -2]);
     if (!$db) {
       $json = $this->JSON(5602, 'Failed to pull it off.', null);
       return response($json);

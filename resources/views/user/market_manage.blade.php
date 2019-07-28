@@ -40,7 +40,7 @@
 </nav>
 @else
 <div class="alert alert-primary">
-  还没有可以购买的商品，稍候再来看看吧~
+  还没有商品，挂售以后再来看看吧~
 </div>
 @endif
 @endsection
