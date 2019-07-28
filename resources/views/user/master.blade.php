@@ -12,7 +12,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/style.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/components.min.css">
-  <link rel="stylesheet" href="{{ asset('css/stisla.css') }}">
   <script src="{{ asset('js/app.js') }}" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery-lazy@1.7.10/jquery.lazy.min.js" charset="utf-8"></script>
@@ -64,7 +63,7 @@
             <li><a class="nav-link" href="{{ action('UserController@worker') }}"><i class="fa-fw fas fa-tools"></i> <span>Worker</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@blend') }}"><i class="fa-fw fas fa-mortar-pestle"></i> <span>合成中心</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@recycle') }}"><i class="fa-fw fas fa-recycle"></i> <span>回收中心</span></a></li>
-            <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-money-check"></i> <span>交易市场</span></a></li>
+            <li><a class="nav-link" href="{{ action('UserController@market') }}"><i class="fa-fw fas fa-money-check"></i> <span>交易市场</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@shop') }}"><i class="fa-fw fas fa-store-alt"></i> <span>资源商城</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@gifts_reedem') }}"><i class="fa-fw fas fa-gift"></i> <span>礼包兑换</span></a></li>
             <li class="menu-header">基金会</li>
@@ -102,6 +101,7 @@
         <section class="section">
           <div class="section-header">
             <h1>@yield('header')</h1>
+            @yield('breadcrumb')
           </div>
           <div class="section-body">
             @if(isset($_user) && $_user->status === 0)

@@ -37,6 +37,9 @@ Route::get('/user/gifts/reedem', 'UserController@gifts_reedem')                 
 // Route::get('/user/badges', 'UserController@badges')                               ->middleware('check.auth', 'notice:25');
 Route::get('/user/security/username', 'UserController@username_modify')           ->middleware('check.auth', 'notice:26');
 Route::get('/user/resources', 'UserController@user_resources')                    ->middleware('check.auth', 'notice:27');
+Route::get('/user/market', 'UserController@market')                               ->middleware('check.auth', 'notice:16');
+Route::get('/user/market/sale', 'UserController@market_sale')                     ->middleware('check.auth', 'notice:17');
+Route::get('/user/market/manage', 'UserController@market_manage')                 ->middleware('check.auth', 'notice:18');
 
 // 基金会
 Route::get('/foundation/recurit', 'FoundationController@recruit')                 ->middleware('check.auth', 'notice:15');

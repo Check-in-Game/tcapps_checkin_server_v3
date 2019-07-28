@@ -75,6 +75,24 @@ Route::post('/worker/upgrade_query', 'APIUser@worker_upgrade_query')
 Route::post('/worker/upgrade', 'APIUser@worker_upgrade')
       ->middleware('apicheck.auth');
 
+// Market
+  // query items
+Route::get('/market/sale/query_items', 'APIMarket@query_items')
+      ->middleware('apicheck.auth');
+  // sale items
+Route::post('/market/sale', 'APIMarket@sale')
+      ->middleware('apicheck.auth');
+  // purchase items
+Route::post('/market/purchase', 'APIMarket@purchase')
+      ->middleware('apicheck.auth');
+  // modify price
+Route::post('/market/modify/price', 'APIMarket@modify_price')
+      ->middleware('apicheck.auth');
+  // pull off items
+Route::post('/market/pulloff', 'APIMarket@pulloff')
+      ->middleware('apicheck.auth');
+
+
 // =======ADMIN=======
 // 数据迁移
   // 积分迁移
