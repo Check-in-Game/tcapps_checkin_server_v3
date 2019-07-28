@@ -34,6 +34,10 @@
         </button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-success" role="alert">
+          <h4 class="alert-heading">礼包说明</h4>
+          <p id="_items_body_description"></p>
+        </div>
         <table class="table table-striped table-hover">
           <thead>
             <tr>
@@ -100,7 +104,9 @@
           m_tip('兑换成功！', 'success');
           let items = data.body.items;
           let gifts = data.body.gifts;
+          let description = data.body.description;
           let table = '';
+          $('#_items_body_description').text(description);
           $.each(gifts, function(iid, value){
             let _d = $('#tpl_items_table').text();
             _d = _d.replace('==1==', items[iid]['iname']);

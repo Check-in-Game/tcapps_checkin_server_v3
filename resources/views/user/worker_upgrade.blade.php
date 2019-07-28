@@ -79,7 +79,7 @@ Worker升级
 </tr>
 </script>
 <script type="text/javascript">
-  let items = [];
+  var items = [];
   function upgrade_query(wid) {
     let attr = $('#worker_upgrade_btn_' + wid).attr('onclick');
     $('#worker_upgrade_btn_' + wid).removeAttr('onclick');

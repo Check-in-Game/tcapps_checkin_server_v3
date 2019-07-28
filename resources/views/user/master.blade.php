@@ -10,16 +10,15 @@
   <title>Check-in Game</title>
   <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/stisla@2.3.0/assets/css/style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/stisla@2.3.0/assets/css/components.min.css">
-  <link rel="stylesheet" href="{{ asset('css/stisla.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/components.min.css">
   <script src="{{ asset('js/app.js') }}" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery-lazy@1.7.10/jquery.lazy.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery.nicescroll@3.7.6/jquery.nicescroll.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" charset="utf-8"></script>
-  <script src="https://cdn.jsdelivr.net/npm/stisla@2.3.0/assets/js/stisla.js" charset="utf-8"></script>
-  <script src="https://cdn.jsdelivr.net/npm/stisla@2.3.0/assets/js/scripts.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/stisla.min.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/scripts.min.js" charset="utf-8"></script>
   <link rel="stylesheet" href="https://cdn.staticfile.org/izitoast/1.4.0/css/iziToast.min.css">
   <script src="https://cdn.staticfile.org/izitoast/1.4.0/js/iziToast.min.js" charset="utf-8"></script>
   @yield('meta')
@@ -61,15 +60,10 @@
             <li><a class="nav-link" href="{{ action('UserController@user') }}"><i class="fa-fw fas fa-user-circle"></i> <span>用户面板</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@user_resources') }}"><i class="fa-fw fas fa-box-open"></i> <span>我的资源</span></a></li>
             <li class="menu-header">资源管理</li>
-            <li class="dropdown">
-              <a href="javascript:;" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa-fw fas fa-square"></i> <span>可莫尔</span></a>
-              <ul class="dropdown-menu">
-                <li><a class="nav-link" href="{{ action('UserController@worker') }}"><i class="fa-fw fas fa-tools"></i> Worker</a></li>
-                <li><a class="nav-link" href="{{ action('UserController@blend') }}"><i class="fa-fw fas fa-mortar-pestle"></i> 合成中心</a></li>
-              </ul>
-            </li>
+            <li><a class="nav-link" href="{{ action('UserController@worker') }}"><i class="fa-fw fas fa-tools"></i> <span>Worker</span></a></li>
+            <li><a class="nav-link" href="{{ action('UserController@blend') }}"><i class="fa-fw fas fa-mortar-pestle"></i> <span>合成中心</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@recycle') }}"><i class="fa-fw fas fa-recycle"></i> <span>回收中心</span></a></li>
-            <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-money-check"></i> <span>交易市场</span></a></li>
+            <li><a class="nav-link" href="{{ action('UserController@market') }}"><i class="fa-fw fas fa-money-check"></i> <span>交易市场</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@shop') }}"><i class="fa-fw fas fa-store-alt"></i> <span>资源商城</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@gifts_reedem') }}"><i class="fa-fw fas fa-gift"></i> <span>礼包兑换</span></a></li>
             <li class="menu-header">基金会</li>
@@ -79,9 +73,12 @@
                 <li><a class="nav-link" href="{{ action('UserController@worker_upgrade') }}"><i class="fa-fw fas fa-tools"></i> Worker升级</a></li>
               </ul>
             </li>
-            <!-- <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-hotel"></i> <span>科技研发</span></a></li>
-            <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-handshake"></i> <span>会议中心</span></a></li>
-            <li><a class="nav-link" href="javascript:m_alert('暂未开放', 'warning');"><i class="fa-fw fas fa-keyboard"></i> <span>办公中心</span></a></li> -->
+            <!-- <li class="dropdown">
+              <a href="javascript:;" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa-fw fas fa-keyboard"></i> <span>办公中心</span></a>
+              <ul class="dropdown-menu">
+                <li><a class="nav-link" href="{{ action('FoundationController@recruit') }}"><i class="fa-fw fas fa-file-invoice"></i> <span>招募计划</span></a></li>
+              </ul>
+            </li> -->
           </ul>
 
           <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
@@ -104,6 +101,7 @@
         <section class="section">
           <div class="section-header">
             <h1>@yield('header')</h1>
+            @yield('breadcrumb')
           </div>
           <div class="section-body">
             @if(isset($_user) && $_user->status === 0)
@@ -192,13 +190,13 @@ function m_alert(text, color='primary') {
   $('#modal-alert-content').text(text);
   $('#modal-alert').modal('show');
 }
-function m_tip(text, color='info', id='_tips', position='topRight', timeout=10000) {
+function m_tip(text, color='info', id='_tips', position='bottomRight', timeout=5000) {
   switch (color) {
     case 'info':
       iziToast.info({
         id: id,
         message: text,
-        position: 'topRight',
+        position: position,
         timeout: timeout
       });
       break;
@@ -206,7 +204,7 @@ function m_tip(text, color='info', id='_tips', position='topRight', timeout=1000
       iziToast.success({
         id: id,
         message: text,
-        position: 'topRight',
+        position: position,
         timeout: timeout
       });
       break;
@@ -214,7 +212,15 @@ function m_tip(text, color='info', id='_tips', position='topRight', timeout=1000
       iziToast.warning({
         id: id,
         message: text,
-        position: 'topRight',
+        position: position,
+        timeout: timeout
+      });
+      break;
+    case 'danger':
+      iziToast.error({
+        id: id,
+        message: text,
+        position: position,
         timeout: timeout
       });
       break;
@@ -222,11 +228,17 @@ function m_tip(text, color='info', id='_tips', position='topRight', timeout=1000
       iziToast.error({
         id: id,
         message: text,
-        position: 'topRight',
+        position: position,
         timeout: timeout
       });
       break;
     default:
+      iziToast.info({
+        id: id,
+        message: text,
+        position: position,
+        timeout: timeout
+      });
       break;
   }
   return id;

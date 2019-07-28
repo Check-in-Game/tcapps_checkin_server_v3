@@ -32,6 +32,7 @@ INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `descript
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (11, '一起加倍吧！（1.3倍纪念版）', 1, '/cdn/v2/badges/6.png', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (12, 'v2勋章', 1, '/cdn/v2/badges/7.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 2000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (13, 'Worker兑换券', 1, '/cdn/v3/basic_resources/worker.svg', '一种基础资源的兑换券，兑换后可用于产出资源', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (14, '挂售许可', 6, '/cdn/v3/license/sale.svg', '在交易市场上架物品的凭证', 5, 1);
 
 #物品类型列表v3
 create table tcapps_checkin_v3_items_types(
@@ -43,6 +44,7 @@ INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (2, '基本�
 INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (3, '重要资源');
 INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (4, '特殊资源');
 INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (5, 'Worker');
+INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (6, '许可证');
 
 #Worker注册表v3
 #1为正常状态，2为寄售
@@ -101,6 +103,31 @@ create table tcapps_checkin_v3_user_items(
   items json not null comment "物品"
 )comment="背包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
+#挂售系统v3
+#status 1正常 2锁定 -1强制下架
+create table tcapps_checkin_v3_market_sale(
+  sid int unsigned primary key auto_increment not null comment "挂售ID",
+  uid int unsigned not null comment "用户ID",
+  iid int unsigned not null comment "物品ID",
+  count int unsigned not null comment "挂售数量",
+  price int unsigned not null comment "单价",
+  update_time datetime not null comment "更新时间",
+  status tinyint not null default 1 comment "状态"
+)comment="挂售系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#交易市场购买记录v3
+create table tcapps_checkin_v3_market_purchase_records(
+  pid int unsigned auto_increment primary key not null comment "购买ID",
+  sale_uid int unsigned not null comment "挂售用户ID",
+  purc_uid int unsigned not null comment "购买用户ID",
+  sid int unsigned not null comment "挂售ID",
+  iid int unsigned not null comment "物品ID",
+  price int unsigned not null comment "单价",
+  count int unsigned not null comment "购买数量",
+  purchase_time datetime not null comment "购买时间",
+  status tinyint not null default 1 comment "状态"
+)comment="交易市场购买记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
 #勋章系统v3
 create table tcapps_checkin_v3_badges(
   bid int unsigned auto_increment primary key not null comment "勋章ID",
@@ -135,6 +162,7 @@ INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `si
 INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('4', '20', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '20', 'Worker可产出的基础资源', '1');
 INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('13', '5000', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '5000', '可用于产出可莫尔资源', '1');
 INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('13', '1', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '1', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '5000', '可用于产出可莫尔资源', '1');
+INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('14', '10', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '20', '在交易市场上架物品的凭证', '1');
 
 #购买记录v3
 create table tcapps_checkin_v3_purchase_records(
@@ -242,7 +270,7 @@ create table tcapps_checkin_system(
 )comment="系统设置表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('register_available', 'true', '是否开通注册通道');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('badges_wear_limit', 1, '用户佩戴勋章数量限制');
-INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('cdn_prefix', 'https://cdn.jsdelivr.net/gh/jokin1999/checkin-static', 'CDN');
+INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('cdn_prefix', 'https://cdn.jsdelivr.net/npm/checkin-static', 'CDN');
 INSERT INTO `tcapps_checkin_system` (`skey`, `svalue`, `description`) VALUES ('worker_max_level', 5, '最高Worker等级');
 
 ```
