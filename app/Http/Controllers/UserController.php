@@ -373,6 +373,7 @@ class UserController extends Controller {
                   ->join('v3_items', 'v3_market_sale.iid', '=', 'v3_items.iid')
                   ->where('v3_market_sale.uid', $uid)
                   ->where('v3_market_sale.count', '>', 0)
+                  ->where('v3_market_sale.status', '<>', -2)
                   ->orderBy('v3_market_sale.sid')
                   ->orderBy('v3_market_sale.iid')
                   ->orderBy('v3_market_sale.price')
