@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Captcha;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
-class APICheckIn extends Controller {
+class CheckIn extends Controller {
 
     // 清灰
     public function clean() {

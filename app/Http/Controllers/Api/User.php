@@ -1,13 +1,112 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Cookie;
 use Captcha;
-use Illuminate\Support\Facades\DB;
+use DB;
+use App\Http\Controllers\Common\UserAuth;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class APIUser extends Controller {
+class User extends Controller {
+
+    // Email 发送eg
+    public function __login_old() {
+      $email = '327928971@qq.com';
+      $name = 'Jokin';
+      $code = 'http://twocola.com';
+      $data = ['active_link'=>$code];
+      $this->sendMail('email.activationcode', $email, $name, '欢迎注册我们的网站，请激活您的账号！', $data);
+    }
+
+    // 老用户数据迁移
+    public function login_old() {
+      $old_username    = request()->post('old_username');
+      $old_password    = request()->post('old_password');
+      $username        = request()->post('username');
+      $password        = request()->post('password');
+      $captcha         = request()->post('captcha');
+      if (is_null($old_username) || is_null($old_password) ||
+          is_null($username) || is_null($password) || is_null($captcha)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 匹配验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(5701, 'Bad captcha.', null);
+        return response($json);
+      }
+      // 判断新账户是用户名否符合注册要求
+      $pattern = "/^[a-z][a-zA-Z0-9_]{4,15}$/";
+      if(!preg_match($pattern,$username)){
+        $json = $this->JSON(5703, 'Invaild username.', null);
+        return response($json);
+      }
+      // 判断新账户密码是否符合注册要求
+      $pattern = "/^.{6,16}$/";
+      if(!preg_match($pattern,$password)){
+        $json = $this->JSON(5704, 'Invaild password.', null);
+        return response($json);
+      }
+      // 签权老账户密码
+      $old_password = md5($old_password.'tcAppsCheckIn@)!(');
+      // 匹配原账户密码
+      $old_account = DB::table('user_accounts')
+                      ->where('username', $old_username)
+                      ->where('password', $old_password)
+                      ->where('status', 1)
+                      ->first();
+      // 账户不存在
+      if (!$old_account) {
+        $json = $this->JSON(5702, 'Incorrect old account.', null);
+        return response($json);
+      }
+      // 判断新账户是否已经被注册
+      $new_account = DB::table('v3_user_accounts')
+                      ->where('username', $username)
+                      ->exists();
+      // 该用户名已经被使用
+      if ($new_account) {
+        $json = $this->JSON(5705, 'Used username.', null);
+        return response($json);
+      }
+      // 注册用户
+      $data = [
+        'username'  => $username,
+        'nickname'  => $username,
+        'password'  => UserAuth::generate_password($password),
+        'status'    => 1,
+      ];
+      $new_account = DB::table('v3_user_accounts')->insert($data);
+      // 写入数据库失败
+      if (!$new_account) {
+        $json = $this->JSON(5706, 'Unknown error.', null);
+        return response($json);
+      }
+      // 读取原有资产
+      $items = DB::table('v3_user_items')
+                ->where('uid', $old_account->uid)
+                ->value('items');
+
+      if ($items && count($items = json_decode($items, true)) > 0) {
+        // 转移资产
+        foreach($items as $iid => $value) {
+          $data = [
+            'uid'     => $old_account->uid,
+            'iid'     => $iid,
+            'amount'  => $value['count'],
+            'status'  => 1
+          ];
+          $uid = DB::table('v3_user_backpack')->insertGetId($data);
+        }
+      }
+      $auth = UserAuth::generate_auth($password, $uid, 1);
+      Cookie::queue('uid', $uid);
+      Cookie::queue('auth', $auth);
+      $json = $this->JSON(0, null, ['msg'  => 'Success!']);
+      return response($json);
+    }
 
     // 登录
     public function login() {
@@ -30,7 +129,7 @@ class APIUser extends Controller {
         return response($json);
       }
       // 获取用户名密码
-      $user = DB::table('user_accounts')
+      $user = DB::table('v3_user_accounts')
             ->where('username', $username)
             ->lockForUpdate()
             ->first();
@@ -39,7 +138,7 @@ class APIUser extends Controller {
         return response($json);
       }
       // 匹配密码
-      if ($user->password !== $this->generate_password($password)) {
+      if ($user->password !==  UserAuth::generate_password($password)) {
         $json = $this->JSON(2303, 'Incorrect username or password.', null);
         return response($json);
       }
@@ -49,7 +148,7 @@ class APIUser extends Controller {
         return response($json);
       }
       // 登录
-      $auth = $this->generate_auth($user->password, $user->uid, $user->status);
+      $auth = UserAuth::generate_auth($user->password, $user->uid, $user->status);
       $json = $this->JSON(0, null, ['msg'  => 'Success!']);
       return response($json)
             ->withCookie(cookie()->forever('uid', $user->uid))
@@ -259,12 +358,12 @@ class APIUser extends Controller {
         return response($json);
       }
       // 判断原密码是否正确
-      if ($this->generate_password($old_password) !== $user->password) {
+      if (UserAuth::generate_password($old_password) !== $user->password) {
         $json = $this->JSON(2704, 'Bad auth.', null);
         return response($json);
       }
       // 修改密码
-      $password = $this->generate_password($new_password);
+      $password = UserAuth::generate_password($new_password);
       $data = [
         'password'  => $password
       ];

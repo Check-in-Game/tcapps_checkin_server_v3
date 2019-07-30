@@ -2,8 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use DB;
 use Closure;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Common\UserAuth;
 
 class APICheckAuth
 {
@@ -30,7 +31,7 @@ class APICheckAuth
       // 获取用户名密码
       $user = DB::table('user_accounts')->where('uid', $uid)->first();
       // Controller/CheckAuth中有重复轮子
-      if (!$user || $auth !== md5($user->password.$user->uid.$user->status.'2*4&%1^@HSIW}>./;2')) {
+      if (!$user || $auth !== UserAuth::generate_auth($user->password, $user->uid, $user->status)) {
         $json =  [
           'errno'     => 2402,
           'error'     => 'Invaild auth.',

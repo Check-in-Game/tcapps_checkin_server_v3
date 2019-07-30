@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Cookie;
 use Captcha;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
-class APIMarket extends Controller {
+class Market extends Controller {
   // 查询可出售物品
   public function query_items() {
     $uid      = request()->cookie('uid');

@@ -2,6 +2,18 @@
 
 ## 数据库设计
 ```
+#用户信息表v3
+#-2：封禁 -1：限制 0：未验证邮件 1：正常
+create table tcapps_checkin_v3_user_accounts(
+  uid int unsigned auto_increment primary key not null comment "用户ID",
+  username varchar(16) unique not null comment "用户名",
+  nickname varchar(16) not null comment "昵称",
+  email varchar(64) not null default '' comment "Email",
+  password varchar(32) not null comment "密码",
+  status tinyint not null default 0 comment "状态"
+)comment="用户信息表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+#insert into tcapps_checkin_v3_user_accounts set username='jokin',password='74e133f544b908be8e30e9cb64e8a536';
+
 #擦灰记录表v3
 create table tcapps_checkin_v3_clean_list(
   uid int unsigned primary key not null comment "用户ID",
@@ -93,7 +105,8 @@ create table tcapps_checkin_v3_user_backpack(
   uid int unsigned not null comment "用户ID",
   iid int unsigned not null comment "物品ID",
   amount int unsigned not null comment "物品数量",
-  frozen int unsigned not null comment "冻结物品数量",
+  locked_amount int unsigned not null default 0 comment "锁定物品数量",
+  frozen int unsigned not null default 0 comment "冻结物品数量",
   status tinyint not null default 1 comment "状态"
 )comment="背包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
 

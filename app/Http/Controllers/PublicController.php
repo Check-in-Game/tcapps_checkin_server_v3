@@ -97,6 +97,11 @@ class PublicController extends Controller {
       return view('public.login');
     }
 
+    // 老用户数据迁移
+    public function login_old() {
+      return view('public.login_old');
+    }
+
     // 告警页面
     public function alert($error, $content) {
       return view('public.alert', ['error' => $error, 'content' => $content]);

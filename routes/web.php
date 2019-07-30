@@ -20,6 +20,7 @@ Route::redirect('/index', '/home');
 Route::get('/home', 'PublicController@index')                                     ->middleware('check.auth:info', 'notice:1');
 // 登录
 Route::get('/login', 'PublicController@login')                                    ->middleware('check.auth:info', 'notice:4');
+Route::get('/login_old', 'PublicController@login_old')                            ->middleware('check.auth:info', 'notice:4');
 // 注册
 Route::match(['get', 'post'], '/register', 'PublicController@register')           ->middleware('check.auth:info', 'notice:2');
 // 排行榜

@@ -15,92 +15,94 @@ use Illuminate\Http\Request;
 
 // =======USER=======
 // Login
-Route::post('/login', 'APIUser@login');
+Route::post('/login', 'Api\User@login');
+Route::post('/login_old', 'Api\User@login_old');
+// Route::post('/login', 'Api\User@login_old');
 // Logout
-Route::get('/logout', 'APIUser@logout')
+Route::get('/logout', 'Api\User@logout')
       ->middleware('apicheck.auth');
 
 // Check in v2
-Route::post('/user/checkin/clean', 'APICheckIn@clean')
+Route::post('/user/checkin/clean', 'Api\CheckIn@clean')
       ->middleware('apicheck.auth');
 
 // Security
-Route::post('/user/security/password', 'APIUser@security_change_password')
+Route::post('/user/security/password', 'Api\User@security_change_password')
       ->middleware('apicheck.auth');
-Route::post('/user/security/username', 'APIUser@security_change_username')
+Route::post('/user/security/username', 'Api\User@security_change_username')
       ->middleware('apicheck.auth');
 
 // Purchase
-Route::post('/purchase', 'APIUser@purchase')
+Route::post('/purchase', 'Api\User@purchase')
       ->middleware('apicheck.auth');
 
 // Blend
-Route::post('/blend', 'APIUser@blend')
+Route::post('/blend', 'Api\User@blend')
       ->middleware('apicheck.auth');
 
 // Recycle
-Route::post('/recycle', 'APIUser@recycle')
+Route::post('/recycle', 'Api\User@recycle')
       ->middleware('apicheck.auth');
 
 // Gift Reedem
-Route::post('/gifts/reedem', 'APIUser@gifts_reedem')
+Route::post('/gifts/reedem', 'Api\User@gifts_reedem')
       ->middleware('apicheck.auth');
 
 // Worker
   // redeem worker
-Route::get('/worker/redeem', 'APIUser@worker_redeem')
+Route::get('/worker/redeem', 'Api\User@worker_redeem')
       ->middleware('apicheck.auth');
   // get worker list
-Route::post('/worker', 'APIUser@worker')
+Route::post('/worker', 'Api\APIUser@worker')
       ->middleware('apicheck.auth');
   // get specific worker list
-Route::post('/worker/assign_query', 'APIUser@worker_assign_query')
+Route::post('/worker/assign_query', 'Api\User@worker_assign_query')
       ->middleware('apicheck.auth');
   // assign worker to a field
-Route::post('/worker/assign', 'APIUser@worker_assign')
+Route::post('/worker/assign', 'Api\User@worker_assign')
       ->middleware('apicheck.auth');
   // withdraw worker from a field
-Route::post('/worker/withdraw', 'APIUser@worker_withdraw')
+Route::post('/worker/withdraw', 'Api\User@worker_withdraw')
       ->middleware('apicheck.auth');
   // query anticipation of harvest
-Route::post('/worker/harvest_query', 'APIUser@worker_harvest_query')
+Route::post('/worker/harvest_query', 'Api\User@worker_harvest_query')
       ->middleware('apicheck.auth');
   // harvest
-Route::post('/worker/harvest', 'APIUser@worker_harvest')
+Route::post('/worker/harvest', 'Api\User@worker_harvest')
       ->middleware('apicheck.auth');
   // query worker upgrade demands
-Route::post('/worker/upgrade_query', 'APIUser@worker_upgrade_query')
+Route::post('/worker/upgrade_query', 'Api\User@worker_upgrade_query')
       ->middleware('apicheck.auth');
   // worker upgrade
-Route::post('/worker/upgrade', 'APIUser@worker_upgrade')
+Route::post('/worker/upgrade', 'Api\User@worker_upgrade')
       ->middleware('apicheck.auth');
 
 // Market
   // query items
-Route::get('/market/sale/query_items', 'APIMarket@query_items')
+Route::get('/market/sale/query_items', 'Api\Market@query_items')
       ->middleware('apicheck.auth');
   // sale items
-Route::post('/market/sale', 'APIMarket@sale')
+Route::post('/market/sale', 'Api\Market@sale')
       ->middleware('apicheck.auth');
   // purchase items
-Route::post('/market/purchase', 'APIMarket@purchase')
+Route::post('/market/purchase', 'Api\Market@purchase')
       ->middleware('apicheck.auth');
   // modify price
-Route::post('/market/modify/price', 'APIMarket@modify_price')
+Route::post('/market/modify/price', 'Api\Market@modify_price')
       ->middleware('apicheck.auth');
   // pull off items
-Route::post('/market/pulloff', 'APIMarket@pulloff')
+Route::post('/market/pulloff', 'Api\Market@pulloff')
       ->middleware('apicheck.auth');
 
 
 // =======ADMIN=======
 // 数据迁移
   // 积分迁移
-Route::get('/admin/migrate/points', 'APIAdmin@migrate_points')
+Route::get('/admin/migrate/points', 'Api\Admin\Admin@migrate_points')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
   // 勋章迁移
-Route::get('/admin/migrate/badges', 'APIAdmin@migrate_badges')
+Route::get('/admin/migrate/badges', 'Api\Admin\Admin@migrate_badges')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
 // // Conpensate
@@ -185,20 +187,20 @@ Route::get('/admin/migrate/badges', 'APIAdmin@migrate_badges')
 
 // Admins 管理权限管理
   // add
-Route::post('/admin/rights/add', 'APIAdmin@admins_rights_add')
+Route::post('/admin/rights/add', 'Api\Admin\Admin@admins_rights_add')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
   // del
-Route::delete('/admin/rights', 'APIAdmin@admins_rights_del')
+Route::delete('/admin/rights', 'Api\Admin\Admin@admins_rights_del')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
 // Admins 管理等级管理
   // update
-Route::post('/admin/level', 'APIAdmin@admin_level_update')
+Route::post('/admin/level', 'Api\Admin\Admin@admin_level_update')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:admin_level_update');
   // update
-Route::delete('/admin/level', 'APIAdmin@admin_level_remove')
+Route::delete('/admin/level', 'Api\Admin\Admin@admin_level_remove')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:admin_level_remove');
 
