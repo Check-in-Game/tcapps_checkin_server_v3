@@ -30,7 +30,13 @@ class CheckAuth
           // 检查匹配
           // 获取用户名密码
           $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
-          if ($user->status == '-2') {
+          // 无法查询到信息
+          if (!$user) {
+            Cookie::queue(cookie()->forget('uid'));
+            Cookie::queue(cookie()->forget('auth'));
+            return redirect("login");
+          }
+          if ($user->status == -2) {
             $data = [
               'error'     => '账户封禁',
               'content'   => '该账户已经被封禁！'
@@ -46,7 +52,7 @@ class CheckAuth
               'content'   => '您的登录状态失效了，请重新登录！'
             ];
             Cookie::queue(cookie()->forget('uid'));
-            // Cookie::queue(cookie()->forget('auth'));
+            Cookie::queue(cookie()->forget('auth'));
             return redirect("alert/{$data['error']}/{$data['content']}");
           }
           // 获取管理权限

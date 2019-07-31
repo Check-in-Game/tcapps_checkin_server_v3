@@ -5,11 +5,13 @@
 #用户信息表v3
 #-2：封禁 -1：限制 0：未验证邮件 1：正常
 create table tcapps_checkin_v3_user_accounts(
-  uid int unsigned auto_increment primary key not null comment "用户ID",
+  uid int unsigned primary key auto_increment not null comment "用户ID",
   username varchar(16) unique not null comment "用户名",
   nickname varchar(16) not null comment "昵称",
   email varchar(64) not null default '' comment "Email",
   password varchar(32) not null comment "密码",
+  register_at datetime not null comment "注册时间",
+  update_at datetime not null comment "最后更新时间",
   status tinyint not null default 0 comment "状态"
 )comment="用户信息表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 #insert into tcapps_checkin_v3_user_accounts set username='jokin',password='74e133f544b908be8e30e9cb64e8a536';

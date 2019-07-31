@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use DB;
 use Cookie;
 use Captcha;
-use DB;
-use App\Http\Controllers\Common\UserAuth;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Common\UserAuth;
 
 class User extends Controller {
 
@@ -49,6 +49,8 @@ class User extends Controller {
         $json = $this->JSON(5704, 'Invaild password.', null);
         return response($json);
       }
+      // 密码加密
+      $password = UserAuth::generate_password($password);
       // 签权老账户密码
       $old_password = md5($old_password.'tcAppsCheckIn@)!(');
       // 匹配原账户密码
@@ -73,17 +75,22 @@ class User extends Controller {
       }
       // 注册用户
       $data = [
-        'username'  => $username,
-        'nickname'  => $username,
-        'password'  => UserAuth::generate_password($password),
-        'status'    => 1,
+        'username'      => $username,
+        'nickname'      => $username,
+        'password'      => $password,
+        'register_at'   => date('Y-m-d H:i:s'),
+        'update_at'     => date('Y-m-d H:i:s'),
+        'status'        => $status = 0, // 未验证邮箱
       ];
-      $new_account = DB::table('v3_user_accounts')->insert($data);
+      $new_account = DB::table('v3_user_accounts')->insertGetId($data);
+      $uid = $new_account;
       // 写入数据库失败
       if (!$new_account) {
         $json = $this->JSON(5706, 'Unknown error.', null);
         return response($json);
       }
+      // 原账户标记已经转移
+      DB::table('user_accounts')->where('uid', $old_account->uid)->update(['status'=> -3]);
       // 读取原有资产
       $items = DB::table('v3_user_items')
                 ->where('uid', $old_account->uid)
@@ -98,14 +105,14 @@ class User extends Controller {
             'amount'  => $value['count'],
             'status'  => 1
           ];
-          $uid = DB::table('v3_user_backpack')->insertGetId($data);
+          DB::table('v3_user_backpack')->insert($data);
         }
       }
-      $auth = UserAuth::generate_auth($password, $uid, 1);
-      Cookie::queue('uid', $uid);
-      Cookie::queue('auth', $auth);
+      $auth = UserAuth::generate_auth($password, $uid, $status);
       $json = $this->JSON(0, null, ['msg'  => 'Success!']);
-      return response($json);
+      return response($json)
+            ->withCookie(cookie()->forever('uid', $uid))
+            ->withCookie(cookie()->forever('auth', $auth));
     }
 
     // 登录
@@ -143,7 +150,7 @@ class User extends Controller {
         return response($json);
       }
       // 用户状态
-      if ($user->status === -1) {
+      if ($user->status === -2) {
         $json = $this->JSON(2306, 'Incorrect user status.', null);
         return response($json);
       }

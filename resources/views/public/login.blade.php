@@ -106,6 +106,8 @@
           location.href = '/user';
         }else if(data.errno == 2307){
           m_alert('服务器开小差辣~', 'danger');
+        }else if(data.errno == 2306){
+          m_alert('该账户被封禁', 'danger');
         }else if(data.errno == 2305){
           m_alert('验证码错误', 'danger');
         }else{
