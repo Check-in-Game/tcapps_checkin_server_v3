@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
+use Cookie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Common\UserAuth;
 
 class UserController extends Controller {
     // 用户中心
@@ -112,11 +114,72 @@ class UserController extends Controller {
     // 修改密码
     public function security_change_password() {
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
       $data = [
         'username'        => $user->username
       ];
       return view('user.security_change_password', $data);
+    }
+
+    // 修改邮箱
+    public function security_email() {
+      $uid = request()->cookie('uid');
+      $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
+      $data = [
+        'username'        => $user->username
+      ];
+      return view('user.security_email', $data);
+    }
+
+    // 验证邮箱
+    public function verify_email($uid, $code) {
+      // 寻找用户
+      $user = DB::table('v3_user_accounts')
+                ->where('uid', $uid)
+                ->where('status', 0)
+                ->first();
+      if (!$user) {
+        $data = [
+          'color'       => 'warning',
+          'msg'         => '用户不存在或状态异常，请稍候重试。'
+        ];
+        return view('user.verify_email', $data);
+      }
+      // 获取邮件注册信息
+      $email_db = DB::table('v3_user_email_verification')
+                    ->where('uid', $uid)
+                    ->where('send_time', '>', date('Y-m-d H:i:s', strtotime('-30 minutes')))
+                    ->first();
+      if (!$email_db) {
+        $data = [
+          'color'       => 'warning',
+          'msg'         => '验证链接已经失效，请重试。'
+        ];
+        return view('user.verify_email', $data);
+      }
+      // 对比code
+      $res = UserAuth::email_code($email_db->send_time, $email_db->uid, $email_db->email, $code);
+      if ($res) {
+        $data = [
+          'email'   => $email_db->email,
+          'status'  => 1,
+        ];
+        DB::table('v3_user_accounts')->where('uid', $uid)->where('status', 0)->update($data);
+        DB::table('v3_user_email_verification')->where('uid', $uid)->delete();
+        $data = [
+          'color'       => 'success',
+          'msg'         => '验证成功！'
+        ];
+        $auth = UserAuth::generate_auth($user->password, $user->uid, 1);
+        Cookie::queue('auth', $auth);
+        return view('user.verify_email', $data);
+      }else{
+        $data = [
+          'color'       => 'danger',
+          'msg'         => '验证链接错误，请重试。'
+        ];
+        return view('user.verify_email', $data);
+      }
     }
 
     // 勋章一览

@@ -17,4 +17,17 @@ class UserAuth extends Controller {
       return md5($password.$uid.$status.env('APP_AUTH_CONFUSION'));
     }
 
+    // 邮箱验证代码
+    static public function email_code(string $now, int $uid, string $email, $code = false) {
+      // 生成代码
+      $real = md5(env('APP_AUTH_CONFUSION').$email.$now.env('APP_PWD_CONFUSION').$uid);
+      if ($code === false) {
+        // 生成验证代码
+        return $real;
+      }else{
+        // 验证
+        return $code === $real ? true : false;
+      }
+    }
+
 }

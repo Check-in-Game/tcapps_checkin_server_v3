@@ -11,15 +11,6 @@ use App\Http\Controllers\Common\UserAuth;
 
 class User extends Controller {
 
-    // Email 发送eg
-    public function __login_old() {
-      $email = '327928971@qq.com';
-      $name = 'Jokin';
-      $code = 'http://twocola.com';
-      $data = ['active_link'=>$code];
-      $this->sendMail('email.activationcode', $email, $name, '欢迎注册我们的网站，请激活您的账号！', $data);
-    }
-
     // 老用户数据迁移
     public function login_old() {
       $old_username    = request()->post('old_username');
@@ -389,50 +380,75 @@ class User extends Controller {
       }
     }
 
-    // 修改用户名
-    public function security_change_username() {
-      // 获取用户uid
-      $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->sharedLock()->first();
+    // 注册邮箱验证
+    public function security_email_verify() {
+      $uid            = request()->cookie('uid');
+      $email          = request()->post('email');
+      $captcha        = request()->post('captcha');
+      if (is_null($email) || is_null($captcha)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 检查验证码
+      if (!Captcha::check($captcha)) {
+        $json = $this->JSON(5801, 'Bad captcha.', null);
+        return response($json);
+      }
+      // 验证邮箱地址
+      $pattern = "/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/";
+      if(!preg_match($pattern,$email)){
+        $json = $this->JSON(5802, 'Bad email address.', null);
+        return response($json);
+      }
+      // 检测邮件重复
+      $db = DB::table('v3_user_accounts')
+              ->where('email', $email)
+              ->exists();
+      if ($db) {
+        $json = $this->JSON(5803, 'Already bound.', null);
+        return response($json);
+      }
+      // 获取用户信息
+      $user = DB::table('v3_user_accounts')
+                ->where('uid', $uid)
+                ->where('status', 0)
+                ->sharedLock()
+                ->first();
       if (!$user) {
-        $json = $this->JSON(3502, 'Invaild user.', null);
-        return response($json);
-      }else if($user->status === 1) {
-        $json = $this->JSON(3503, 'Cannot change username.', null);
+        $json = $this->JSON(5804, 'Invaild user.', null);
         return response($json);
       }
-      $username = Request()->post('username');
-      // 判断用户名是否合法
-      $pattern = "/^[a-zA-Z0-9_]+$/";
-      $preg = preg_match($pattern, $username);
-      if (mb_strlen($username) < 5 || mb_strlen($username) > 16 || !$preg){
-        $json = $this->JSON(3501, 'Invaild username.', null);
+      // 检查注册记录
+      $send_time = DB::table('v3_user_email_verification')
+              ->where('uid', $uid)
+              ->where('send_time', '>', date('Y-m-d H:i:s', strtotime('-60 seconds')))
+              ->value('send_time');
+      if ($send_time) {
+        $rest_sec = 60 - (time() - strtotime($send_time));
+        $json = $this->JSON(5805, 'Too many requests.', ['rest_sec' => $rest_sec]);
         return response($json);
       }
-      // 用户名不合法状态
-      if ($user->status === 0) {
-        $data = [
-          'username'  => $username,
-          'status'    => 1,         // 修正合法状态
-        ];
-      }else{
-        // 其他情况不修改状态
-        $json = $this->JSON(3503, 'Failed to change username.', null);
+      // 注册信息
+      $now = date('Y-m-d H:i:s');
+      $data = [
+        'email' => $email,
+        'send_Time' => $now
+      ];
+      $res = DB::table('v3_user_email_verification')
+                ->lockForUpdate()
+                ->updateOrInsert(['uid'=>$uid], $data);
+      if (!$res) {
+        $json = $this->JSON(5806, 'Failed to register the email.', null);
         return response($json);
       }
-      // 修改用户名
-      $res = DB::table('user_accounts')
-                ->where('uid', $user->uid)
-                ->update($data);
-      if ($res) {
-        $json = $this->JSON(0, null, ['msg'  => 'Success!']);
-        return response($json)
-        ->withCookie(cookie()->forget('uid'))
-        ->withCookie(cookie()->forget('auth'));
-      }else{
-        $json = $this->JSON(3503, 'Failed to change username.', null);
-        return response($json);
-      }
+      // 发送邮件
+      $subject = '【'.env('APP_NAME').'】验证电子邮件地址';
+      $code = UserAuth::email_code($now, $uid, $email);
+      $data = ['active_link' => url("/user/verify_email/{$uid}/{$code}")];
+      $this->sendMail('email.activationcode', $email, $user->nickname, $subject, $data);
+      $json = $this->JSON(0, null, ['msg' => 'Success!']);
+      return response($json);
+
     }
 
     // 可莫尔合成

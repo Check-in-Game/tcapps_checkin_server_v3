@@ -29,7 +29,7 @@ class APICheckAuth
       }
       // 检查匹配
       // 获取用户名密码
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
       // Controller/CheckAuth中有重复轮子
       if (!$user || $auth !== UserAuth::generate_auth($user->password, $user->uid, $user->status)) {
         $json =  [

@@ -104,11 +104,6 @@
             @yield('breadcrumb')
           </div>
           <div class="section-body">
-            @if(isset($_user) && $_user->status === 0)
-              <div class="alert alert-danger">
-                <strong>功能可能受到限制：</strong>您可能暂时无法参与任何公众功能，如签到、参与排行榜等。请您及时在用户中心<a href="{{ action('UserController@username_modify') }}" target="_self">修改用户名（或点此修改）</a>。
-              </div>
-            @endif
             @foreach($_notices as $notice)
             <div class="alert alert-{{ $notice['color'] }}" role="alert">
               @if (!empty($notice['title']))

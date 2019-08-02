@@ -29,7 +29,7 @@ Route::post('/user/checkin/clean', 'Api\CheckIn@clean')
 // Security
 Route::post('/user/security/password', 'Api\User@security_change_password')
       ->middleware('apicheck.auth');
-Route::post('/user/security/username', 'Api\User@security_change_username')
+Route::post('/user/security/email', 'Api\User@security_email_verify')
       ->middleware('apicheck.auth');
 
 // Purchase

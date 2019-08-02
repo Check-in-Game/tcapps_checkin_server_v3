@@ -36,6 +36,10 @@ class CheckAuth
             Cookie::queue(cookie()->forget('auth'));
             return redirect("login");
           }
+          // 要求验证邮箱
+          if ($user->status == 0 && $request->path() != 'user/security/email') {
+            return redirect("user/security/email");
+          }
           if ($user->status == -2) {
             $data = [
               'error'     => '账户封禁',

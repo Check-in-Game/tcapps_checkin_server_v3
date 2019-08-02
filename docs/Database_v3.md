@@ -14,7 +14,13 @@ create table tcapps_checkin_v3_user_accounts(
   update_at datetime not null comment "最后更新时间",
   status tinyint not null default 0 comment "状态"
 )comment="用户信息表",engine=InnoDB default character set utf8 collate utf8_general_ci;
-#insert into tcapps_checkin_v3_user_accounts set username='jokin',password='74e133f544b908be8e30e9cb64e8a536';
+
+#邮箱验证发送表v3
+create table tcapps_checkin_v3_user_email_verification(
+  uid int unsigned primary key not null comment "用户ID",
+  email varchar(64) unique not null comment "Email",
+  send_time datetime not null comment "最后发送时间"
+)comment="邮箱验证发送表",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #擦灰记录表v3
 create table tcapps_checkin_v3_clean_list(
@@ -113,10 +119,10 @@ create table tcapps_checkin_v3_user_backpack(
 )comment="背包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #背包系统v3
-create table tcapps_checkin_v3_user_items(
-  uid int unsigned primary key not null comment "用户ID",
-  items json not null comment "物品"
-)comment="背包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+#create table tcapps_checkin_v3_user_items(
+#  uid int unsigned primary key not null comment "用户ID",
+#  items json not null comment "物品"
+#)comment="背包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #挂售系统v3
 #status 1正常 2锁定 -1强制下架 -2 主动下架

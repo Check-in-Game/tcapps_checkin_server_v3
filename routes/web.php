@@ -26,10 +26,13 @@ Route::match(['get', 'post'], '/register', 'PublicController@register')         
 // 排行榜
 // Route::get('/leaderboard', 'PublicController@leaderboard')                        ->middleware('check.auth:info', 'notice:28');
 
+Route::get('/user/verify_email/{uid}/{code}', 'UserController@verify_email')      ->middleware('notice:19');
+
 // 用户中心
 Route::get('/user', 'UserController@user')                                        ->middleware('check.auth', 'notice:5');
 Route::get('/shop', 'UserController@shop')                                        ->middleware('check.auth', 'notice:6');
 Route::get('/user/security/password', 'UserController@security_change_password')  ->middleware('check.auth', 'notice:7');
+Route::get('/user/security/email', 'UserController@security_email')               ->middleware('check.auth', 'notice:16');
 Route::get('/user/recycle', 'UserController@recycle')                             ->middleware('check.auth', 'notice:8');
 Route::get('/user/blend', 'UserController@blend')                                 ->middleware('check.auth', 'notice:9');
 Route::get('/user/worker', 'UserController@worker')                               ->middleware('check.auth', 'notice:10');
