@@ -30,7 +30,7 @@ class CheckIn extends Controller {
         return response($json);
       }
       // 判断用户状态
-      $banedStatus = [-1, 0];
+      $banedStatus = [-2, -1, 0];
       if (in_array($user->status, $banedStatus)) {
         $json = $this->JSON(3903, 'Incorrect user status.', null);
         return response($json);
@@ -64,7 +64,7 @@ class CheckIn extends Controller {
       // 是否需要新建记录
       $need_insert = !$db;
       // 固定擦灰1-5积分
-      $worth = rand(1, 5);
+      $worth = rand(1, 50);
       // 计算总积分
       if ($db) {
         $point = $db->point + $worth;
@@ -82,7 +82,7 @@ class CheckIn extends Controller {
         $db = DB::table('v3_user_point')->where('uid', $user->uid)->sharedLock()->update($data);
       }
       // 只有1-2个积分的时候，奖励1个可莫尔碎片
-      if ($worth === 1 || $worth === 2) {
+      if ($worth >= 1 && $worth <= 5) {
         $comber = rand(1, 4); // 四种碎片随机
         // 查询用户背包
         $db = DB::table('v3_user_items')->where('uid', $user->uid)->sharedLock()->first();
