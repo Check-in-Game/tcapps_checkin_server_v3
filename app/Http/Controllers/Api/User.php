@@ -91,7 +91,7 @@ class User extends Controller {
         // 转移资产
         foreach($items as $iid => $value) {
           $data = [
-            'uid'     => $old_account->uid,
+            'uid'     => $new_account,
             'iid'     => $iid,
             'amount'  => $value['count'],
             'status'  => 1
