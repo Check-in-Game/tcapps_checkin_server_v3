@@ -6,42 +6,34 @@ use Cookie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Common\UserAuth;
+use App\Http\Controllers\Common\BackpackManager;
 
 class UserController extends Controller {
     // 用户中心
     public function user() {
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      $username = $user->username;
       // 查询积分
       $db_prefix = env('DB_PREFIX');
       $point = DB::table('v3_user_point')
-              ->where('uid', $user->uid)
-              ->value('point');
+                ->where('uid', $uid)
+                ->value('point');
       $point = $point ? $point : 0;
-      // 基础资源信息 comber
-      $combers = DB::table('v3_items')
-                ->whereIn('iid', [1,2,3,4,5])
-                ->get();
-      // 查询资源物品
-      $items = DB::table('v3_user_items')
-              ->where('uid', $user->uid)
-              ->value('items');
+      // 查询可莫尔信息
+      $items = BackpackManager::uid($uid)
+                              ->items([1,2,3,4,5], true)
+                              ->backpack(true);
       // 清灰时间结算
       $clean = DB::table('v3_clean_list')
-            ->where('uid', $user->uid)
-            ->first();
+                ->where('uid', $uid)
+                ->first();
       if ($clean && $clean->check_time >= date('Y-m-d 00:00:00')) {
         $clean = strtotime(date('Y-m-d 23:59:59')) - time();
       }else{
         $clean = 0;
       }
       $data = [
-        'uid'          => $uid,
-        'username'     => $username,
-        'combers'      => $combers,
         'point'        => $point,
-        'items'        => json_decode($items, true),
+        'items'        => $items,
         'clean'        => $clean
       ];
       return view('user.home', $data);
@@ -225,23 +217,9 @@ class UserController extends Controller {
     public function user_resources() {
       $uid = request()->cookie('uid');
       // 查询资源
-      $resources = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->value('items');
-      $items = [];
-      if ($resources) {
-        $resources = json_decode($resources, true);
-        // 获取所有物品id
-        $user_items_id = array_keys($resources);
-        // 查询所需要的物品
-        $items = DB::table('v3_items')
-        ->whereIn('iid', $user_items_id)
-        ->sharedLock()
-        ->get();
-      }
+      $items = BackpackManager::uid($uid)
+                              ->backpack(true);
       $data = array(
-        'user_items'  => $resources,
         'items'       => $items
       );
       return view('user.user_resources', $data);
@@ -251,23 +229,9 @@ class UserController extends Controller {
     public function recycle() {
       $uid = request()->cookie('uid');
       // 查询资源
-      $resources = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->value('items');
-      $items = [];
-      if ($resources) {
-        $resources = json_decode($resources, true);
-        // 获取所有物品id
-        $user_items_id = array_keys($resources);
-        // 查询所需要的物品
-        $items = DB::table('v3_items')
-                  ->whereIn('iid', $user_items_id)
-                  ->sharedLock()
-                  ->get();
-      }
+      $items = BackpackManager::uid($uid)
+                              ->backpack(true);
       $data = array(
-        'user_items'  => $resources,
         'items'       => $items
       );
       return view('user.recycle_center', $data);
@@ -276,17 +240,11 @@ class UserController extends Controller {
     // 合成中心
     public function blend() {
       $uid = request()->cookie('uid');
-      // 基础资源信息 comber
-      $combers = DB::table('v3_items')
-                ->whereIn('iid', [1,2,3,4])
-                ->get();
-      // 查询资源物品
-      $items = DB::table('v3_user_items')
-              ->where('uid', $uid)
-              ->value('items');
+      $items = BackpackManager::uid($uid)
+                              ->items([1,2,3,4], true)
+                              ->backpack(true);
       $data = array(
-        'combers'  => $combers,
-        'items'    => json_decode($items, true)
+        'items'    => $items
       );
       return view('user.blend_center', $data);
     }

@@ -3,6 +3,14 @@
 用户面板
 @endsection
 @section('body')
+<div class="hero text-white hero-bg-image hero-bg-parallax mb-4"
+  style="background-image: url('{{ $_system['cdn_prefix'] }}/cdn/v3/home/city.jpg');">
+  <div class="hero-inner">
+    <h2>欢迎回来，{{ $_user->nickname }}！</h2>
+    <p class="lead">每日登录擦灰才不会落后哟~</p>
+  </div>
+</div>
+
 <div class="row">
   <!-- 基本信息 -->
   <div class="col-md-4 col-sm-12 mb-3 text-center">
@@ -14,7 +22,7 @@
         <div class="row">
           <!-- UID -->
           <div class="col-6 text-right mb-1 font-weight-bold">UID：</div>
-          <div class="col-6 text-left mb-1">{{ $uid }}</div>
+          <div class="col-6 text-left mb-1">{{ $_user->uid }}</div>
           <!-- 积分 -->
           <div class="col-6 text-right mb-1 font-weight-bold">积分：</div>
           <div class="col-6 text-left mb-1">{{ $point }}</div>
@@ -51,39 +59,30 @@
 
 <!-- Combers -->
 <div class="row">
-  @foreach($combers as $comber)
+  @foreach($items as $item)
   <div class="col-lg-3 col-md-6 col-sm-6 col-12">
     <div class="card card-statistic-1">
-      <div class="card-icon bg-white lazy" style="background: url('{{ asset('img/loading.svg') }}') no-repeat center center;" data-src="{{ $_system['cdn_prefix'] }}{{ $comber->image }}">
+      <div class="card-icon bg-white lazy" style="background: url('{{ asset('img/loading.svg') }}') no-repeat center center;" data-src="{{ $_system['cdn_prefix'] }}{{ $item['image'] }}">
       </div>
       <div class="card-wrap">
         <div class="card-header">
-          <h4>{{ $comber->iname }}</h4>
+          <h4>{{ $item['iname'] }}</h4>
         </div>
         <div class="card-body">
-          {{ isset($items[$comber->iid]['count']) ? $items[$comber->iid]['count'] : 0 }} C
+          {{ $item['valid'] }} C
         </div>
       </div>
     </div>
   </div>
   @endforeach
 </div>
-
-<div class="alert alert-info" role="alert">
-  <h4 class="alert-heading">更快的获取积分</h4>
-  <p>
-    您可以在<a class="alert-link" href="{{ action('PublicController@index') }}" target="_self">首页</a>加入QQ交流群获取一手活动预告信息，您也可以在用户中心的活动中心查询活动一览以更好的把握时机。
-  </p>
-  <p>
-    如果您在使用过程中发现Bug或由其他的意见和建议，加入QQ群向群主反映（Bug请私聊），会有丰厚的礼包奖励。
-  </p>
-  <p>
-    QQ群会不定时发放礼包，礼包内容包含一系列增益道具、直接积分奖励等。
-  </p>
-  <p>
-    游戏是在不断更新的，更多玩法正在紧锣密鼓的布置中，为了更好的游戏体验，欢迎加入QQ群共同讨论、建设、开发。
-  </p>
+<div class="hero align-items-center bg-secondary text-muted">
+  <div class="hero-inner text-center">
+    <h2>Coming Soon</h2>
+    <p class="lead">更多玩法、功能即将开放，敬请期待！</p>
+  </div>
 </div>
+
 @endsection
 @section('extraModalContent')
 <div class="modal fade" id="clean" tabindex="0" role="dialog" aria-labelledby="clean-title" aria-hidden="true">
