@@ -48,7 +48,7 @@
     }
     match = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
     if(!match.test(email)){
-      m_alert("您的邮箱格式有误，请检查您的邮箱是否输入错误。", 'warning');
+      m_alert("您的邮箱格式有误，请检查您的邮箱是否输入错误（试试全部小写）。", 'warning');
       return false;
     }
     m_loading();
