@@ -240,12 +240,17 @@ class Market extends Controller {
       return response($json);
     }
     // 最低价格限制
-    $lowest_price = DB::table('v3_items')
-                      ->where('iid', $iid)
-                      ->value('recycle_value');
-    if ($lowest_price && $price < $lowest_price) {
-      $json = $this->JSON(5503, 'Too cheap.', null);
-      return response($json);
+    $iid = DB::table('v3_market_sale')
+            ->where('sid', $sid)
+            ->value('iid');
+    if ($iid) {
+      $lowest_price = DB::table('v3_items')
+                        ->where('iid', $iid)
+                        ->value('recycle_value');
+      if ($lowest_price && $price < $lowest_price) {
+        $json = $this->JSON(5503, 'Too cheap.', null);
+        return response($json);
+      }
     }
     // 修改数据
     $db = DB::table('v3_market_sale')
