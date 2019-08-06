@@ -297,7 +297,7 @@ class Market extends Controller {
     }
     // 退回物品
     // 查询用户资源
-    $db = BM::uid($uid)->add($item->iid, $item->count, BM::LOCKED);
+    $db = BM::uid($uid)->add($item->iid, $item->count, BM::GENERAL);
     if (!$db) {
       // 恢复数据
       DB::table('v3_market_sale')
