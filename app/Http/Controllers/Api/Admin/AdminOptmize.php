@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Admin;
 
 use Cookie;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
-class APIAdminOptmize extends Controller {
+class AdminOptmize extends Controller {
     public function optmize(string $project) {
       if (method_exists($this, $project)) {
         return $this->$project();

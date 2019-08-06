@@ -2,44 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
+use Cookie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Common\UserAuth;
+use App\Http\Controllers\Common\BackpackManager as BM;
 
 class UserController extends Controller {
     // 用户中心
     public function user() {
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      $username = $user->username;
       // 查询积分
       $db_prefix = env('DB_PREFIX');
       $point = DB::table('v3_user_point')
-              ->where('uid', $user->uid)
-              ->value('point');
+                ->where('uid', $uid)
+                ->value('point');
       $point = $point ? $point : 0;
-      // 基础资源信息 comber
-      $combers = DB::table('v3_items')
-                ->whereIn('iid', [1,2,3,4,5])
-                ->get();
-      // 查询资源物品
-      $items = DB::table('v3_user_items')
-              ->where('uid', $user->uid)
-              ->value('items');
+      // 查询可莫尔信息
+      $items = BM::uid($uid)
+                ->items([1,2,3,4,5], true)
+                ->backpack(true);
       // 清灰时间结算
       $clean = DB::table('v3_clean_list')
-            ->where('uid', $user->uid)
-            ->first();
+                ->where('uid', $uid)
+                ->first();
       if ($clean && $clean->check_time >= date('Y-m-d 00:00:00')) {
         $clean = strtotime(date('Y-m-d 23:59:59')) - time();
       }else{
         $clean = 0;
       }
       $data = [
-        'uid'          => $uid,
-        'username'     => $username,
-        'combers'      => $combers,
         'point'        => $point,
-        'items'        => json_decode($items, true),
+        'items'        => $items,
         'clean'        => $clean
       ];
       return view('user.home', $data);
@@ -48,8 +42,7 @@ class UserController extends Controller {
     // 兑换中心
     public function shop() {
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      $username = $user->username;
+      $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
       $db_prefix = env('DB_PREFIX');
       // 读取商品
       $cols = [
@@ -102,7 +95,6 @@ class UserController extends Controller {
               ->value('point');
       $data = [
         'uid'             => $uid,
-        'username'        => $username,
         'goods'           => $shop,
         'point'           => $point ? $point : 0,
       ];
@@ -112,11 +104,76 @@ class UserController extends Controller {
     // 修改密码
     public function security_change_password() {
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
+      $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
       $data = [
         'username'        => $user->username
       ];
       return view('user.security_change_password', $data);
+    }
+
+    // 修改邮箱
+    public function security_email() {
+      $uid = request()->cookie('uid');
+      $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
+      $data = [
+        'username'        => $user->username
+      ];
+      return view('user.security_email', $data);
+    }
+
+    // 验证邮箱
+    public function verify_email($uid, $code) {
+      // 寻找用户
+      $user = DB::table('v3_user_accounts')
+                ->where('uid', $uid)
+                ->where('status', 0)
+                ->first();
+      if (!$user) {
+        $data = [
+          'color'       => 'warning',
+          'msg'         => '用户不存在或状态异常，请稍候重试。'
+        ];
+        return view('user.verify_email', $data);
+      }
+      // 获取邮件注册信息
+      $email_db = DB::table('v3_user_email_verification')
+                    ->where('uid', $uid)
+                    ->where('send_time', '>', date('Y-m-d H:i:s', strtotime('-30 minutes')))
+                    ->first();
+      if (!$email_db) {
+        $data = [
+          'color'       => 'warning',
+          'msg'         => '验证链接已经失效，请重试。'
+        ];
+        return view('user.verify_email', $data);
+      }
+      // 对比code
+      $res = UserAuth::email_code($email_db->send_time, $email_db->uid, $email_db->email, $code);
+      if ($res) {
+        $data = [
+          'email'   => $email_db->email,
+          'status'  => 1,
+        ];
+        DB::table('v3_user_accounts')->where('uid', $uid)->where('status', 0)->update($data);
+        DB::table('v3_user_email_verification')->where('uid', $uid)->delete();
+        $data = [
+          'color'       => 'success',
+          'msg'         => '验证成功！'
+        ];
+        $auth = UserAuth::generate_auth($user->password, $user->uid, 1);
+        Cookie::queue('auth', $auth);
+        // 新手礼包
+        BM::uid($user->uid)->add(5, 100, BM::LOCKED);  // 20个可莫尔
+        BM::uid($user->uid)->add(13, 10, BM::LOCKED);  // 10个WK兑换券
+        BM::uid($user->uid)->add(14, 10, BM::LOCKED);  // 10个挂售许可
+        return view('user.verify_email', $data);
+      }else{
+        $data = [
+          'color'       => 'danger',
+          'msg'         => '验证链接错误，请重试。'
+        ];
+        return view('user.verify_email', $data);
+      }
     }
 
     // 勋章一览
@@ -162,23 +219,9 @@ class UserController extends Controller {
     public function user_resources() {
       $uid = request()->cookie('uid');
       // 查询资源
-      $resources = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->value('items');
-      $items = [];
-      if ($resources) {
-        $resources = json_decode($resources, true);
-        // 获取所有物品id
-        $user_items_id = array_keys($resources);
-        // 查询所需要的物品
-        $items = DB::table('v3_items')
-        ->whereIn('iid', $user_items_id)
-        ->sharedLock()
-        ->get();
-      }
+      $items = BM::uid($uid)
+                              ->backpack(true);
       $data = array(
-        'user_items'  => $resources,
         'items'       => $items
       );
       return view('user.user_resources', $data);
@@ -188,23 +231,9 @@ class UserController extends Controller {
     public function recycle() {
       $uid = request()->cookie('uid');
       // 查询资源
-      $resources = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->value('items');
-      $items = [];
-      if ($resources) {
-        $resources = json_decode($resources, true);
-        // 获取所有物品id
-        $user_items_id = array_keys($resources);
-        // 查询所需要的物品
-        $items = DB::table('v3_items')
-                  ->whereIn('iid', $user_items_id)
-                  ->sharedLock()
-                  ->get();
-      }
+      $items = BM::uid($uid)
+                              ->backpack(true);
       $data = array(
-        'user_items'  => $resources,
         'items'       => $items
       );
       return view('user.recycle_center', $data);
@@ -213,35 +242,22 @@ class UserController extends Controller {
     // 合成中心
     public function blend() {
       $uid = request()->cookie('uid');
-      // 基础资源信息 comber
-      $combers = DB::table('v3_items')
-                ->whereIn('iid', [1,2,3,4])
-                ->get();
-      // 查询资源物品
-      $items = DB::table('v3_user_items')
-              ->where('uid', $uid)
-              ->value('items');
+      $items = BM::uid($uid)
+                ->items([1,2,3,4], true)
+                ->backpack(true);
       $data = array(
-        'combers'  => $combers,
-        'items'    => json_decode($items, true)
+        'items'    => $items
       );
       return view('user.blend_center', $data);
     }
 
-    // 合成中心
+    // worker
     public function worker() {
       $uid = request()->cookie('uid');
-      $resources = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->value('items');
-      if ($resources) {
-        $resources = json_decode($resources, true);
-        // 查询WORKER兑换券数量 IID 13
-        $worker_ticket = isset($resources[13]['count']) ? $resources[13]['count'] : 0;
-      }else{
-        $worker_ticket = 0;
-      }
+      $worker_ticket = BM::uid($uid)
+                        ->items(13, true)
+                        ->backpack();
+      $worker_ticket = $worker_ticket[13]['valid'];
       // 查询Worker数量
       $worker_count = DB::table('v3_user_workers')
                     ->where('uid', $uid)
@@ -326,19 +342,17 @@ class UserController extends Controller {
         'v3_market_sale.price',
         'v3_market_sale.update_time',
         'v3_market_sale.status',
-        'user_accounts.username',
+        'v3_user_accounts.username',
         'v3_items.iname',
         'v3_items.image',
       ];
       $items = DB::table('v3_market_sale')
-                  ->join('user_accounts', 'v3_market_sale.uid', '=', 'user_accounts.uid')
+                  ->join('v3_user_accounts', 'v3_market_sale.uid', '=', 'v3_user_accounts.uid')
                   ->join('v3_items', 'v3_market_sale.iid', '=', 'v3_items.iid')
                   ->where('v3_market_sale.uid', '<>', $uid)
                   ->where('v3_market_sale.status', 1)
                   ->where('v3_market_sale.count', '>', 0)
                   ->orderBy('v3_market_sale.sid')
-                  ->orderBy('v3_market_sale.iid')
-                  ->orderBy('v3_market_sale.price')
                   ->sharedLock()
                   ->select($select)
                   ->paginate(25);
@@ -364,18 +378,17 @@ class UserController extends Controller {
         'v3_market_sale.price',
         'v3_market_sale.update_time',
         'v3_market_sale.status',
-        'user_accounts.username',
+        'v3_user_accounts.username',
         'v3_items.iname',
         'v3_items.image',
       ];
       $items = DB::table('v3_market_sale')
-                  ->join('user_accounts', 'v3_market_sale.uid', '=', 'user_accounts.uid')
+                  ->join('v3_user_accounts', 'v3_market_sale.uid', '=', 'v3_user_accounts.uid')
                   ->join('v3_items', 'v3_market_sale.iid', '=', 'v3_items.iid')
                   ->where('v3_market_sale.uid', $uid)
                   ->where('v3_market_sale.count', '>', 0)
+                  ->where('v3_market_sale.status', '<>', -2)
                   ->orderBy('v3_market_sale.sid')
-                  ->orderBy('v3_market_sale.iid')
-                  ->orderBy('v3_market_sale.price')
                   ->sharedLock()
                   ->select($select)
                   ->paginate(25);

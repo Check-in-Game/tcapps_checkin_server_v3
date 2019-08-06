@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
+use DB;
 use Cookie;
-use Illuminate\Support\Facades\DB;
+use Closure;
+use App\Http\Controllers\Common\UserAuth;
 
 class CheckAuth
 {
@@ -28,16 +29,35 @@ class CheckAuth
         if (!is_null($uid) && !is_null($auth)) {
           // 检查匹配
           // 获取用户名密码
-          $user = DB::table('user_accounts')->where('uid', $uid)->first();
-          // Controller/APICheckAuth中有重复轮子
-          if (!$user || $auth !== md5($user->password.$user->uid.$user->status.'2*4&%1^@HSIW}>./;2')) {
+          $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
+          // 无法查询到信息
+          if (!$user) {
+            Cookie::queue(cookie()->forget('uid'));
+            Cookie::queue(cookie()->forget('auth'));
+            return redirect("login");
+          }
+          // 要求验证邮箱
+          if ($user->status == 0 && $request->path() != 'user/security/email') {
+            return redirect("user/security/email");
+          }
+          if ($user->status == -2) {
             $data = [
-              'error'     => '签权错误',
-              'content'   => '您的用户签权已经失效了，请重新登录！'
+              'error'     => '账户封禁',
+              'content'   => '该账户已经被封禁！'
             ];
             Cookie::queue(cookie()->forget('uid'));
             Cookie::queue(cookie()->forget('auth'));
-            return redirect('alert/签权错误/您的用户签权已经失效了，请重新登录！');
+            return redirect("alert/{$data['error']}/{$data['content']}");
+          }
+          // Controller/APICheckAuth中有重复轮子
+          if (!$user || $auth !== UserAuth::generate_auth($user->password, $user->uid, $user->status)) {
+            $data = [
+              'error'     => '签权错误',
+              'content'   => '您的登录状态失效了，请重新登录！'
+            ];
+            Cookie::queue(cookie()->forget('uid'));
+            Cookie::queue(cookie()->forget('auth'));
+            return redirect("alert/{$data['error']}/{$data['content']}");
           }
           // 获取管理权限
           $admin = DB::table('admin_level')->where('uid', $uid)->where('status', '<>', -1)->first();

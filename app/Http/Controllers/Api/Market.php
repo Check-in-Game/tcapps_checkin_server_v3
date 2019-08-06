@@ -1,38 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use DB;
 use Cookie;
 use Captcha;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Common\BackpackManager as BM;
 
-class APIMarket extends Controller {
+class Market extends Controller {
   // 查询可出售物品
   public function query_items() {
     $uid      = request()->cookie('uid');
     // 查询资源
-    $resources = DB::table('v3_user_items')
-                ->where('uid', $uid)
-                ->sharedLock()
-                ->value('items');
-    $items = [];  // 物品详情
-    if ($resources) {
-      $resources = json_decode($resources, true);
-      // 获取所有物品id
-      $user_items_id = array_keys($resources);
-      // 查询所需要的物品
-      $items = DB::table('v3_items')
-                ->whereIn('iid', $user_items_id)
-                ->sharedLock()
-                ->get();
-    }else{
-      $json = $this->JSON(5201, 'System is busy.', null);
-      return response($json);
-    }
+    $resources = BM::uid($uid)->backpack(true, BM::GENERAL);
     $data = array(
-      'user_items'  => $resources,
-      'items'       => $items
+      'items'  => $resources,
     );
     $json = $this->JSON(0, null, ['msg'  => 'Success!', 'data' => $data]);
     return response($json);
@@ -55,70 +39,42 @@ class APIMarket extends Controller {
       $json = $this->JSON(5306, 'Bad request.', null);
       return response($json);
     }
+    // 最低价格限制
+    $lowest_price = DB::table('v3_items')
+                      ->where('iid', $iid)
+                      ->value('recycle_value');
+    if ($lowest_price && $price < $lowest_price) {
+      $json = $this->JSON(5307, 'Too cheap.', null);
+      return response($json);
+    }
     // 检查是否拥有挂售许可
     $license_iid = 14;  // 挂售许可iid
-    $license_exists = DB::table('v3_user_items')
-                        ->where('uid', $uid)
-                        ->sharedLock()
-                        ->value("items->{$license_iid}->count");
+    $license_exists = BM::uid($uid)->has($license_iid, 1, BM::VALID);
     if (!$license_exists) {
       $json = $this->JSON(5302, 'Sale license needed.', null);
       return response($json);
     }
     // 检查挂售物品是否充足
-    $item_count = DB::table('v3_user_items')
-                    ->where('uid', $uid)
-                    ->sharedLock()
-                    ->value("items->{$iid}->count");
-    if (!$item_count || $item_count < $count) {
+    $need = $iid == 14 ? $count + 1 : $count;  // 挂售“挂售许可”时增加一个数量检查
+    $is_sufficient = BM::uid($uid)->has($iid, $need, BM::GENERAL);
+    if (!$is_sufficient) {
       $json = $this->JSON(5303, 'Insufficient items.', null);
       return response($json);
     }
-    // 获取背包数据
-    $resources = DB::table('v3_user_items')
-                ->where('uid', $uid)
-                ->sharedLock()
-                ->value('items');
-    // 复制背包数据
-    $_resources = $resources;
-    $items = [];  // 物品详情
-    if ($resources) {
-      $resources = json_decode($resources, true);
-    }else{
-      $json = $this->JSON(5301, 'System is busy.', null);
-      return response($json);
-    }
     // 扣除挂售许可
-    if (isset($resources[$license_iid]['count']) && $resources[$license_iid]['count'] >= 0) {
-      $resources[$license_iid]['count'] --;
-      // 数量小于等于0 删除该数据
-      if ($resources[$license_iid]['count'] <= 0) {
-        unset($resources[$license_iid]);
-      }
-    }else{
-      // 缺少挂售许可
+    $license = BM::uid($uid)->reduce($license_iid, 1, BM::LOCKED_FIRST);
+    // 缺少挂售许可
+    if (!$license) {
       $json = $this->JSON(5302, 'Sale license needed.', null);
       return response($json);
     }
     // 扣除售出物品
-    if (isset($resources[$iid]['count']) && $resources[$iid]['count'] >= $count) {
-      $resources[$iid]['count'] -= $count;
-      // 数量小于等于0 删除该数据
-      if ($resources[$iid]['count'] <= 0) {
-        unset($resources[$iid]);
-      }
-    }else{
-      // 挂售物品数量不足
+    $item = BM::uid($uid)->reduce($iid, $count, BM::GENERAL_ONLY);
+    // 挂售物品数量不足
+    if (!$item) {
+      // 返还挂售许可
+      BM::uid($uid)->add($license_iid, 1, BM::GENERAL);
       $json = $this->JSON(5303, 'Insufficient items.', null);
-      return response($json);
-    }
-    // 更新物品数据
-    $package = DB::table('v3_user_items')
-                ->where('uid', $uid)
-                ->lockForUpdate()
-                ->update(['items'  => json_encode($resources)]);
-    if (!$package) {
-      $json = $this->JSON(5304, 'System is busy.', null);
       return response($json);
     }
     // 写入挂售数据
@@ -135,11 +91,10 @@ class APIMarket extends Controller {
       $json = $this->JSON(0, null, ['msg'  => 'Success!']);
       return response($json);
     }else{
-      // 恢复数据
-      DB::table('v3_user_items')
-        ->where('uid', $uid)
-        ->sharedLock()
-        ->update(['items'  => json_encode($_resources)]);
+      // 返还挂售许可
+      BM::uid($uid)->add($license_iid, 1, BM::GENERAL);
+      // 返还物品
+      BM::uid($uid)->add($iid, $count, BM::GENERAL);
       $json = $this->JSON(5305, 'Failed to put it on shelves.', null);
       return response($json);
     }
@@ -177,11 +132,11 @@ class APIMarket extends Controller {
       return response($json);
     }
     // 获取用户信息
-    $user = DB::table('user_accounts')
+    $user = DB::table('v3_user_accounts')
             ->where('uid', $uid)
             ->sharedLock()
             ->first();
-    if ($user->status !== 1) {
+    if (!$user || $user->status !== 1) {
       $json = $this->JSON(5403, 'Invaild user status.', null);
       return response($json);
     }
@@ -244,51 +199,22 @@ class APIMarket extends Controller {
     }
     // 增加卖家积分
     $db = DB::table('v3_user_point')
-        ->where('uid', $sale->uid)
-        ->lockForUpdate()
-        ->increment('point', $cost);
+            ->where('uid', $sale->uid)
+            ->exists();
+    if ($db) {
+      $db = DB::table('v3_user_point')
+              ->where('uid', $sale->uid)
+              ->lockForUpdate()
+              ->increment('point', $cost);
+    }else{
+      $db = DB::table('v3_user_point')
+              ->insert(['uid' => $sale->uid, 'point' => $cost]);
+    }
     if (!$db) {
       $json = $this->JSON(5408, 'Unknown error.', null);
       return response($json);
     }
-    // 查询用户资源
-    $user_items = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->exists();
-    if (!$user_items) {
-      // 首次注册购买信息
-      $items = array(
-        $sale->iid  => array(
-          'count'   => $count
-        )
-      );
-      $data = array(
-        'uid' => $uid,
-        'items' => json_encode($items)
-      );
-      $db = DB::table('v3_user_items')->lockForUpdate()->insert($data);
-    }else{
-      // 更新购买信息
-      // 查询是否有对应IID的记录
-      $item_db = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->value("items->{$sale->iid}->count");
-      if ($item_db || $item_db === 0) {
-        // 存在对应IID记录
-        $db = DB::table('v3_user_items')
-              ->where('uid', $uid)
-              ->lockForUpdate()
-              ->update(["items->{$sale->iid}->count" => $count + $item_db]);
-      }else{
-        // 创建对应记录
-        $db = DB::table('v3_user_items')
-              ->where('uid', $uid)
-              ->lockForUpdate()
-              ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$sale->iid}\":{\"count\": {$count}}}')")]);
-      }
-    }
+    $db = BM::uid($uid)->add($sale->iid, $count);
     if ($db) {
       $json = $this->JSON(0, null, ['msg' => 'Success!']);
       return response($json);
@@ -311,6 +237,14 @@ class APIMarket extends Controller {
     $price = (int) $price;
     if ($price <= 0) {
       $json = $this->JSON(5501, 'Bad request.', null);
+      return response($json);
+    }
+    // 最低价格限制
+    $lowest_price = DB::table('v3_items')
+                      ->where('iid', $iid)
+                      ->value('recycle_value');
+    if ($lowest_price && $price < $lowest_price) {
+      $json = $this->JSON(5503, 'Too cheap.', null);
       return response($json);
     }
     // 修改数据
@@ -356,50 +290,14 @@ class APIMarket extends Controller {
             ->where('uid', $uid)
             ->where('update_time', $item->update_time)
             ->sharedLock()
-            ->update(['count' => 0, 'update_time' => date('Y-m-d H:i:s')]);
+            ->update(['update_time' => date('Y-m-d H:i:s'), 'status' => -2]);
     if (!$db) {
       $json = $this->JSON(5602, 'Failed to pull it off.', null);
       return response($json);
     }
     // 退回物品
     // 查询用户资源
-    $user_items = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->exists();
-    if (!$user_items) {
-      // 首次注册购买信息
-      $items = array(
-        $item->iid  => array(
-          'count'   => $item->count
-        )
-      );
-      $data = array(
-        'uid' => $uid,
-        'items' => json_encode($items)
-      );
-      $db = DB::table('v3_user_items')->lockForUpdate()->insert($data);
-    }else{
-      // 更新购买信息
-      // 查询是否有对应IID的记录
-      $item_db = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->value("items->{$item->iid}->count");
-      if ($item_db || $item_db === 0) {
-        // 存在对应IID记录
-        $db = DB::table('v3_user_items')
-              ->where('uid', $uid)
-              ->lockForUpdate()
-              ->update(["items->{$item->iid}->count" => $item->count + $item_db]);
-      }else{
-        // 创建对应记录
-        $db = DB::table('v3_user_items')
-              ->where('uid', $uid)
-              ->lockForUpdate()
-              ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$item->iid}\":{\"count\": {$item->count}}}')")]);
-      }
-    }
+    $db = BM::uid($uid)->add($item->iid, $item->count, BM::LOCKED);
     if (!$db) {
       // 恢复数据
       DB::table('v3_market_sale')
@@ -407,7 +305,7 @@ class APIMarket extends Controller {
         ->where('uid', $uid)
         ->where('update_time', $item->update_time)
         ->sharedLock()
-        ->update(['count' => $item->count, 'update_time' => date('Y-m-d H:i:s')]);
+        ->update(['count' => $item->count, 'update_time' => date('Y-m-d H:i:s'), 'status' => 1]);
       $json = $this->JSON(5603, 'Failed to pull it off.', null);
       return response($json);
     }else{

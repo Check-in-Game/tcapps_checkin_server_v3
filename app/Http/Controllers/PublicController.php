@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use Cookie;
 use Captcha;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Common\UserAuth;
+use App\Http\Controllers\Common\BackpackManager as BM;
 
 class PublicController extends Controller {
 
@@ -30,8 +32,18 @@ class PublicController extends Controller {
         $password = $_POST['password'];
         $comfirm = $_POST['comfirm'];
         $captcha = $_POST['captcha'];
-        // 判断合法性
-        if (mb_strlen($username) > 16 || mb_strlen($username) < 5 || mb_strlen($password) > 16 || mb_strlen($password) < 8) {
+        // 判断用户名是否合法
+        $pattern = "/^[a-z][a-zA-Z0-9_]{4,15}$/";
+        $preg = preg_match($pattern, $username);
+        if (!$preg) {
+          return view('public.register',[
+            'reg_status' => false,
+            'reg_error' => '注册失败！用户名必须是5-16位的不含除下划线外的特殊字符的英文与数字的组合。',
+          ]);
+        }
+        // 判断密码是否合法
+        $pattern = "/^.{6,16}$/";
+        if(!preg_match($pattern,$password)){
           return view('public.register',[
             'reg_status' => false,
             'reg_error' => '注册失败！用户名长度不得超过16位，不得低于5位；密码长度不得超过16位，不得低于8位。',
@@ -44,14 +56,6 @@ class PublicController extends Controller {
             'reg_error' => '注册失败！两次密码不一致。',
           ]);
         }
-        $pattern = "/^[a-zA-Z0-9_]+$/";
-        $preg = preg_match($pattern, $username);
-        if (!$preg) {
-          return view('public.register',[
-            'reg_status' => false,
-            'reg_error' => '注册失败！用户名中不能包含特殊字符。',
-          ]);
-        }
         // 检查验证码
         if (!Captcha::check($captcha)) {
           return view('public.register',[
@@ -60,7 +64,7 @@ class PublicController extends Controller {
           ]);
         }
         // 检查用户是否存在
-        $db = DB::table('user_accounts')->where('username', $username)->first();
+        $db = DB::table('v3_user_accounts')->where('username', $username)->first();
         if ($db) {
           // 用户已经存在
           return view('public.register',[
@@ -68,21 +72,24 @@ class PublicController extends Controller {
             'reg_error' => '注册失败！该用户名可能已经存在。',
           ]);
         }
-        $password = $this->generate_password($password);
+        $password = UserAuth::generate_password($password);
         // 写入用户表
         $data = array(
-          'username'    => $username,
-          'password'    => $password,
-          'status'      => 1          // 有效用户
+          'username'      => $username,
+          'nickname'      => $username,
+          'password'      => $password,
+          'register_at'   => date('Y-m-d H:i:s'),
+          'update_at'     => date('Y-m-d H:i:s'),
+          'status'        => $status = 0, // 未验证邮箱
         );
-        $uid = DB::table('user_accounts')->insertGetId($data);
+        $uid = DB::table('v3_user_accounts')->insertGetId($data);
         if (!$uid) {
           return view('public.register',[
             'reg_status' => false,
             'reg_error' => '注册失败！未知原因。',
           ]);
         }else{
-          $auth = $this->generate_auth($password, $uid, 1);
+          $auth = UserAuth::generate_auth($password, $uid, $status);
           Cookie::queue('uid', $uid);
           Cookie::queue('auth', $auth);
           return redirect('user');
@@ -95,6 +102,11 @@ class PublicController extends Controller {
     // 登录
     public function login() {
       return view('public.login');
+    }
+
+    // 老用户数据迁移
+    public function login_old() {
+      return view('public.login_old');
     }
 
     // 告警页面

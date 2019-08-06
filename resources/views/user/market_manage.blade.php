@@ -40,7 +40,7 @@
 </nav>
 @else
 <div class="alert alert-primary">
-  还没有可以购买的商品，稍候再来看看吧~
+  还没有商品，挂售以后再来看看吧~
 </div>
 @endif
 @endsection
@@ -106,6 +106,8 @@ function modify(sid) {
       }else{
         if (data.errno == 5502) {
           info = '无需修改、已经售罄或挂售不存在！';
+        }else if(data.errno == 5502){
+          info = '挂售价格过低！';
         }else{
           info = '系统繁忙，请稍候再试！';
         }

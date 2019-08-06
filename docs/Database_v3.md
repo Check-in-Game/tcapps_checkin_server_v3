@@ -2,6 +2,26 @@
 
 ## 数据库设计
 ```
+#用户信息表v3
+#-2：封禁 -1：限制 0：未验证邮件 1：正常
+create table tcapps_checkin_v3_user_accounts(
+  uid int unsigned primary key auto_increment not null comment "用户ID",
+  username varchar(16) unique not null comment "用户名",
+  nickname varchar(16) not null comment "昵称",
+  email varchar(64) not null default '' comment "Email",
+  password varchar(32) not null comment "密码",
+  register_at datetime not null comment "注册时间",
+  update_at datetime not null comment "最后更新时间",
+  status tinyint not null default 0 comment "状态"
+)comment="用户信息表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#邮箱验证发送表v3
+create table tcapps_checkin_v3_user_email_verification(
+  uid int unsigned primary key not null comment "用户ID",
+  email varchar(64) unique not null comment "Email",
+  send_time datetime not null comment "最后发送时间"
+)comment="邮箱验证发送表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
 #擦灰记录表v3
 create table tcapps_checkin_v3_clean_list(
   uid int unsigned primary key not null comment "用户ID",
@@ -92,19 +112,20 @@ create table tcapps_checkin_v3_user_point(
 create table tcapps_checkin_v3_user_backpack(
   uid int unsigned not null comment "用户ID",
   iid int unsigned not null comment "物品ID",
-  amount int unsigned not null comment "物品数量",
-  frozen int unsigned not null comment "冻结物品数量",
+  amount int unsigned not null default 0 comment "物品数量",
+  locked_amount int unsigned not null default 0 comment "锁定物品数量",
+  frozen int unsigned not null default 0 comment "冻结物品数量",
   status tinyint not null default 1 comment "状态"
 )comment="背包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #背包系统v3
-create table tcapps_checkin_v3_user_items(
-  uid int unsigned primary key not null comment "用户ID",
-  items json not null comment "物品"
-)comment="背包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+#create table tcapps_checkin_v3_user_items(
+#  uid int unsigned primary key not null comment "用户ID",
+#  items json not null comment "物品"
+#)comment="背包系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #挂售系统v3
-#status 1正常 2锁定 -1强制下架
+#status 1正常 2锁定 -1强制下架 -2 主动下架
 create table tcapps_checkin_v3_market_sale(
   sid int unsigned primary key auto_increment not null comment "挂售ID",
   uid int unsigned not null comment "用户ID",
@@ -162,7 +183,7 @@ INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `si
 INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('4', '20', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '20', 'Worker可产出的基础资源', '1');
 INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('13', '5000', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '5000', '可用于产出可莫尔资源', '1');
 INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('13', '1', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '1', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '5000', '可用于产出可莫尔资源', '1');
-INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('14', '10', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '20', '在交易市场上架物品的凭证', '1');
+INSERT INTO `tcapps_checkin_v3_shop` (`iid`, `cost`, `starttime`, `endtime`, `sid`, `all_count`, `rebuy`, `onsale`, `sale_starttime`, `sale_endtime`, `sale_cost`, `description`, `status`) VALUES ('14', '100', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '1', '0', '0', '0', '1970-01-01 00:00:00', '1970-01-01 00:00:00', '20', '在交易市场上架物品的凭证', '1');
 
 #购买记录v3
 create table tcapps_checkin_v3_purchase_records(

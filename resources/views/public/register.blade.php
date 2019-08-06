@@ -61,7 +61,7 @@
 
     <p class="clearfix">
       <input class="btn btn-primary btn-block" type="button" value="立刻注册" onclick="javascript:register();">
-      <button class="btn btn-secondary btn-block" id="btn" name="button" onclick="javascript:location.href='{{ action('PublicController@login') }}';">有帐号？</button>
+      <a class="btn btn-secondary btn-block" href="{{ action('PublicController@login') }}">已有账户？</a>
     </p>
   </form>
 </div>

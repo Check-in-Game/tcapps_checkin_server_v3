@@ -19,7 +19,8 @@
     3、提交挂售后，系统将暂时扣除对应物品，取消挂售后返还。<br />
     4、挂售提交后，允许挂售人多次修改挂售价格和暂停挂售。<br />
     5、提供的参考单价为系统回收单价，非市场平均价。<br />
-    <strong>6、提交挂售视为已经阅读、充分理解并同意“挂售须知”。</strong>
+    6、仅【通用】类型的物品可进行寄售。<br />
+    <strong>7、提交挂售视为已经阅读、充分理解并同意“挂售须知”。</strong>
   </p>
 </div>
 
@@ -119,18 +120,18 @@
       success: function(data){
         if (data.errno == 0) {
           let items = data.body.data.items;
-          let user_items = data.body.data.user_items;
+          // let user_items = data.body.data.user_items;
           let table = '';
-          $.each(items, function(key, item){
+          $.each(items, function(iid, item){
             // 注册物品信息
             _items[item['iid']] = [];
             _items[item['iid']]['iname'] = item['iname'];
             _items[item['iid']]['image'] = item['image'];
             _items[item['iid']]['recycle_value'] = item['recycle_value'];
-            _items[item['iid']]['max'] = user_items[item['iid']]['count'];
+            _items[item['iid']]['max'] = item['amount'];
             let _d = $('#tpl_sale_table').text();
             _d = _d.replace('==1==', item['iname']);
-            _d = _d.replace('==2==', user_items[item['iid']]['count']);
+            _d = _d.replace('==2==', item['amount']);
             _d = _d.replace('==3==', item['image']);
             _d = _d.replace('==4==', item['iid']);
             table += _d;
@@ -209,6 +210,8 @@
             m_alert('挂售的物品剩余数量不足！', 'warning');
           }else if(data.errno == 5306) {
             m_alert('挂售数量与挂售单价不可小于0', 'warning');
+          }else if(data.errno == 5307) {
+            m_alert('挂售价格过低', 'warning');
           }else{
             m_alert('网络状态不佳，请稍候再试！', 'danger');
           }

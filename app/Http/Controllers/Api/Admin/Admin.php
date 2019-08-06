@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Admin;
 
 use Cookie;
 use Captcha;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
-class APIAdmin extends Controller {
+class Admin extends Controller {
     // 积分数据迁移
     public function migrate_points() {
       // 获取总积分

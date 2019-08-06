@@ -12,17 +12,17 @@
   </p>
 </div>
 <div class="row">
-  @foreach($combers as $comber)
+  @foreach($items as $iid => $item)
   <div class="col-lg-3 col-md-6 col-sm-6 col-12">
     <div class="card card-statistic-1">
-      <div class="card-icon bg-white lazy" style="background: url('{{ asset('img/loading.svg') }}') no-repeat center center;" data-src="{{ $_system['cdn_prefix'] }}{{ $comber->image }}">
+      <div class="card-icon bg-white lazy" style="background: url('{{ asset('img/loading.svg') }}') no-repeat center center;" data-src="{{ $_system['cdn_prefix'] }}{{ $item['image'] }}">
       </div>
       <div class="card-wrap">
         <div class="card-header">
-          <h4>{{ $comber->iname }}</h4>
+          <h4>{{ $item['iname'] }}</h4>
         </div>
         <div class="card-body">
-          <span id="comber_{{ $comber->iid }}">{{ isset($items[$comber->iid]['count']) ? $items[$comber->iid]['count'] : 0 }}</span>
+          <span id="comber_{{ $iid }}">{{ $item['valid'] }}</span>
           C
         </div>
       </div>

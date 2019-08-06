@@ -89,7 +89,9 @@ Worker管理
       </div>
       <div class="card-footer text-center">
         <a href="javascript:assign_modal({{ $f->fid }});" class="btn btn-primary" id="btn_assign_{{ $f->fid }}">投入</a>
+        @if(isset($field_workers_mine[$f->fid]))
         <a href="javascript:query_harvest({{ $f->fid }});" class="btn btn-success" id="btn_harvest_{{ $f->fid }}">收获</a>
+        @endif
       </div>
     </div>
   </div>
@@ -171,15 +173,6 @@ Worker管理
           <strong>开始时间：</strong> <span id="_harvest_update_time">-</span> <br />
           <strong>时间小计：</strong> <span id="_harvest_audit_time">-</span> 小时<br />
         </p>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text">验证码</span>
-          </div>
-          <input type="text" class="form-control" placeholder="Captcha" id="captcha" maxlength="6">
-          <div class="input-group-append">
-            <img src="{{ captcha_src() }}" alt="captcha" onclick="this.src='{{ captcha_src() }}' + Math.random();" id="captcha_img">
-          </div>
-        </div>
         <p>
           <strong>本次收获预计到账 <span id="_harvest_anticipate_count">0</span> <span id="_harvest_iname">-</span></strong>
         </p>
@@ -297,6 +290,8 @@ Worker管理
             m_tip('该产区异常，请稍候再试！', 'danger');
           }else if(data.errno == 4403){
             m_tip('该Worker等级不足，无法投入！', 'warning');
+          }else if(data.errno == 4404){
+            m_tip('该矿区已经满载，无法投入！', 'warning');
           }else{
             m_tip('未知错误！', 'warning');
           }
@@ -325,6 +320,10 @@ Worker管理
       success: function(data){
         if (data.errno == 0) {
           let workers = data.body.data;
+          if (workers.length == 0) {
+            m_tip('该区域没有您的Worker', 'warning');
+            return false;
+          }
           let node = $('#_query_body_table');
           node.text('');
           $.each(workers, function(key, worker) {
@@ -389,9 +388,6 @@ Worker管理
     });
   }
   function query_harvest(fid) {
-    // 刷新验证码
-    $('#captcha_img').click();
-    $('#captcha').val('');
     m_tip('请稍候，加载区域信息中...', 'info', 'loading-fields');
     $('#btn_harvest_' + fid).attr('disabled', 'disabled');
     $.ajax({
@@ -442,19 +438,13 @@ Worker管理
   }
   function harvest(fid) {
     $('#_harvest').modal('hide');
-    let captcha  = $('#captcha').val();
-    if (captcha === '') {
-      m_alert('验证码错误', 'warning');
-      return false;
-    }
     m_loading();
     $.ajax({
       url: '/api/worker/harvest',
       type: 'post',
       dataType: 'json',
       data: {
-        'fid': fid,
-        'captcha': captcha
+        'fid': fid
       },
       timeout: 10000,
       complete: function(XMLHttpRequest, status){

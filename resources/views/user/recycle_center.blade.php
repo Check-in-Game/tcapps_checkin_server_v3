@@ -15,20 +15,20 @@
   <thead>
     <tr>
       <th scope="col">图标</th>
-      <th scope="col">名称</th>
+      <th scope="col" class="d-none d-lg-table-cell">名称</th>
       <th scope="col">拥有</th>
       <th scope="col">单价</th>
       <th scope="col">操作</th>
     </tr>
   </thead>
   <tbody>
-    @foreach($items as $item)
+    @foreach($items as $iid => $item)
     <tr>
-      <td><img class="lazy" src="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}{{ $item->image }}" alt="{{ $item->iname }}" height="18x;"></td>
-      <td>{{ $item->iname }}</td>
-      <td id="rc_{{ $item->iid }}">{{ isset($user_items[$item->iid]['count']) ? $user_items[$item->iid]['count'] : 0 }}</td>
-      <td id="rv_{{ $item->iid }}">{{ $item->recycle_value }}</td>
-      <td><a href="javascript:comfirm_recycle({{ $item->iid }});">回收</a></td>
+      <td><img class="lazy" src="{{ asset('img/loading.svg') }}" data-src="{{ $_system['cdn_prefix'] }}{{ $item['image'] }}" alt="{{ $item['iname'] }}" height="18x;" title="{{ $item['iname'] }}" data-toggle="tooltip"></td>
+      <td class="d-none d-lg-table-cell">{{ $item['iname'] }}</td>
+      <td id="rc_{{ $iid }}">{{ $item['valid'] }}</td>
+      <td id="rv_{{ $iid }}">{{ $item['recycle_value'] }}</td>
+      <td><a href="javascript:comfirm_recycle({{ $iid }});">回收</a></td>
     </tr>
     @endforeach
   </tbody>
