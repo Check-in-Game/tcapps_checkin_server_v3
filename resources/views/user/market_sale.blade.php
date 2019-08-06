@@ -210,6 +210,8 @@
             m_alert('挂售的物品剩余数量不足！', 'warning');
           }else if(data.errno == 5306) {
             m_alert('挂售数量与挂售单价不可小于0', 'warning');
+          }else if(data.errno == 5307) {
+            m_alert('挂售价格过低', 'warning');
           }else{
             m_alert('网络状态不佳，请稍候再试！', 'danger');
           }

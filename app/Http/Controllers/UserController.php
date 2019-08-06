@@ -342,19 +342,17 @@ class UserController extends Controller {
         'v3_market_sale.price',
         'v3_market_sale.update_time',
         'v3_market_sale.status',
-        'user_accounts.username',
+        'v3_user_accounts.username',
         'v3_items.iname',
         'v3_items.image',
       ];
       $items = DB::table('v3_market_sale')
-                  ->join('user_accounts', 'v3_market_sale.uid', '=', 'user_accounts.uid')
+                  ->join('v3_user_accounts', 'v3_market_sale.uid', '=', 'v3_user_accounts.uid')
                   ->join('v3_items', 'v3_market_sale.iid', '=', 'v3_items.iid')
                   ->where('v3_market_sale.uid', '<>', $uid)
                   ->where('v3_market_sale.status', 1)
                   ->where('v3_market_sale.count', '>', 0)
                   ->orderBy('v3_market_sale.sid')
-                  ->orderBy('v3_market_sale.iid')
-                  ->orderBy('v3_market_sale.price')
                   ->sharedLock()
                   ->select($select)
                   ->paginate(25);
@@ -380,19 +378,17 @@ class UserController extends Controller {
         'v3_market_sale.price',
         'v3_market_sale.update_time',
         'v3_market_sale.status',
-        'user_accounts.username',
+        'v3_user_accounts.username',
         'v3_items.iname',
         'v3_items.image',
       ];
       $items = DB::table('v3_market_sale')
-                  ->join('user_accounts', 'v3_market_sale.uid', '=', 'user_accounts.uid')
+                  ->join('v3_user_accounts', 'v3_market_sale.uid', '=', 'v3_user_accounts.uid')
                   ->join('v3_items', 'v3_market_sale.iid', '=', 'v3_items.iid')
                   ->where('v3_market_sale.uid', $uid)
                   ->where('v3_market_sale.count', '>', 0)
                   ->where('v3_market_sale.status', '<>', -2)
                   ->orderBy('v3_market_sale.sid')
-                  ->orderBy('v3_market_sale.iid')
-                  ->orderBy('v3_market_sale.price')
                   ->sharedLock()
                   ->select($select)
                   ->paginate(25);

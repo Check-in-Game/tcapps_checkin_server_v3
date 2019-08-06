@@ -39,6 +39,14 @@ class Market extends Controller {
       $json = $this->JSON(5306, 'Bad request.', null);
       return response($json);
     }
+    // 最低价格限制
+    $lowest_price = DB::table('v3_items')
+                      ->where('iid', $iid)
+                      ->value('recycle_value');
+    if ($lowest_price && $price < $lowest_price) {
+      $json = $this->JSON(5307, 'Too cheap.', null);
+      return response($json);
+    }
     // 检查是否拥有挂售许可
     $license_iid = 14;  // 挂售许可iid
     $license_exists = BM::uid($uid)->has($license_iid, 1, BM::VALID);
@@ -231,6 +239,14 @@ class Market extends Controller {
       $json = $this->JSON(5501, 'Bad request.', null);
       return response($json);
     }
+    // 最低价格限制
+    $lowest_price = DB::table('v3_items')
+                      ->where('iid', $iid)
+                      ->value('recycle_value');
+    if ($lowest_price && $price < $lowest_price) {
+      $json = $this->JSON(5503, 'Too cheap.', null);
+      return response($json);
+    }
     // 修改数据
     $db = DB::table('v3_market_sale')
             ->where('uid', $uid)
@@ -281,7 +297,7 @@ class Market extends Controller {
     }
     // 退回物品
     // 查询用户资源
-    $db = BM::uid($uid)->add($item->iid, $item->count, BM::GENERAL);
+    $db = BM::uid($uid)->add($item->iid, $item->count, BM::LOCKED);
     if (!$db) {
       // 恢复数据
       DB::table('v3_market_sale')
