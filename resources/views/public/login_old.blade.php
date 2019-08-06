@@ -99,7 +99,7 @@
     let confirm_password = $('#confirm_password').val();
     let captcha  = $('#captcha').val();
     // 用户名验证
-    var match = new RegExp("^[a-z][a-zA-Z0-9_]{4,15}$");
+    var match = new RegExp("^[a-zA-Z][a-zA-Z0-9_]{4,15}$");
     if(!match.test(username)){
       m_alert("新用户名必须由字母开头，5-16位，不可包含中文以及除下划线以外的特殊字符");
       $("#username").focus();

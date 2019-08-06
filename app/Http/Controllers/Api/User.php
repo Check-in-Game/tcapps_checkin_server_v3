@@ -30,7 +30,7 @@ class User extends Controller {
         return response($json);
       }
       // 判断新账户是用户名否符合注册要求
-      $pattern = "/^[a-z][a-zA-Z0-9_]{4,15}$/";
+      $pattern = "/^[a-zA-Z][a-zA-Z0-9_]{4,15}$/";
       if(!preg_match($pattern,$username)){
         $json = $this->JSON(5703, 'Invaild username.', null);
         return response($json);
@@ -120,6 +120,21 @@ class User extends Controller {
           'status'  => $worker->status,
         ];
         DB::table('v3_user_workers')->insert($data);
+      }
+      // 挂售转移
+      $sales = DB::table('v3_market_sale_')
+                    ->where('uid', $old_account->uid)
+                    ->get();
+      foreach($sales as $sale) {
+        $data = [
+          'uid' => $uid,
+          'iid' => $sale->iid,
+          'count' => $sale->count,
+          'price' => $sale->price,
+          'update_time' => $sale->update_time,
+          'status'  => $sale->status,
+        ];
+        DB::table('v3_market_sale')->insert($data);
       }
       $auth = UserAuth::generate_auth($password, $uid, $status);
       $json = $this->JSON(0, null, ['msg'  => 'Success!']);

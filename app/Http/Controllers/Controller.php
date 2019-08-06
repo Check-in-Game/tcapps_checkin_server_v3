@@ -31,6 +31,7 @@ class Controller extends BaseController {
 
     // 发送邮件
     public function sendMail(string $view, string $recipient, string $name, string $subject, array $data) : bool {
+      set_time_limit(60);
       $data['_recipient'] = $recipient;
       $data['_name'] = $name;
       $data['_subject'] = $subject;

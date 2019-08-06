@@ -33,7 +33,7 @@ class PublicController extends Controller {
         $comfirm = $_POST['comfirm'];
         $captcha = $_POST['captcha'];
         // 判断用户名是否合法
-        $pattern = "/^[a-z][a-zA-Z0-9_]{4,15}$/";
+        $pattern = "/^[a-zA-Z][a-zA-Z0-9_]{4,15}$/";
         $preg = preg_match($pattern, $username);
         if (!$preg) {
           return view('public.register',[

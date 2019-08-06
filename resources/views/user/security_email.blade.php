@@ -60,7 +60,7 @@
         'email': email,
         'captcha' : captcha
       },
-      timeout: 10000,
+      timeout: 60000,
       complete: function(XMLHttpRequest, status){
         m_loading(false);
         if (status === 'timeout') {
