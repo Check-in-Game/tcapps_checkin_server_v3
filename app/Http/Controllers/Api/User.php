@@ -101,11 +101,25 @@ class User extends Controller {
         }
       }
       // 积分转移
-      $point = DB::table('v3_point_')
+      $point = DB::table('v3_user_point_')
                 ->where('uid', $old_account->uid)
                 ->value('point');
       if ($point) {
-        DB::table('v3_point')->insert(['uid'=>$uid, 'point'=>$point]);
+        DB::table('v3_user_point')->insert(['uid'=>$uid, 'point'=>$point]);
+      }
+      // Worker转移
+      $workers = DB::table('v3_user_workers_')
+                    ->where('uid', $old_account->uid)
+                    ->get();
+      foreach($workers as $worker) {
+        $data = [
+          'uid' => $uid,
+          'fid' => $worker->fid,
+          'level' => $worker->level,
+          'update_time' => $worker->update_time,
+          'status'  => $worker->status,
+        ];
+        DB::table('v3_user_workers')->insert($data);
       }
       $auth = UserAuth::generate_auth($password, $uid, $status);
       $json = $this->JSON(0, null, ['msg'  => 'Success!']);
@@ -298,7 +312,7 @@ class User extends Controller {
       }
       // 获取用户uid
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->sharedLock()->first();
+      $user = DB::table('v3_user_accounts')->where('uid', $uid)->sharedLock()->first();
       // 顺便验证签权状态
       if (!$user) {
         $json = $this->JSON(2702, 'Invaild user.', null);
@@ -336,7 +350,7 @@ class User extends Controller {
       $data = [
         'password'  => $password
       ];
-      $res = DB::table('user_accounts')
+      $res = DB::table('v3_user_accounts')
                 ->where('uid', $user->uid)
                 ->lockForUpdate()
                 ->update($data);
