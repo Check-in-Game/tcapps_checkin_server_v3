@@ -290,6 +290,8 @@ Worker管理
             m_tip('该产区异常，请稍候再试！', 'danger');
           }else if(data.errno == 4403){
             m_tip('该Worker等级不足，无法投入！', 'warning');
+          }else if(data.errno == 4404){
+            m_tip('该矿区已经满载，无法投入！', 'warning');
           }else{
             m_tip('未知错误！', 'warning');
           }
@@ -318,6 +320,10 @@ Worker管理
       success: function(data){
         if (data.errno == 0) {
           let workers = data.body.data;
+          if (workers.length == 0) {
+            m_tip('该区域没有您的Worker', 'warning');
+            return false;
+          }
           let node = $('#_query_body_table');
           node.text('');
           $.each(workers, function(key, worker) {
