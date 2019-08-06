@@ -7,6 +7,7 @@ use Cookie;
 use Captcha;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Common\UserAuth;
+use App\Http\Controllers\Common\BackpackManager as BM;
 
 class PublicController extends Controller {
 
@@ -63,7 +64,7 @@ class PublicController extends Controller {
           ]);
         }
         // 检查用户是否存在
-        $db = DB::table('user_accounts')->where('username', $username)->first();
+        $db = DB::table('v3_user_accounts')->where('username', $username)->first();
         if ($db) {
           // 用户已经存在
           return view('public.register',[
@@ -76,7 +77,7 @@ class PublicController extends Controller {
         $data = array(
           'username'      => $username,
           'nickname'      => $username,
-          'password'      => UserAuth::generate_password($password),
+          'password'      => $password,
           'register_at'   => date('Y-m-d H:i:s'),
           'update_at'     => date('Y-m-d H:i:s'),
           'status'        => $status = 0, // 未验证邮箱

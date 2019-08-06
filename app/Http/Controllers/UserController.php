@@ -6,7 +6,7 @@ use Cookie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Common\UserAuth;
-use App\Http\Controllers\Common\BackpackManager;
+use App\Http\Controllers\Common\BackpackManager as BM;
 
 class UserController extends Controller {
     // 用户中心
@@ -19,9 +19,9 @@ class UserController extends Controller {
                 ->value('point');
       $point = $point ? $point : 0;
       // 查询可莫尔信息
-      $items = BackpackManager::uid($uid)
-                              ->items([1,2,3,4,5], true)
-                              ->backpack(true);
+      $items = BM::uid($uid)
+                ->items([1,2,3,4,5], true)
+                ->backpack(true);
       // 清灰时间结算
       $clean = DB::table('v3_clean_list')
                 ->where('uid', $uid)
@@ -42,8 +42,7 @@ class UserController extends Controller {
     // 兑换中心
     public function shop() {
       $uid = request()->cookie('uid');
-      $user = DB::table('user_accounts')->where('uid', $uid)->first();
-      $username = $user->username;
+      $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
       $db_prefix = env('DB_PREFIX');
       // 读取商品
       $cols = [
@@ -96,7 +95,6 @@ class UserController extends Controller {
               ->value('point');
       $data = [
         'uid'             => $uid,
-        'username'        => $username,
         'goods'           => $shop,
         'point'           => $point ? $point : 0,
       ];
@@ -164,6 +162,10 @@ class UserController extends Controller {
         ];
         $auth = UserAuth::generate_auth($user->password, $user->uid, 1);
         Cookie::queue('auth', $auth);
+        // 新手礼包
+        BM::uid($user->uid)->add(5, 100, BM::LOCKED);  // 20个可莫尔
+        BM::uid($user->uid)->add(13, 10, BM::LOCKED);  // 10个WK兑换券
+        BM::uid($user->uid)->add(14, 10, BM::LOCKED);  // 10个挂售许可
         return view('user.verify_email', $data);
       }else{
         $data = [
@@ -217,7 +219,7 @@ class UserController extends Controller {
     public function user_resources() {
       $uid = request()->cookie('uid');
       // 查询资源
-      $items = BackpackManager::uid($uid)
+      $items = BM::uid($uid)
                               ->backpack(true);
       $data = array(
         'items'       => $items
@@ -229,7 +231,7 @@ class UserController extends Controller {
     public function recycle() {
       $uid = request()->cookie('uid');
       // 查询资源
-      $items = BackpackManager::uid($uid)
+      $items = BM::uid($uid)
                               ->backpack(true);
       $data = array(
         'items'       => $items
@@ -240,29 +242,22 @@ class UserController extends Controller {
     // 合成中心
     public function blend() {
       $uid = request()->cookie('uid');
-      $items = BackpackManager::uid($uid)
-                              ->items([1,2,3,4], true)
-                              ->backpack(true);
+      $items = BM::uid($uid)
+                ->items([1,2,3,4], true)
+                ->backpack(true);
       $data = array(
         'items'    => $items
       );
       return view('user.blend_center', $data);
     }
 
-    // 合成中心
+    // worker
     public function worker() {
       $uid = request()->cookie('uid');
-      $resources = DB::table('v3_user_items')
-                  ->where('uid', $uid)
-                  ->sharedLock()
-                  ->value('items');
-      if ($resources) {
-        $resources = json_decode($resources, true);
-        // 查询WORKER兑换券数量 IID 13
-        $worker_ticket = isset($resources[13]['count']) ? $resources[13]['count'] : 0;
-      }else{
-        $worker_ticket = 0;
-      }
+      $worker_ticket = BM::uid($uid)
+                        ->items(13, true)
+                        ->backpack();
+      $worker_ticket = $worker_ticket[13]['valid'];
       // 查询Worker数量
       $worker_count = DB::table('v3_user_workers')
                     ->where('uid', $uid)

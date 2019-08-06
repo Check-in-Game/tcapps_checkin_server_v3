@@ -112,7 +112,7 @@ create table tcapps_checkin_v3_user_point(
 create table tcapps_checkin_v3_user_backpack(
   uid int unsigned not null comment "用户ID",
   iid int unsigned not null comment "物品ID",
-  amount int unsigned not null comment "物品数量",
+  amount int unsigned not null default 0 comment "物品数量",
   locked_amount int unsigned not null default 0 comment "锁定物品数量",
   frozen int unsigned not null default 0 comment "冻结物品数量",
   status tinyint not null default 1 comment "状态"

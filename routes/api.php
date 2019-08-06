@@ -53,7 +53,7 @@ Route::post('/gifts/reedem', 'Api\User@gifts_reedem')
 Route::get('/worker/redeem', 'Api\User@worker_redeem')
       ->middleware('apicheck.auth');
   // get worker list
-Route::post('/worker', 'Api\APIUser@worker')
+Route::post('/worker', 'Api\User@worker')
       ->middleware('apicheck.auth');
   // get specific worker list
 Route::post('/worker/assign_query', 'Api\User@worker_assign_query')
