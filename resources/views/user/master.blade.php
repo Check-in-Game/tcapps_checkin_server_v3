@@ -243,7 +243,7 @@ function m_tip_close(id) {
 }
 function logout() {
   $.getJSON('/api/logout', function(){
-    location.href = '/home';
+    location.href = '';
   });
 }
 </script>

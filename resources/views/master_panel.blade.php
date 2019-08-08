@@ -97,7 +97,7 @@
       });
       function logout() {
         $.getJSON('/api/logout', function(){
-          location.href = '/home';
+          location.href = '';
         });
       }
       function m_loading(up = true) {

@@ -16,8 +16,7 @@ use Illuminate\Http\Request;
 // =======USER=======
 // Login
 Route::post('/login', 'Api\User@login');
-Route::post('/login_old', 'Api\User@login_old');
-// Route::post('/login', 'Api\User@login_old');
+
 // Logout
 Route::get('/logout', 'Api\User@logout')
       ->middleware('apicheck.auth');

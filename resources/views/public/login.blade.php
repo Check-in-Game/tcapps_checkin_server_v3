@@ -1,6 +1,5 @@
 @extends('public.master')
 @section('container')
-<!-- 公告-4 -->
 @foreach($_notices as $notice)
 <div class="container">
   <div class="alert alert-{{ $notice['color'] }}" role="alert">
@@ -17,10 +16,6 @@
 </div>
 <div class="mx-auto my-4 text-center" style="max-width:400px;">
   <h2>登录 / Login</h2>
-
-  <div class="alert alert-danger">
-    为提升系统安全系数，非新注册用户请使用下方【老用户数据转移】后按流程进行数据迁移。
-  </div>
 
   <div class="input-group mb-3">
     <div class="input-group-prepend">
@@ -49,7 +44,6 @@
   <p class="clearfix">
     <button class="btn btn-success btn-block" id="btn" name="button" onclick="javascript:login();">登录</button>
     <button class="btn btn-secondary btn-block" id="btn" name="button" onclick="javascript:location.href='{{ action('PublicController@register') }}';">没有帐号？</button>
-    <button class="btn btn-info btn-block" id="btn" name="button" onclick="javascript:location.href='{{ action('PublicController@login_old') }}';">老用户数据转移</button>
   </p>
 </div>
 
