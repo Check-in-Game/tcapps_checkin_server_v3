@@ -94,6 +94,13 @@ Route::post('/market/pulloff', 'Api\Market@pulloff')
       ->middleware('apicheck.auth');
 
 
+// Foundation
+  // disucss
+    // new discuss
+Route::post('/foundation/discuss/new', 'Api\Foundation\discuss@discuss_new')
+->middleware('apicheck.auth');
+
+
 // =======ADMIN=======
 // 数据迁移
   // 积分迁移
