@@ -1002,59 +1002,6 @@ class User extends Controller {
           return response($json);
         }
       }
-      // // 查询用户资源
-      // $user_items = DB::table('v3_user_items')
-      //               ->where('uid', $uid)
-      //               ->sharedLock()
-      //               ->exists();
-      // if (!$user_items) {
-      //   // 首次注册购买信息
-      //   $data = array(
-      //     'uid' => $uid,
-      //     'items' => $gifts->items
-      //   );
-      //   $db = DB::table('v3_user_items')->lockForUpdate()->insert($data);
-      // }else{
-      //   // 记录用户原物品信息
-      //   $user_items = DB::table('v3_user_items')
-      //                 ->where('uid', $uid)
-      //                 ->sharedLock()
-      //                 ->value('items');
-      //   if (!$user_items) {
-      //     $json = $this->JSON(5107, 'Failed to reedem.', null);
-      //     return response($json);
-      //   }
-      //   // 更新物品信息
-      //   foreach($gifts_items as $iid => $value) {
-      //     // 查询是否有对应IID的记录
-      //     $item_db = DB::table('v3_user_items')
-      //                   ->where('uid', $uid)
-      //                   ->sharedLock()
-      //                   ->value("items->{$iid}->count");
-      //     if ($item_db || $item_db === 0) {
-      //       // 存在对应IID记录
-      //       $db = DB::table('v3_user_items')
-      //               ->where('uid', $uid)
-      //               ->lockForUpdate()
-      //               ->update(["items->{$iid}->count" => $item_db + $value['count']]);
-      //     }else{
-      //       // 创建对应记录
-      //       $db = DB::table('v3_user_items')
-      //               ->where('uid', $uid)
-      //               ->lockForUpdate()
-      //               ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$iid}\":{\"count\": {$value['count']}}}')")]);
-      //     }
-      //     // 恢复用户原始物品信息
-      //     if (!$db) {
-      //       $user_items = DB::table('v3_user_items')
-      //                     ->where('uid', $uid)
-      //                     ->lockForUpdate()
-      //                     ->update(['items' => $user_items]);
-      //       $json = $this->JSON(5108, 'Failed to reedem.', null);
-      //       return response($json);
-      //     }
-      //   }
-      // }
       // 写入兑换记录
       $data = [
         'uid'     => $uid,

@@ -4,9 +4,6 @@ Worker管理
 @endsection
 @section('body')
 <!-- 基本信息 -->
-<div class="alert alert-primary">
-  Worker是此游戏最基础、最重要的部分，玩家需要充分理解Worker的运行机制才能获得最高收益。机制详解请移步左侧查看游戏手册->Worker部分。
-</div>
 <div class="row">
   <div class="col-md-4 col-sm-12 mb-3 text-center">
     <div class="card border-dark mb-3">
@@ -20,82 +17,99 @@ Worker管理
           <div class="col-6 text-left mb-1">{{ $worker_ticket }} @if($worker_ticket > 0) <a href="javascript:redeem();">兑换</a> @endif</div>
           <!-- 积分 -->
           <div class="col-6 text-right mb-1 font-weight-bold">Worker：</div>
-          <div class="col-6 text-left mb-1">{{ $worker_count }}</div>
+          <div class="col-6 text-left mb-1">{{ $worker_count }} <a href="javascript:onekey_harvest();">一键收获</a></div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<!-- 产区 -->
-<div class="row">
-  @foreach($field as $f)
-  <div class="col-12 col-md-6 col-lg-3">
-    <div class="card card-dark">
-      <div class="card-header">
-        <h4>{{$f->fname}}</h4>
-        <div class="card-header-action">
-          <button onclick="javascript:query_modal({{ $f->fid }});" class="btn btn-info" id="btn_query_{{ $f->fid }}"> <i class="fa fa-fw fa-tools"></i> </button>
-        </div>
-      </div>
-      <div class="card-body">
+<div class="card">
+  <div class="card-body">
+    <ul class="nav nav-tabs" role="tablist">
+      @foreach($fields as $level => $field)
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#level_{{ $level }}" role="tab" name="wka_nav">{{ $level }}级</a>
+      </li>
+      @endforeach
+    </ul>
+    <div class="tab-content tab-bordered" id="myTab3Content">
+      @foreach($fields as $level => $field)
+      <div class="tab-pane fade" id="level_{{ $level }}" role="tabpanel" aria-labelledby="level_{{ $level }}">
+        <!-- 产区 -->
         <div class="row">
-          <div class="col-6 text-right mb-1 font-weight-bold">
-            <strong>产出资源：</strong>
+          @foreach($field as $f)
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card card-dark">
+              <div class="card-header">
+                <h4>{{$f->fname}}</h4>
+                <div class="card-header-action">
+                  <button onclick="javascript:query_modal({{ $f->fid }});" class="btn btn-info" id="btn_query_{{ $f->fid }}"> <i class="fa fa-fw fa-tools"></i> </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-6 text-right mb-1 font-weight-bold">
+                    <strong>产出资源：</strong>
+                  </div>
+                  <div class="col-6 text-left mb-1">
+                    {{ $f->iname }}
+                  </div>
+                  <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
+                    <strong>产出速度：</strong>
+                  </div>
+                  <div class="col-6 text-left mb-1">
+                    {{ $f->speed }}/h
+                  </div>
+                  <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
+                    <strong>产出倍率：</strong>
+                  </div>
+                  <div class="col-6 text-left mb-1">
+                    {{ $f->times }} 倍
+                  </div>
+                  <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
+                    <strong>数量限制：</strong>
+                  </div>
+                  <div class="col-6 text-left mb-1">
+                    @if ($f->limi_count === 0)
+                      无限制
+                    @else
+                      <span class="text-danger font-weight-bold">{{ $f->limi_count }}</span>
+                    @endif
+                  </div>
+                  <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
+                    <strong>最低等级：</strong>
+                  </div>
+                  <div class="col-6 text-left mb-1">
+                    {{ $f->limi_level }} 级
+                  </div>
+                  <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
+                    <strong>Worker总数：</strong>
+                  </div>
+                  <div class="col-6 text-left mb-1">
+                    {{ isset($field_workers[$f->fid]) ? $field_workers[$f->fid] : 0 }}
+                  </div>
+                  <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
+                    <strong>我的Worker：</strong>
+                  </div>
+                  <div class="col-6 text-left mb-1">
+                    {{ isset($field_workers_mine[$f->fid]) ? $field_workers_mine[$f->fid] : 0 }}
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer text-center">
+                <a href="javascript:assign_modal({{ $f->fid }});" class="btn btn-primary" id="btn_assign_{{ $f->fid }}">投入</a>
+                @if(isset($field_workers_mine[$f->fid]))
+                <a href="javascript:query_harvest({{ $f->fid }});" class="btn btn-success" id="btn_harvest_{{ $f->fid }}">收获</a>
+                @endif
+              </div>
+            </div>
           </div>
-          <div class="col-6 text-left mb-1">
-            {{ $f->iname }}
-          </div>
-          <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
-            <strong>产出速度：</strong>
-          </div>
-          <div class="col-6 text-left mb-1">
-            {{ $f->speed }}/h
-          </div>
-          <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
-            <strong>产出倍率：</strong>
-          </div>
-          <div class="col-6 text-left mb-1">
-            {{ $f->times }} 倍
-          </div>
-          <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
-            <strong>数量限制：</strong>
-          </div>
-          <div class="col-6 text-left mb-1">
-            @if ($f->limi_count === 0)
-              无限制
-            @else
-              <span class="text-danger font-weight-bold">{{ $f->limi_count }}</span>
-            @endif
-          </div>
-          <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
-            <strong>最低等级：</strong>
-          </div>
-          <div class="col-6 text-left mb-1">
-            {{ $f->limi_level }} 级
-          </div>
-          <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
-            <strong>Worker总数：</strong>
-          </div>
-          <div class="col-6 text-left mb-1">
-            {{ isset($field_workers[$f->fid]) ? $field_workers[$f->fid] : 0 }}
-          </div>
-          <div class="col-6 text-right mb-1 font-weight-boldcol-6 text-right mb-1 font-weight-bold">
-            <strong>我的Worker：</strong>
-          </div>
-          <div class="col-6 text-left mb-1">
-            {{ isset($field_workers_mine[$f->fid]) ? $field_workers_mine[$f->fid] : 0 }}
-          </div>
+          @endforeach
         </div>
       </div>
-      <div class="card-footer text-center">
-        <a href="javascript:assign_modal({{ $f->fid }});" class="btn btn-primary" id="btn_assign_{{ $f->fid }}">投入</a>
-        @if(isset($field_workers_mine[$f->fid]))
-        <a href="javascript:query_harvest({{ $f->fid }});" class="btn btn-success" id="btn_harvest_{{ $f->fid }}">收获</a>
-        @endif
-      </div>
+      @endforeach
     </div>
   </div>
-  @endforeach
 </div>
 @endsection
 @section('extraModalContent')
@@ -208,6 +222,10 @@ Worker管理
 </tr>
 </script>
 <script type="text/javascript">
+  var harvest_list = "{{ $harvest }}";
+  $(function(){
+    $('[name=wka_nav]').eq(0).click()
+  });
   function assign_modal(fid) {
     m_tip('请稍候，加载Workers中...', 'info', 'loading-workers');
     $('#btn_assign_' + fid).attr('disabled', 'disabled');
@@ -436,9 +454,9 @@ Worker管理
       }
     });
   }
-  function harvest(fid) {
+  function harvest(fid, onekey = false) {
     $('#_harvest').modal('hide');
-    m_loading();
+    if (onekey === false) m_loading();
     $.ajax({
       url: '/api/worker/harvest',
       type: 'post',
@@ -450,24 +468,35 @@ Worker管理
       complete: function(XMLHttpRequest, status){
         m_loading(false);
         if (status === 'timeout') {
-          m_alert('响应超时，请稍候再试！', 'danger');
+          m_tip('响应超时，请稍候再试！', 'danger');
         }
       },
       success: function(data){
         if (data.errno == 0) {
-          m_alert('成功收获 ' + data.body.data.profits + ' ' + data.body.data.iname, 'success');
+          m_tip('成功收获 ' + data.body.data.profits + ' ' + data.body.data.iname, 'success');
         }else{
           if (data.errno == 4701) {
-            m_alert('获取该区域信息失败，请稍候再试！', 'danger');
+            m_tip('获取该区域信息失败，请稍候再试！', 'danger');
           }else if(data.errno == 4702){
-            m_alert('发放收益失败，请稍候再试！', 'danger');
+            m_tip('发放收益失败，请稍候再试！', 'danger');
           }else if(data.errno == 4703){
-            m_alert('验证码错误', 'warning');
+            m_tip('验证码错误', 'warning');
           }else{
-            m_alert('网络情况不佳，请稍候再试！', 'danger');
+            m_tip('网络情况不佳，请稍候再试！', 'danger');
           }
         }
       }
+    });
+  }
+  function onekey_harvest() {
+    let hl = $.parseJSON(harvest_list);
+    if (hl.length === 0) {
+      m_tip('暂无可收获Worker', 'warning');
+      return false;
+    }
+    $.each(hl, function(key, value){
+      harvest(value, true);
+      console.log(value);
     });
   }
   function redeem() {

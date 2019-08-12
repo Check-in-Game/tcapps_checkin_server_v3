@@ -264,10 +264,15 @@ class UserController extends Controller {
                     ->sharedLock()
                     ->count();
       // 查询产区情况
-      $field = DB::table('v3_user_workers_field')
+      $_field = DB::table('v3_user_workers_field')
               ->join('v3_items', 'v3_user_workers_field.iid', '=', 'v3_items.iid')
               ->where('v3_user_workers_field.status', 1)
               ->get();
+      $fields = [];
+      foreach ($_field as $key => $value) {
+        $fields[$value->limi_level][] = $value;
+      }
+      ksort($fields);
       // 统计各产区Worker数量
       $field_workers_data = DB::table('v3_user_workers')
                           ->where('fid', '<>', 0)
@@ -294,9 +299,10 @@ class UserController extends Controller {
       $data = array(
         'worker_ticket'       => $worker_ticket,
         'worker_count'        => $worker_count,
-        'field'               => $field,
+        'fields'              => $fields,
         'field_workers'       => $field_workers,
         'field_workers_mine'  => $field_workers_mine,
+        'harvest'             => json_encode(array_keys($field_workers_mine)),
       );
       return view('user.worker', $data);
     }
