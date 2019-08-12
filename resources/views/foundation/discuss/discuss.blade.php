@@ -5,9 +5,10 @@
 @section('body')
 <div class="my-4 text-center">
   <div class="btn-group">
-    <button class="btn btn-success my-1" onclick="javascript:location.href='?tid=1';">讨论中</button>
-    <button class="btn btn-warning my-1" onclick="javascript:location.href='?tid=2';">跟进中</button>
-    <button class="btn btn-danger my-1" onclick="javascript:location.href='?tid=3';">已关闭</button>
+    <button class="btn btn-success my-1" onclick="javascript:location.href='?sid=1';">讨论中</button>
+    <button class="btn btn-warning my-1" onclick="javascript:location.href='?sid=2';">跟进中</button>
+    <button class="btn btn-danger my-1" onclick="javascript:location.href='?sid=3';">已关闭</button>
+    <button class="btn btn-info my-1" onclick="javascript:location.href='?mine=1';">我的议项</button>
     <button class="btn btn-primary my-1" onclick="javascript:location.href='{{ action('FoundationController@discuss_new') }}';">创建议项</button>
   </div>
 </div>
@@ -39,7 +40,7 @@
             @if ($discussion->level == 255)
               <span class="badge badge-danger">置顶</span>
             @endif
-            <a href="javascript:;" style="color:#6c757d; font-weight: bold; text-decoration: none;">
+            <a href="{{ action('FoundationController@details') }}?did={{ $discussion->did }}" style="color:#6c757d; font-weight: bold; text-decoration: none;">
               {{ $discussion->topic }}
             </a>
             <span class="text-muted">#{{ $discussion->did }}</span>
@@ -54,8 +55,8 @@
     </ul>
   </div>
 </div>
-{{ $discussions->links() }}
 @endforeach
+{{ $discussions->links() }}
 @endsection
 @section('extraModalContent')
 

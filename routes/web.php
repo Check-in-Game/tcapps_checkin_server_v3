@@ -49,6 +49,7 @@ Route::get('/foundation/recurit', 'FoundationController@recruit')               
 // 议事大厅
 Route::get('/foundation/discuss', 'FoundationController@discuss')                 ->middleware('check.auth', 'notice:19');
 Route::get('/foundation/discuss/new', 'FoundationController@discuss_new')         ->middleware('check.auth', 'notice:20');
+Route::get('/foundation/discuss/details', 'FoundationController@details')         ->middleware('check.auth', 'notice:21');
 
 // 管理中心
 Route::get('/admin', 'AdminController@index')                                     ->middleware('check.auth', 'check.admin.auth', 'notice:11');

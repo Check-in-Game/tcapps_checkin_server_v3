@@ -19,15 +19,23 @@ class FoundationController extends Controller {
 
     // 议事中心
     public function discuss() {
-      $tid         = request()->get('tid') ?? 1;
-      if ($tid > 3) {
-        $tid = 1;
+      $uid         = request()->cookie('uid');
+      $sid         = request()->get('sid') ?? 1;
+      $mine        = request()->get('mine');
+      if ($sid > 3) {
+        $sid = 1;
       }
       $discussions = DB::table('v3_foundation_discuss')
                       ->join('v3_user_accounts', 'v3_user_accounts.uid', 'v3_foundation_discuss.uid')
-                      ->where('v3_foundation_discuss.status', $tid)
-                      ->orderBy('v3_foundation_discuss.level', 'desc')
-                      ->paginate(10);
+                      ->where('v3_foundation_discuss.status', '<>', -1)
+                      ->orderBy('v3_foundation_discuss.level', 'desc');
+      if (is_null($mine)) {
+        $discussions = $discussions->where('v3_foundation_discuss.status', $sid);
+      }else{
+        $discussions = $discussions->where('v3_foundation_discuss.uid', $uid)
+                                  ->where('v3_foundation_discuss.status', '<>', 3);
+      }
+      $discussions = $discussions->paginate(10);
       // 查询评论数量
       $comments_count = [];
       foreach ($discussions as $discussion) {
@@ -42,6 +50,38 @@ class FoundationController extends Controller {
         'comments_count'  => $comments_count,
       ];
       return view('foundation.discuss.discuss', $data);
+    }
+
+    // 查看议项
+    public function details() {
+      $did         = request()->get('did');
+      $select = [
+        'v3_foundation_discuss.did',
+        'v3_foundation_discuss.uid',
+        'v3_foundation_discuss.tid',
+        'v3_foundation_discuss.topic',
+        'v3_foundation_discuss.level',
+        'v3_foundation_discuss.create_at',
+        'v3_foundation_discuss.update_at',
+        'v3_foundation_discuss.status',
+        'v3_user_accounts.uid',
+        'v3_user_accounts.nickname',
+      ];
+      $discussion = DB::table('v3_foundation_discuss')
+                      ->join('v3_user_accounts', 'v3_user_accounts.uid', 'v3_foundation_discuss.uid')
+                      ->where('v3_foundation_discuss.did', $did)
+                      ->select($select)
+                      ->first();
+      $comments = DB::table('v3_foundation_discuss_posts')
+                ->join('v3_user_accounts', 'v3_user_accounts.uid', 'v3_foundation_discuss_posts.uid')
+                ->where('v3_foundation_discuss_posts.did', $did)
+                ->where('v3_foundation_discuss_posts.status', 1)
+                ->get();
+      $data = [
+        'discussion' => $discussion,
+        'comments'    => $comments,
+      ];
+      return view('foundation.discuss.details', $data);
     }
 
 }
