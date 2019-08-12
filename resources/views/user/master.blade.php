@@ -10,6 +10,7 @@
   <title>Check-in Game</title>
   <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/selectric.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/style.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/components.min.css">
   <script src="{{ asset('js/app.js') }}" charset="utf-8"></script>
@@ -17,6 +18,8 @@
   <script src="https://cdn.jsdelivr.net/npm/jquery-lazy@1.7.10/jquery.lazy.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery.nicescroll@3.7.6/jquery.nicescroll.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/jquery.selectric.min.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/moment.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/stisla.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/scripts.min.js" charset="utf-8"></script>
   <link rel="stylesheet" href="https://cdn.staticfile.org/izitoast/1.4.0/css/iziToast.min.css">
@@ -73,6 +76,7 @@
                 <li><a class="nav-link" href="{{ action('UserController@worker_upgrade') }}"><i class="fa-fw fas fa-tools"></i> Worker升级</a></li>
               </ul>
             </li>
+            <li><a class="nav-link" href="{{ action('FoundationController@discuss') }}"><i class="fa-fw fas fa-comments"></i> <span>议事大厅</span></a></li>
             <!-- <li class="dropdown">
               <a href="javascript:;" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa-fw fas fa-keyboard"></i> <span>办公中心</span></a>
               <ul class="dropdown-menu">
@@ -243,7 +247,7 @@ function m_tip_close(id) {
 }
 function logout() {
   $.getJSON('/api/logout', function(){
-    location.href = '/home';
+    location.href = '';
   });
 }
 </script>

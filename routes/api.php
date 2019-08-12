@@ -16,8 +16,7 @@ use Illuminate\Http\Request;
 // =======USER=======
 // Login
 Route::post('/login', 'Api\User@login');
-Route::post('/login_old', 'Api\User@login_old');
-// Route::post('/login', 'Api\User@login_old');
+
 // Logout
 Route::get('/logout', 'Api\User@logout')
       ->middleware('apicheck.auth');
@@ -95,6 +94,19 @@ Route::post('/market/pulloff', 'Api\Market@pulloff')
       ->middleware('apicheck.auth');
 
 
+// Foundation
+  // disucss
+    // new discuss
+Route::post('/foundation/discuss/new', 'Api\Foundation\discuss@discuss_new')
+      ->middleware('apicheck.auth');
+      // new comment
+Route::post('/foundation/discuss/comment', 'Api\Foundation\discuss@comment_new')
+      ->middleware('apicheck.auth');
+      // close topic
+Route::post('/foundation/discuss/close', 'Api\Foundation\discuss@discuss_close')
+      ->middleware('apicheck.auth');
+
+
 // =======ADMIN=======
 // 数据迁移
   // 积分迁移
@@ -105,6 +117,11 @@ Route::get('/admin/migrate/points', 'Api\Admin\Admin@migrate_points')
 Route::get('/admin/migrate/badges', 'Api\Admin\Admin@migrate_badges')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
+// 基金会
+  // discuss
+    // set status
+Route::post('/admin/foundation/discuss/setStatus', 'Api\Admin\Foundation\discuss@setStatus')
+      ->middleware('apicheck.auth');
 // // Conpensate
 // Route::post('/admin/conpensate', 'APIAdmin@conpensate')
 //       ->middleware('apicheck.auth')

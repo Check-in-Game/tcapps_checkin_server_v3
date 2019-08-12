@@ -66,6 +66,31 @@ INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (4, '特殊�
 INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (5, 'Worker');
 INSERT INTO `tcapps_checkin_v3_items_types` (`tid`, `sname`) VALUES (6, '许可证');
 
+#议项注册表v3
+#tid    1为新想法，2为新问题，3为Bug反馈
+#status 1为讨论中，2为跟进中，-1为关闭
+create table tcapps_checkin_v3_foundation_discuss(
+  did int unsigned primary key auto_increment not null comment "主题ID",
+  uid int unsigned not null comment "发起人UID",
+  tid tinyint unsigned not null comment "类型ID",
+  topic varchar(32) not null comment "主题",
+  level tinyint unsigned not null comment "等级",
+  create_at datetime not null comment "创建时间",
+  update_at datetime not null comment "更新时间",
+  status tinyint not null default 1 comment "状态"
+)comment="议项注册表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#讨论提交表
+create table tcapps_checkin_v3_foundation_discuss_posts(
+  post_id int unsigned primary key auto_increment not null comment "PID",
+  did int unsigned not null comment "主题ID",
+  uid int unsigned not null comment "发布人UID",
+  create_at datetime not null comment "创建时间",
+  update_at datetime not null comment "更新时间",
+  content text not null comment "内容",
+  status tinyint not null default 1 comment "状态"
+)comment="议项注册表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
 #Worker注册表v3
 #1为正常状态，2为寄售
 create table tcapps_checkin_v3_user_workers(

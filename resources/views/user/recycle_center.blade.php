@@ -82,8 +82,8 @@ function comfirm_recycle(iid) {
 function recycle() {
   $('#_comfirm').modal('hide');
   m_loading();
-  let iid = $('#recycle_iid').val();;
-  let count = $('#recycle_count').val();;
+  let iid = $('#recycle_iid').val();
+  let count = $('#recycle_count').val();
   $.ajax({
     url: '/api/recycle',
     type: 'post',

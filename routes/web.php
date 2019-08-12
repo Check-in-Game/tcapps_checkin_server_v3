@@ -20,7 +20,6 @@ Route::redirect('/index', '/home');
 Route::get('/home', 'PublicController@index')                                     ->middleware('check.auth:info', 'notice:1');
 // 登录
 Route::get('/login', 'PublicController@login')                                    ->middleware('check.auth:info', 'notice:4');
-Route::get('/login_old', 'PublicController@login_old')                            ->middleware('check.auth:info', 'notice:4');
 // 注册
 Route::match(['get', 'post'], '/register', 'PublicController@register')           ->middleware('check.auth:info', 'notice:2');
 // 排行榜
@@ -47,7 +46,10 @@ Route::get('/user/market/manage', 'UserController@market_manage')               
 
 // 基金会
 Route::get('/foundation/recurit', 'FoundationController@recruit')                 ->middleware('check.auth', 'notice:15');
-
+// 议事大厅
+Route::get('/foundation/discuss', 'FoundationController@discuss')                 ->middleware('check.auth', 'notice:19');
+Route::get('/foundation/discuss/new', 'FoundationController@discuss_new')         ->middleware('check.auth', 'notice:20');
+Route::get('/foundation/discuss/details', 'FoundationController@details')         ->middleware('check.auth', 'notice:21');
 
 // 管理中心
 Route::get('/admin', 'AdminController@index')                                     ->middleware('check.auth', 'check.admin.auth', 'notice:11');
