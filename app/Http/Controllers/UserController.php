@@ -319,8 +319,6 @@ class UserController extends Controller {
       $workers = DB::table('v3_user_workers')
                   ->where('uid', $uid)
                   ->where('status', 1)
-                  ->orderBy('level', 'desc')
-                  ->lockForUpdate()
                   ->paginate(25);
       $data = array(
         'workers'        => $workers,
