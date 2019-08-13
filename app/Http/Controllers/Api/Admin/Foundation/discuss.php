@@ -29,6 +29,7 @@ class discuss extends Controller {
       return response($json);
     }
     $data = [
+      'update_at' => date('Y-m-d H:i:s'),
       'status'    => $status,
     ];
     DB::table('v3_foundation_discuss')->where('did', $did)->update($data);

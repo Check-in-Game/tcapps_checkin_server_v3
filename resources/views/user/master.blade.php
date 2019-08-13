@@ -6,7 +6,7 @@
   <meta name="description" content="一款有参与感的收菜游戏。">
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-  <link href="https://cdn.bootcss.com/font-awesome/5.8.1/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome@5.10.1/css/all.min.css" rel="stylesheet">
   <title>Check-in Game</title>
   <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
@@ -70,13 +70,14 @@
             <li><a class="nav-link" href="{{ action('UserController@shop') }}"><i class="fa-fw fas fa-store-alt"></i> <span>资源商城</span></a></li>
             <li><a class="nav-link" href="{{ action('UserController@gifts_reedem') }}"><i class="fa-fw fas fa-gift"></i> <span>礼包兑换</span></a></li>
             <li class="menu-header">基金会</li>
+            <li><a class="nav-link" href="{{ action('FoundationController@business') }}"><i class="fa-fw fas fa-building"></i> <span>事务大厅</span></a></li>
+            <li><a class="nav-link" href="{{ action('FoundationController@discuss') }}"><i class="fa-fw fas fa-comments"></i> <span>议事大厅</span></a></li>
             <li class="dropdown">
               <a href="javascript:;" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa-fw fas fa-angle-double-up"></i> <span>科技升级</span></a>
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="{{ action('UserController@worker_upgrade') }}"><i class="fa-fw fas fa-tools"></i> Worker升级</a></li>
               </ul>
             </li>
-            <li><a class="nav-link" href="{{ action('FoundationController@discuss') }}"><i class="fa-fw fas fa-comments"></i> <span>议事大厅</span></a></li>
             <!-- <li class="dropdown">
               <a href="javascript:;" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fa-fw fas fa-keyboard"></i> <span>办公中心</span></a>
               <ul class="dropdown-menu">

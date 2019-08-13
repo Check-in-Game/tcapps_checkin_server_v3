@@ -32,6 +32,7 @@ Route::get('/user', 'UserController@user')                                      
 Route::get('/shop', 'UserController@shop')                                        ->middleware('check.auth', 'notice:6');
 Route::get('/user/security/password', 'UserController@security_change_password')  ->middleware('check.auth', 'notice:7');
 Route::get('/user/security/email', 'UserController@security_email')               ->middleware('check.auth', 'notice:16');
+Route::get('/user/profile/nickname', 'UserController@profile_nickname')           ->middleware('check.auth', 'notice:22');
 Route::get('/user/recycle', 'UserController@recycle')                             ->middleware('check.auth', 'notice:8');
 Route::get('/user/blend', 'UserController@blend')                                 ->middleware('check.auth', 'notice:9');
 Route::get('/user/worker', 'UserController@worker')                               ->middleware('check.auth', 'notice:10');
@@ -45,11 +46,14 @@ Route::get('/user/market/sale', 'UserController@market_sale')                   
 Route::get('/user/market/manage', 'UserController@market_manage')                 ->middleware('check.auth', 'notice:18');
 
 // 基金会
+  // 招募
 Route::get('/foundation/recurit', 'FoundationController@recruit')                 ->middleware('check.auth', 'notice:15');
-// 议事大厅
+  // 议事大厅
 Route::get('/foundation/discuss', 'FoundationController@discuss')                 ->middleware('check.auth', 'notice:19');
 Route::get('/foundation/discuss/new', 'FoundationController@discuss_new')         ->middleware('check.auth', 'notice:20');
 Route::get('/foundation/discuss/details', 'FoundationController@details')         ->middleware('check.auth', 'notice:21');
+  // 议事大厅
+Route::get('/foundation/business', 'FoundationController@business')               ->middleware('check.auth', 'notice:23');
 
 // 管理中心
 Route::get('/admin', 'AdminController@index')                                     ->middleware('check.auth', 'check.admin.auth', 'notice:11');

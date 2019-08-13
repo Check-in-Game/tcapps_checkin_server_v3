@@ -84,4 +84,28 @@ class FoundationController extends Controller {
       return view('foundation.discuss.details', $data);
     }
 
+    // 事务大厅
+    public function business() {
+      $uid         = request()->cookie('uid');
+      // 查询基金会积分
+      $foundation_point = DB::table('v3_foundation')
+                            ->where('fkey', 'point')
+                            ->value('fvalue');
+      // 查询个人贡献
+      $my_credit = DB::table('v3_foundation_credit')
+                    ->where('uid', $uid)
+                    ->value('credit');
+      // 查询排行榜
+      $charts = DB::table('v3_foundation_credit')
+                  ->join('v3_user_accounts', 'v3_user_accounts.uid', '=', 'v3_foundation_credit.uid')
+                  ->orderBy('v3_foundation_credit.credit', 'desc')
+                  ->limit(10)
+                  ->get();
+      $data = [
+        'charts'            => $charts,
+        'my_credit'         => $my_credit,
+        'foundation_point'  => $foundation_point,
+      ];
+      return view('foundation.business.business', $data);
+    }
 }

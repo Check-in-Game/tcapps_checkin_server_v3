@@ -7,7 +7,7 @@
 create table tcapps_checkin_v3_user_accounts(
   uid int unsigned primary key auto_increment not null comment "用户ID",
   username varchar(16) unique not null comment "用户名",
-  nickname varchar(16) not null comment "昵称",
+  nickname varchar(16) unique not null comment "昵称",
   email varchar(64) not null default '' comment "Email",
   password varchar(32) not null comment "密码",
   register_at datetime not null comment "注册时间",
@@ -51,8 +51,14 @@ INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `descript
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (10, '一起加倍吧！（1.2倍纪念版）', 1, '/cdn/v2/badges/5.png', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (11, '一起加倍吧！（1.3倍纪念版）', 1, '/cdn/v2/badges/6.png', '传说中的勋章之一，看起来似乎有一股很强的力量……', 1000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (12, 'v2勋章', 1, '/cdn/v2/badges/7.svg', '传说中的勋章之一，看起来似乎有一股很强的力量……', 2000, 1);
-INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (13, 'Worker兑换券', 1, '/cdn/v3/basic_resources/worker.svg', '一种基础资源的兑换券，兑换后可用于产出资源', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (13, 'Worker兑换券', 2, '/cdn/v3/basic_resources/worker.svg', '一种基础资源的兑换券，兑换后可用于产出资源', 1000, 1);
 INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (14, '挂售许可', 6, '/cdn/v3/license/sale.svg', '在交易市场上架物品的凭证', 5, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (15, 'Worker升级卡', 3, '/cdn/v3/basic_resources/worker_updage_ticket.svg', '高等级Worker升级的凭证', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (16, '体验积分券', 3, '/cdn/v3/bill/bill_100.svg', '可用于兑换100积分', 100, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (17, '小积分券', 3, '/cdn/v3/bill/bill_1k.svg', '可用于兑换1000积分', 1000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (18, '积分券', 3, '/cdn/v3/bill/bill_5k.svg', '可用于兑换5000积分', 5000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (19, '大积分券', 3, '/cdn/v3/bill/bill_10k.svg', '可用于兑换1万积分', 10000, 1);
+INSERT INTO `tcapps_checkin_v3_items` (`iid`, `iname`, `tid`, `image`, `description`, `recycle_value`, `status`) VALUES (20, '富翁体验券', 3, '/cdn/v3/bill/bill_100k.svg', '可用于兑换10万积分', 100000, 1);
 
 #物品类型列表v3
 create table tcapps_checkin_v3_items_types(
@@ -90,6 +96,38 @@ create table tcapps_checkin_v3_foundation_discuss_posts(
   content text not null comment "内容",
   status tinyint not null default 1 comment "状态"
 )comment="议项注册表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#基金会礼包领取表v3
+create table tcapps_checkin_v3_foundation_business_gifts_redeem(
+  rid int unsigned primary key auto_increment not null comment "兑换ID",
+  uid int unsigned not null comment "领取用户",
+  gift_name varchar(32) not null comment "礼包名称",
+  reedem_at datetime not null comment "领取时间",
+  status tinyint not null default 1 comment "状态"
+)comment="基金会礼包领取表",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#基金会系统v3
+create table tcapps_checkin_v3_foundation(
+  fkey varchar(255) primary key not null comment "设置键",
+  fvalue varchar(2048) not null comment "设置值",
+  description varchar(256) not null comment "解释"
+)comment="基金会系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+INSERT INTO `tcapps_checkin_v3_foundation` (`fkey`, `fvalue`, `description`) VALUES ('point', 0, '公用积分');
+
+#基金会贡献积分系统v3
+create table tcapps_checkin_v3_foundation_credit(
+  uid int unsigned primary key not null comment "用户ID",
+  credit int not null comment "贡献值"
+)comment="基金会贡献积分系统",engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+#基金会积分捐赠记录v3
+create table tcapps_checkin_v3_foundation_business_donate_record_point(
+  rid int unsigned primary key auto_increment not null comment "记录ID",
+  uid int unsigned not null comment "用户ID",
+  point int not null comment "捐赠积分",
+  donate_at datetime not null comment "捐赠时间",
+  status tinyint not null default 1 comment "状态"
+)comment="基金会积分捐赠记录",engine=InnoDB default character set utf8 collate utf8_general_ci;
 
 #Worker注册表v3
 #1为正常状态，2为寄售

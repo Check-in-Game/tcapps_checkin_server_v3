@@ -111,14 +111,20 @@ class UserController extends Controller {
       return view('user.security_change_password', $data);
     }
 
-    // 修改邮箱
-    public function security_email() {
+    // 修改昵称
+    public function profile_nickname() {
       $uid = request()->cookie('uid');
       $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
       $data = [
-        'username'        => $user->username
+        'user'        => $user
       ];
-      return view('user.security_email', $data);
+      return view('user.profile.nickname', $data);
+    }
+
+    // 修改邮箱
+    public function security_email() {
+      $uid = request()->cookie('uid');
+      return view('user.security_email');
     }
 
     // 验证邮箱
@@ -163,8 +169,8 @@ class UserController extends Controller {
         $auth = UserAuth::generate_auth($user->password, $user->uid, 1);
         Cookie::queue('auth', $auth);
         // 新手礼包
-        BM::uid($user->uid)->add(5, 100, BM::LOCKED);  // 20个可莫尔
-        BM::uid($user->uid)->add(13, 10, BM::LOCKED);  // 10个WK兑换券
+        BM::uid($user->uid)->add(5, 20, BM::LOCKED);  // 20个可莫尔
+        BM::uid($user->uid)->add(13, 5, BM::LOCKED);   // 5个WK兑换券
         BM::uid($user->uid)->add(14, 10, BM::LOCKED);  // 10个挂售许可
         return view('user.verify_email', $data);
       }else{
@@ -264,10 +270,15 @@ class UserController extends Controller {
                     ->sharedLock()
                     ->count();
       // 查询产区情况
-      $field = DB::table('v3_user_workers_field')
+      $_field = DB::table('v3_user_workers_field')
               ->join('v3_items', 'v3_user_workers_field.iid', '=', 'v3_items.iid')
               ->where('v3_user_workers_field.status', 1)
               ->get();
+      $fields = [];
+      foreach ($_field as $key => $value) {
+        $fields[$value->limi_level][] = $value;
+      }
+      ksort($fields);
       // 统计各产区Worker数量
       $field_workers_data = DB::table('v3_user_workers')
                           ->where('fid', '<>', 0)
@@ -294,9 +305,10 @@ class UserController extends Controller {
       $data = array(
         'worker_ticket'       => $worker_ticket,
         'worker_count'        => $worker_count,
-        'field'               => $field,
+        'fields'              => $fields,
         'field_workers'       => $field_workers,
         'field_workers_mine'  => $field_workers_mine,
+        'harvest'             => json_encode(array_keys($field_workers_mine)),
       );
       return view('user.worker', $data);
     }

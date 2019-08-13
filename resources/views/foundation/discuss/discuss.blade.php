@@ -25,26 +25,28 @@
         @if ($discussion->tid == 1)
         <img class="mr-3 lazy"
           data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/foundation/discuss/idea.svg"
-          src="{{ asset('img/loading-bar.svg') }}" height="50px">
+          src="{{ asset('img/loading-bar.svg') }}" height="22px">
         @elseif ($discussion->tid == 2)
         <img class="mr-3 lazy"
           data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/foundation/discuss/question.svg"
-          src="{{ asset('img/loading-bar.svg') }}" height="50px">
+          src="{{ asset('img/loading-bar.svg') }}" height="22px">
         @elseif ($discussion->tid == 3)
         <img class="mr-3 lazy"
           data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/foundation/discuss/bug.svg"
-          src="{{ asset('img/loading-bar.svg') }}" height="50px">
+          src="{{ asset('img/loading-bar.svg') }}" height="22px">
         @endif
         <div class="media-body">
-          <h5 class="mb-2">
+          <h6 class="mb-2">
             @if ($discussion->level == 255)
               <span class="badge badge-danger">置顶</span>
             @endif
-            <a href="{{ action('FoundationController@details') }}?did={{ $discussion->did }}" style="color:#6c757d; font-weight: bold; text-decoration: none;">
+            <a href="{{ action('FoundationController@details') }}?did={{ $discussion->did }}"
+               class="text-dark"
+               style="color:#6c757d; font-weight: bold; text-decoration: none;">
               {{ $discussion->topic }}
             </a>
             <span class="text-muted">#{{ $discussion->did }}</span>
-          </h5>
+          </h6>
           <p class="mb-0">
             <span class="text-dark">{{ $discussion->nickname }}</span> |
             {{ $discussion->create_at }} |

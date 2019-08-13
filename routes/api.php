@@ -31,6 +31,11 @@ Route::post('/user/security/password', 'Api\User@security_change_password')
 Route::post('/user/security/email', 'Api\User@security_email_verify')
       ->middleware('apicheck.auth');
 
+// Profile
+  // nickname
+Route::post('/user/profile/nickname', 'Api\User@profile_nickname')
+      ->middleware('apicheck.auth');
+
 // Purchase
 Route::post('/purchase', 'Api\User@purchase')
       ->middleware('apicheck.auth');
@@ -106,6 +111,15 @@ Route::post('/foundation/discuss/comment', 'Api\Foundation\discuss@comment_new')
 Route::post('/foundation/discuss/close', 'Api\Foundation\discuss@discuss_close')
       ->middleware('apicheck.auth');
 
+  // Fresher Gift
+    // reedem
+Route::get('/foundation/business/fresher_gift', 'Api\Foundation\business@fresher_gift')
+      ->middleware('apicheck.auth');
+
+  // Donate
+    // point
+Route::post('/foundation/business/donate_point', 'Api\Foundation\business@donate_point')
+      ->middleware('apicheck.auth');
 
 // =======ADMIN=======
 // 数据迁移
@@ -117,6 +131,7 @@ Route::get('/admin/migrate/points', 'Api\Admin\Admin@migrate_points')
 Route::get('/admin/migrate/badges', 'Api\Admin\Admin@migrate_badges')
       ->middleware('apicheck.auth')
       ->middleware('apicheck.admin.auth:site_owner');
+
 // 基金会
   // discuss
     // set status

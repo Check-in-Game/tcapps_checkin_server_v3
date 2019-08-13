@@ -21,6 +21,8 @@ class User extends Controller {
         $json = $this->JSON(2307, 'Lost some infomation.', null);
         return response($json);
       }
+      // 转成小写
+      $username = strtolower($username);
       // 匹配验证码
       if (!Captcha::check($captcha)) {
         $json = $this->JSON(2305, 'Bad captcha.', null);
@@ -232,6 +234,7 @@ class User extends Controller {
       // 修改密码
       $password = UserAuth::generate_password($new_password);
       $data = [
+        'update_at' => date('Y-m-d H:i:s'),
         'password'  => $password
       ];
       $res = DB::table('v3_user_accounts')
@@ -245,6 +248,48 @@ class User extends Controller {
         ->withCookie(cookie()->forget('auth'));
       }else{
         $json = $this->JSON(2705, 'Failed to change password.', null);
+        return response($json);
+      }
+    }
+
+    // 修改昵称
+    public function profile_nickname() {
+      $uid        = request()->cookie('uid');
+      $nickname   = request()->post('nickname');
+      if (is_null($nickname)) {
+        $json = $this->JSON(404, 'Not found.', null);
+        return response($json, 404);
+      }
+      // 检查重复
+      $exists = DB::table('v3_user_accounts')
+                  ->where('nickname', $nickname)
+                  ->exists();
+      if ($exists) {
+        $json = $this->JSON(6301, 'Already existed.', null);
+        return response($json);
+      }
+      // 检查更新时间
+      $update_at = DB::table('v3_user_accounts')
+                    ->where('uid', $uid)
+                    ->value('update_at');
+      if ($update_at >= date('Y-m-d 00:00:00')) {
+        $json = $this->JSON(6302, 'Not today.', null);
+        return response($json);
+      }
+      // 修改用户名
+      $data = [
+        'nickname'  => $nickname,
+        'update_at' => date('Y-m-d H:i:s')
+      ];
+      $db = DB::table('v3_user_accounts')
+              ->where('uid', $uid)
+              ->lockForUpdate()
+              ->update($data);
+      if ($db) {
+        $json = $this->JSON(0, null, ['msg' => 'Success!']);
+        return response($json);
+      }else{
+        $json = $this->JSON(6303, 'System is busy.', null);
         return response($json);
       }
     }
@@ -317,7 +362,6 @@ class User extends Controller {
       $this->sendMail('email.activationcode', $email, $user->nickname, $subject, $data);
       $json = $this->JSON(0, null, ['msg' => 'Success!']);
       return response($json);
-
     }
 
     // 可莫尔合成
@@ -1002,59 +1046,6 @@ class User extends Controller {
           return response($json);
         }
       }
-      // // 查询用户资源
-      // $user_items = DB::table('v3_user_items')
-      //               ->where('uid', $uid)
-      //               ->sharedLock()
-      //               ->exists();
-      // if (!$user_items) {
-      //   // 首次注册购买信息
-      //   $data = array(
-      //     'uid' => $uid,
-      //     'items' => $gifts->items
-      //   );
-      //   $db = DB::table('v3_user_items')->lockForUpdate()->insert($data);
-      // }else{
-      //   // 记录用户原物品信息
-      //   $user_items = DB::table('v3_user_items')
-      //                 ->where('uid', $uid)
-      //                 ->sharedLock()
-      //                 ->value('items');
-      //   if (!$user_items) {
-      //     $json = $this->JSON(5107, 'Failed to reedem.', null);
-      //     return response($json);
-      //   }
-      //   // 更新物品信息
-      //   foreach($gifts_items as $iid => $value) {
-      //     // 查询是否有对应IID的记录
-      //     $item_db = DB::table('v3_user_items')
-      //                   ->where('uid', $uid)
-      //                   ->sharedLock()
-      //                   ->value("items->{$iid}->count");
-      //     if ($item_db || $item_db === 0) {
-      //       // 存在对应IID记录
-      //       $db = DB::table('v3_user_items')
-      //               ->where('uid', $uid)
-      //               ->lockForUpdate()
-      //               ->update(["items->{$iid}->count" => $item_db + $value['count']]);
-      //     }else{
-      //       // 创建对应记录
-      //       $db = DB::table('v3_user_items')
-      //               ->where('uid', $uid)
-      //               ->lockForUpdate()
-      //               ->update(['items'=> DB::raw("JSON_MERGE(items, '{\"{$iid}\":{\"count\": {$value['count']}}}')")]);
-      //     }
-      //     // 恢复用户原始物品信息
-      //     if (!$db) {
-      //       $user_items = DB::table('v3_user_items')
-      //                     ->where('uid', $uid)
-      //                     ->lockForUpdate()
-      //                     ->update(['items' => $user_items]);
-      //       $json = $this->JSON(5108, 'Failed to reedem.', null);
-      //       return response($json);
-      //     }
-      //   }
-      // }
       // 写入兑换记录
       $data = [
         'uid'     => $uid,

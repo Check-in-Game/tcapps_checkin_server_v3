@@ -38,7 +38,8 @@
         获取资源
       </div>
       <div class="card-body text-dark">
-        <button class="btn btn-success btn-block" href="javascript:;" data-toggle="modal" data-target="#clean" id='btn_clean'><i class="fa-fw fas fa-broom"></i> 立即擦灰</button>
+        <button class="btn btn-info btn-block" data-toggle="modal" data-target="#clean" id='btn_clean'><i class="fa-fw fas fa-broom"></i> 立即擦灰</button>
+        <button class="btn btn-success btn-block"><i class="fa-fw fas fa-money-check"></i> 交易市场</button>
       </div>
     </div>
   </div>
@@ -50,12 +51,25 @@
         账户安全
       </div>
       <div class="card-body text-dark">
+        <a class="btn btn-info btn-block" href="{{ action('UserController@profile_nickname') }}"><i class="fa-fw fas fa-pen-square"></i> 修改昵称</a>
         <a class="btn btn-danger btn-block" href="{{ action('UserController@security_change_password') }}"><i class="fa-fw fas fa-pen-square"></i> 修改密码</a>
       </div>
     </div>
   </div>
 
 </div>
+
+<!-- 新手福利 -->
+@if ($_user->register_at >= date('Y-m-d H:i:s', strtotime('-1 week')))
+<div class="card card-info">
+  <div class="card-header">
+    <h4>新手福利</h4>
+  </div>
+  <div class="card-body">
+    <a class="btn btn-info" href="{{ action('FoundationController@business') }}" target="_self">基金会每日礼包</a>
+  </div>
+</div>
+@endif
 
 <!-- Combers -->
 <div class="row">
@@ -76,6 +90,7 @@
   </div>
   @endforeach
 </div>
+
 <div class="hero align-items-center bg-secondary text-muted">
   <div class="hero-inner text-center">
     <h2>Coming Soon</h2>
