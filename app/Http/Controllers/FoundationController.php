@@ -95,6 +95,7 @@ class FoundationController extends Controller {
       $my_credit = DB::table('v3_foundation_credit')
                     ->where('uid', $uid)
                     ->value('credit');
+      $my_credit = !$my_credit ? 0 : $my_credit;
       // 查询排行榜
       $charts = DB::table('v3_foundation_credit')
                   ->join('v3_user_accounts', 'v3_user_accounts.uid', '=', 'v3_foundation_credit.uid')
