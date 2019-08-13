@@ -7,7 +7,7 @@
 create table tcapps_checkin_v3_user_accounts(
   uid int unsigned primary key auto_increment not null comment "用户ID",
   username varchar(16) unique not null comment "用户名",
-  nickname varchar(16) not null comment "昵称",
+  nickname varchar(16) unique not null comment "昵称",
   email varchar(64) not null default '' comment "Email",
   password varchar(32) not null comment "密码",
   register_at datetime not null comment "注册时间",

@@ -31,6 +31,11 @@ Route::post('/user/security/password', 'Api\User@security_change_password')
 Route::post('/user/security/email', 'Api\User@security_email_verify')
       ->middleware('apicheck.auth');
 
+// Profile
+  // nickname
+Route::post('/user/profile/nickname', 'Api\User@profile_nickname')
+      ->middleware('apicheck.auth');
+
 // Purchase
 Route::post('/purchase', 'Api\User@purchase')
       ->middleware('apicheck.auth');

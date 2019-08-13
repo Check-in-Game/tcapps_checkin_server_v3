@@ -111,6 +111,16 @@ class UserController extends Controller {
       return view('user.security_change_password', $data);
     }
 
+    // 修改昵称
+    public function profile_nickname() {
+      $uid = request()->cookie('uid');
+      $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
+      $data = [
+        'user'        => $user
+      ];
+      return view('user.profile.nickname', $data);
+    }
+
     // 修改邮箱
     public function security_email() {
       $uid = request()->cookie('uid');

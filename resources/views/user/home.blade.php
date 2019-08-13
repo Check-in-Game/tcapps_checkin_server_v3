@@ -38,7 +38,8 @@
         获取资源
       </div>
       <div class="card-body text-dark">
-        <button class="btn btn-success btn-block" href="javascript:;" data-toggle="modal" data-target="#clean" id='btn_clean'><i class="fa-fw fas fa-broom"></i> 立即擦灰</button>
+        <button class="btn btn-info btn-block" data-toggle="modal" data-target="#clean" id='btn_clean'><i class="fa-fw fas fa-broom"></i> 立即擦灰</button>
+        <button class="btn btn-success btn-block"><i class="fa-fw fas fa-money-check"></i> 交易市场</button>
       </div>
     </div>
   </div>
@@ -50,6 +51,7 @@
         账户安全
       </div>
       <div class="card-body text-dark">
+        <a class="btn btn-info btn-block" href="{{ action('UserController@profile_nickname') }}"><i class="fa-fw fas fa-pen-square"></i> 修改昵称</a>
         <a class="btn btn-danger btn-block" href="{{ action('UserController@security_change_password') }}"><i class="fa-fw fas fa-pen-square"></i> 修改密码</a>
       </div>
     </div>
