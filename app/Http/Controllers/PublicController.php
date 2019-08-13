@@ -28,7 +28,7 @@ class PublicController extends Controller {
           ]);
         }
         // 进入注册流程
-        $username = $_POST['username'];
+        $username = strtolower($_POST['username']);
         $password = $_POST['password'];
         $comfirm = $_POST['comfirm'];
         $captcha = $_POST['captcha'];

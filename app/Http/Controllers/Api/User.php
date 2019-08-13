@@ -21,7 +21,8 @@ class User extends Controller {
         $json = $this->JSON(2307, 'Lost some infomation.', null);
         return response($json);
       }
-      
+      // 转成小写
+      $username = strtolower($username);
       // 匹配验证码
       if (!Captcha::check($captcha)) {
         $json = $this->JSON(2305, 'Bad captcha.', null);
