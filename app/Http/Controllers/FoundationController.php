@@ -35,6 +35,10 @@ class FoundationController extends Controller {
         $discussions = $discussions->where('v3_foundation_discuss.uid', $uid)
                                   ->where('v3_foundation_discuss.status', '<>', 3);
       }
+      // 关闭页倒序
+      if ($sid == 3) {
+        $discussions = $discussions->orderBy('v3_foundation_discuss.did', 'desc');
+      }
       $discussions = $discussions->paginate(10);
       // 查询评论数量
       $comments_count = [];
