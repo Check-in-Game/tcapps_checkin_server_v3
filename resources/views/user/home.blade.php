@@ -39,7 +39,7 @@
       </div>
       <div class="card-body text-dark">
         <button class="btn btn-info btn-block" data-toggle="modal" data-target="#clean" id='btn_clean'><i class="fa-fw fas fa-broom"></i> 立即擦灰</button>
-        <button class="btn btn-success btn-block"><i class="fa-fw fas fa-money-check"></i> 交易市场</button>
+        <a class="btn btn-success btn-block" href="{{ action('UserController@market') }}"><i class="fa-fw fas fa-money-check"></i> 交易市场</a>
       </div>
     </div>
   </div>
@@ -60,7 +60,7 @@
 </div>
 
 <!-- 新手福利 -->
-@if ($_user->register_at >= date('Y-m-d H:i:s', strtotime('-1 week')))
+@if (date('Y-m-d 00:00:00', strtotime($_user->register_at)) >= date('Y-m-d 00:00:00', strtotime('-6 days')))
 <div class="card card-info">
   <div class="card-header">
     <h4>新手福利</h4>

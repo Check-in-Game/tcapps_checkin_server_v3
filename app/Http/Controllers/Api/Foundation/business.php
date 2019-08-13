@@ -18,7 +18,7 @@ class business extends Controller {
     // 查询该用户账户建立日期
     $user = DB::table('v3_user_accounts')
               ->where('uid', $uid)
-              ->where('register_at', '>=', date('Y-m-d H:i:s', strtotime('-1 weeks')))
+              ->where('register_at', '>=', date('Y-m-d 00:00:00', strtotime('-6 days')))
               ->where('status', 1)
               ->first();
     // 超过7日的玩家不可领取
@@ -38,14 +38,6 @@ class business extends Controller {
       $json = $this->JSON(6402, 'Already redeemed.', null);
       return response($json);
     }
-    // 写入领取记录
-    $data = [
-      'uid'       => $uid,
-      'gift_name' => 'fresher_gift',
-      'reedem_at' => date('Y-m-d H:i:s'),
-      'status'    => 1,
-    ];
-    DB::table('v3_foundation_business_gifts_redeem')->insert($data);
     // 判断天数
     $start_time = strtotime($user->register_at);
     $today_time = strtotime(date('Y-m-d H:i:s'));
@@ -78,8 +70,18 @@ class business extends Controller {
         BM::uid($user->uid)->add(15, 5, BM::LOCKED);  // WK升级卡
         break;
       default:
+        $json = $this->JSON(6401, 'Gifts was out-of-date.', null);
+        return response($json);
         break;
     }
+    // 写入领取记录
+    $data = [
+      'uid'       => $uid,
+      'gift_name' => 'fresher_gift',
+      'reedem_at' => date('Y-m-d H:i:s'),
+      'status'    => 1,
+    ];
+    DB::table('v3_foundation_business_gifts_redeem')->insert($data);
     $json = $this->JSON(0, null, ['msg'  => 'Success!']);
     return response($json);
   }
