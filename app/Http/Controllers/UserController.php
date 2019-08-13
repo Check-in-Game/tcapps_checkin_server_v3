@@ -124,11 +124,7 @@ class UserController extends Controller {
     // 修改邮箱
     public function security_email() {
       $uid = request()->cookie('uid');
-      $user = DB::table('v3_user_accounts')->where('uid', $uid)->first();
-      $data = [
-        'username'        => $user->username
-      ];
-      return view('user.security_email', $data);
+      return view('user.security_email');
     }
 
     // 验证邮箱
@@ -173,8 +169,8 @@ class UserController extends Controller {
         $auth = UserAuth::generate_auth($user->password, $user->uid, 1);
         Cookie::queue('auth', $auth);
         // 新手礼包
-        BM::uid($user->uid)->add(5, 100, BM::LOCKED);  // 20个可莫尔
-        BM::uid($user->uid)->add(13, 10, BM::LOCKED);  // 10个WK兑换券
+        BM::uid($user->uid)->add(5, 20, BM::LOCKED);  // 20个可莫尔
+        BM::uid($user->uid)->add(13, 5, BM::LOCKED);   // 5个WK兑换券
         BM::uid($user->uid)->add(14, 10, BM::LOCKED);  // 10个挂售许可
         return view('user.verify_email', $data);
       }else{

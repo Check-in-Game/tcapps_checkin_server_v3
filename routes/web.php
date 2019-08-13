@@ -46,11 +46,14 @@ Route::get('/user/market/sale', 'UserController@market_sale')                   
 Route::get('/user/market/manage', 'UserController@market_manage')                 ->middleware('check.auth', 'notice:18');
 
 // 基金会
+  // 招募
 Route::get('/foundation/recurit', 'FoundationController@recruit')                 ->middleware('check.auth', 'notice:15');
-// 议事大厅
+  // 议事大厅
 Route::get('/foundation/discuss', 'FoundationController@discuss')                 ->middleware('check.auth', 'notice:19');
 Route::get('/foundation/discuss/new', 'FoundationController@discuss_new')         ->middleware('check.auth', 'notice:20');
 Route::get('/foundation/discuss/details', 'FoundationController@details')         ->middleware('check.auth', 'notice:21');
+  // 议事大厅
+Route::get('/foundation/business', 'FoundationController@business')               ->middleware('check.auth', 'notice:23');
 
 // 管理中心
 Route::get('/admin', 'AdminController@index')                                     ->middleware('check.auth', 'check.admin.auth', 'notice:11');

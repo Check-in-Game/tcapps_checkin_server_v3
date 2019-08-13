@@ -59,6 +59,18 @@
 
 </div>
 
+<!-- 新手福利 -->
+@if ($_user->register_at >= date('Y-m-d H:i:s', strtotime('-1 week')))
+<div class="card card-info">
+  <div class="card-header">
+    <h4>新手福利</h4>
+  </div>
+  <div class="card-body">
+    <a class="btn btn-info" href="{{ action('FoundationController@business') }}" target="_self">基金会每日礼包</a>
+  </div>
+</div>
+@endif
+
 <!-- Combers -->
 <div class="row">
   @foreach($items as $item)
@@ -78,6 +90,7 @@
   </div>
   @endforeach
 </div>
+
 <div class="hero align-items-center bg-secondary text-muted">
   <div class="hero-inner text-center">
     <h2>Coming Soon</h2>
