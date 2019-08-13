@@ -4,7 +4,7 @@
 @endsection
 @section('body')
 <!-- 新人福利 -->
-@if ($_user->register_at >= date('Y-m-d H:i:s', strtotime('-1 week')))
+@if (date('Y-m-d 00:00:00', strtotime($_user->register_at)) >= date('Y-m-d 00:00:00', strtotime('-6 days')))
 <div class="card">
   <div class="card-header">
     <h4>新人福利</h4>
