@@ -3,10 +3,13 @@
 议事大厅
 @endsection
 @section('body')
-<div class="mb-4">
-  <button class="btn btn-primary" onclick="history.go(-1);">
+<div class="mb-4 clearfix">
+  <a class="btn btn-primary float-left" href="javascript:;" onclick="history.go(-1);">
     <span class="fas fa-fw fa-chevron-left"></span> 返回
-  </button>
+  </a>
+  <a class="btn btn-warning float-right" href="#comment">
+    <span class="fas fa-fw fa-angle-down"></span>
+  </a>
 </div>
 @if(!$discussion)
 <div class="alert alert-primary">
@@ -42,7 +45,7 @@
         @else
           <div class="media-body border-left border-success px-4">
         @endif
-          <div class="media-description mb-2 text-dark font-weight-bold" style="font-size: 15px; line-height: 26px;">
+          <div class="media-description mb-2 text-dark" style="font-size: 15px; line-height: 26px;">
             @php
               $_comments = explode("\n", $comment->content)
             @endphp
@@ -65,7 +68,7 @@
     <input type="hidden" id="did" value="{{ $discussion->did }}">
     @if($discussion->status != 3)
       <!-- 评论 -->
-      <div class="form-group row mb-4">
+      <div class="form-group row mb-4" id="comment">
         <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">评论</label>
         <div class="col-sm-12 col-md-7">
           <textarea class="form-control" style="height: 120px;" id="content"></textarea>
