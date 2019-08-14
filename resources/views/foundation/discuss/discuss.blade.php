@@ -58,7 +58,7 @@
   </div>
 </div>
 @endforeach
-{{ $discussions->links() }}
+{{ $discussions->onEachSide(1)->links() }}
 @endsection
 @section('extraModalContent')
 

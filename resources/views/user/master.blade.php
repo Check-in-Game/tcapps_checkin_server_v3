@@ -159,6 +159,7 @@
 @yield('extraModalContent')
 <script type="text/javascript">
 $(function(){
+  $('.pagination').addClass('justify-content-center');
   $("img.lazy").Lazy({
     effect: 'fadeIn',
     effectTime: 500

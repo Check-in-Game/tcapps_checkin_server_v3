@@ -22,6 +22,11 @@ class discuss extends Controller {
       $json = $this->JSON(404, 'Not found.', null);
       return response($json, 404);
     }
+    // 敏感处理
+    $content = trim($content);
+    $content = htmlspecialchars($content);
+    // 换行处理
+    $content = str_replace(PHP_EOL, '<br />', $content);
     // 查询该用户账户建立日期
     $user = DB::table('v3_user_accounts')
               ->where('uid', $uid)
@@ -90,6 +95,11 @@ class discuss extends Controller {
       $json = $this->JSON(404, 'Not found.', null);
       return response($json, 404);
     }
+    // 敏感处理
+    $content = trim($content);
+    $content = htmlspecialchars($content);
+    // 换行处理
+    $content = str_replace("\n", '<br />', $content);
     // 查询该用户账户建立日期
     $user = DB::table('v3_user_accounts')
               ->where('uid', $uid)

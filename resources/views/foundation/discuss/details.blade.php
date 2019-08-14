@@ -47,13 +47,7 @@
         @endif
           <div class="media-description mb-2 text-dark" style="font-size: 15px; line-height: 26px;">
             <h6 class="text-primary">{{ $comment->nickname }} :</h6>
-            @php
-              $_comments = explode("\n", $comment->content)
-            @endphp
-            @foreach($_comments as $_comment)
-              {{ $_comment }}
-              <br />
-            @endforeach
+            {!! $comment->content !!}
           </div>
           <div class="text-time mb-0">
             <span class="badge badge-success rounded-right p-1" title="回复ID" data-toggle="tooltip">{{ $comment->post_id }}</span>
@@ -69,6 +63,7 @@
       </li>
       @endforeach
     </ul>
+    {{ $comments->onEachSide(1)->links() }}
     <hr class="my-4" />
     <input type="hidden" id="did" value="{{ $discussion->did }}">
     @if($discussion->status != 3)

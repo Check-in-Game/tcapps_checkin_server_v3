@@ -36,7 +36,7 @@
   </tbody>
 </table>
 <nav>
-  {{ $items->links() }}
+  {{ $items->onEachSide(1)->links() }}
 </nav>
 @else
 <div class="alert alert-primary">
