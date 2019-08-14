@@ -59,7 +59,7 @@ class FoundationController extends Controller {
 
     // 查看议项
     public function details() {
-      $did         = request()->get('did');
+      $did         = request()->get('did') ?? 1;
       $select = [
         'v3_foundation_discuss.did',
         'v3_foundation_discuss.uid',
@@ -81,7 +81,8 @@ class FoundationController extends Controller {
                 ->join('v3_user_accounts', 'v3_user_accounts.uid', 'v3_foundation_discuss_posts.uid')
                 ->where('v3_foundation_discuss_posts.did', $did)
                 ->where('v3_foundation_discuss_posts.status', 1)
-                ->get();
+                ->paginate(2);
+      $comments->withPath('?did=' . $did);
       $data = [
         'discussion' => $discussion,
         'comments'    => $comments,

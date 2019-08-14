@@ -24,7 +24,7 @@ Worker升级
   </tbody>
 </table>
 <nav>
-  {{ $workers->links() }}
+  {{ $workers->onEachSide(1)->links() }}
 </nav>
 @endsection
 @section('extraModalContent')
