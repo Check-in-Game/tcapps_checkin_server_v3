@@ -17,7 +17,7 @@ Worker管理
           <div class="col-6 text-left mb-1">{{ $worker_ticket }} @if($worker_ticket > 0) <a href="javascript:redeem();">兑换</a> @endif</div>
           <!-- 积分 -->
           <div class="col-6 text-right mb-1 font-weight-bold">Worker：</div>
-          <div class="col-6 text-left mb-1">{{ $worker_count }} <a href="javascript:onekey_harvest();">一键收获</a></div>
+          <div class="col-6 text-left mb-1">{{ $worker_count }} <a href="javascript:onekey_harvest_query();">一键收获</a></div>
         </div>
       </div>
     </div>
@@ -198,6 +198,28 @@ Worker管理
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-success" onclick="javascript:;" id="btn_harvest_comfirm">确认收获</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 一键收获 -->
+<div class="modal fade" tabindex="-1" role="dialog" id="_onekey_harvest">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">一键收获确认</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger text-center">
+          您确定要一键收获吗？
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="javascript:onekey_harvest();">确认</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
       </div>
     </div>
@@ -488,7 +510,11 @@ Worker管理
       }
     });
   }
+  function onekey_harvest_query() {
+    $('#_onekey_harvest').modal('show');
+  }
   function onekey_harvest() {
+    $('#_onekey_harvest').modal('hide');
     let hl = $.parseJSON(harvest_list);
     if (hl.length === 0) {
       m_tip('暂无可收获Worker', 'warning');

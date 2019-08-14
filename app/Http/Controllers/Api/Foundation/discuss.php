@@ -25,7 +25,7 @@ class discuss extends Controller {
     // 查询该用户账户建立日期
     $user = DB::table('v3_user_accounts')
               ->where('uid', $uid)
-              ->where('register_at', '<=', date('Y-m-d H:i:s', strtotime('-1 weeks')))
+              ->where('register_at', '<=', date('Y-m-d 00:00:00', strtotime('-1 weeks')))
               ->where('status', 1)
               ->first();
     // 新用户一周内无法新建话题

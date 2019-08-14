@@ -5,6 +5,11 @@
 议事大厅：新议项
 @endsection
 @section('body')
+<div class="mb-4">
+  <button class="btn btn-primary" onclick="history.go(-1);">
+    <span class="fas fa-fw fa-chevron-left"></span> 返回
+  </button>
+</div>
 <div class="card">
   <div class="card-header">
     <h4>创建新议项</h4>

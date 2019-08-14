@@ -19,7 +19,7 @@
           <div class="article-badge-item bg-danger" data-toggle="tooltip" title="现在 - {{ $value['endtime'] }}"><i class="fa-fw fas fa-clock"></i> 限时</div>
           @endif
           @if($value['all_count'] !== 0 || $value['rebuy'] !== 0)
-          <div class="article-badge-item bg-warning" data-toggle="tooltip" title="@if($value['all_count'] !== 0)总限量 {{ $value['all_count'] }} 份@endif @if($value['rebuy'] !== 0)个人限购 {{ $value['rebuy'] }} 份@endif"><i class="fa-fw fas fa-fire"></i> 限量</div>
+          <div class="article-badge-item bg-warning" data-toggle="tooltip" title="@if($value['all_count'] !== 0)总限量 {{ $value['all_count'] }} 份@endif @if($value['rebuy'] !== 0)个人限购 {{ $value['rebuy'] }} 份@endif"><i class="fa-fw fas fa-fire"></i> 限购</div>
           @endif
           @if($value['onsale'] === 1 && date('Y-m-d H:i:s') >= $value['sale_starttime'] && date('Y-m-d H:i:s') <= $value['sale_endtime'])
           <div class="article-badge-item bg-info" data-toggle="tooltip" title="{{ $value['sale_starttime'] }} - {{ $value['sale_endtime'] }}"><i class="fa-fw fas fa-coins"></i> 促销</div>
