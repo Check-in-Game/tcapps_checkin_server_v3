@@ -4,8 +4,8 @@
 @endsection
 @section('body')
 <div class="mb-4 clearfix">
-  <a class="btn btn-primary float-left" href="javascript:;" onclick="history.go(-1);">
-    <span class="fas fa-fw fa-chevron-left"></span> 返回
+  <a class="btn btn-primary float-left" href="{{ action('FoundationController@discuss') }}">
+    <span class="fas fa-fw fa-chevron-left"></span> 返回大厅
   </a>
   <a class="btn btn-warning float-right" href="#comment">
     <span class="fas fa-fw fa-angle-down"></span>
@@ -31,7 +31,7 @@
     data-src="{{ $_system['cdn_prefix'] }}/cdn/v3/foundation/discuss/bug.svg"
     src="{{ asset('img/loading-bar.svg') }}" height="24px">
     @endif
-    <h5 class="pt-2">
+    <h5 class="pt-2" id="title">
       {{ $discussion->topic }}
       <span class="text-muted">#{{ $discussion->did }}</span>
     </h5>
@@ -85,10 +85,16 @@
       <!-- 设置 -->
       @if($discussion->uid == $_user->uid)
         <hr>
-        <div class="my-4 text-center">
+        <div class="my-4 text-center clearfix">
+          <a class="btn btn-primary float-left" href="{{ action('FoundationController@discuss') }}">
+            <span class="fas fa-fw fa-chevron-left"></span> 返回大厅
+          </a>
           <div class="btn-group">
             <button class="btn btn-danger my-1" onclick="close_discuss();">关闭讨论</button>
           </div>
+          <a class="btn btn-warning float-right" href="#title">
+            <span class="fas fa-fw fa-angle-up"></span>
+          </a>
         </div>
       @endif
       <!-- ./设置 -->
