@@ -10,18 +10,19 @@
   <title>Check-in Game</title>
   <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/selectric.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/style.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/css/components.min.css">
+  <link rel="stylesheet" href="{{ $_system['cdn_prefix'] }}/assets/stisla/2.2.0-modified/css/selectric.css">
+  <link rel="stylesheet" href="{{ $_system['cdn_prefix'] }}/assets/stisla/2.2.0-modified/css/style.min.css">
+  <link rel="stylesheet" href="{{ $_system['cdn_prefix'] }}/assets/stisla/2.2.0-modified/css/components.min.css">
+  <link rel="stylesheet" href="{{ $_system['cdn_prefix'] }}/assets/stisla/2.2.0-modified/css/custom.css">
   <script src="{{ asset('js/app.js') }}" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery-lazy@1.7.10/jquery.lazy.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery.nicescroll@3.7.6/jquery.nicescroll.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" charset="utf-8"></script>
-  <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/jquery.selectric.min.js" charset="utf-8"></script>
-  <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/moment.min.js" charset="utf-8"></script>
-  <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/stisla.min.js" charset="utf-8"></script>
-  <script src="https://cdn.jsdelivr.net/npm/checkin-static/assets/stisla/2.2.0-modified/js/scripts.min.js" charset="utf-8"></script>
+  <script src="{{ $_system['cdn_prefix'] }}/assets/stisla/2.2.0-modified/js/jquery.selectric.min.js" charset="utf-8"></script>
+  <script src="{{ $_system['cdn_prefix'] }}/assets/stisla/2.2.0-modified/js/moment.min.js" charset="utf-8"></script>
+  <script src="{{ $_system['cdn_prefix'] }}/assets/stisla/2.2.0-modified/js/stisla.min.js" charset="utf-8"></script>
+  <script src="{{ $_system['cdn_prefix'] }}/assets/stisla/2.2.0-modified/js/scripts.min.js" charset="utf-8"></script>
   <link rel="stylesheet" href="https://cdn.staticfile.org/izitoast/1.4.0/css/iziToast.min.css">
   <script src="https://cdn.staticfile.org/izitoast/1.4.0/js/iziToast.min.js" charset="utf-8"></script>
   @yield('meta')
