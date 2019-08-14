@@ -40,6 +40,7 @@ class FoundationController extends Controller {
         $discussions = $discussions->orderBy('v3_foundation_discuss.did', 'desc');
       }
       $discussions = $discussions->paginate(10);
+      $discussions->withPath('?sid=' . $sid);
       // 查询评论数量
       $comments_count = [];
       foreach ($discussions as $discussion) {
