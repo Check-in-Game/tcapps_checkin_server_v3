@@ -4,7 +4,7 @@
 @endsection
 @section('body')
 <div class="mb-4">
-  <button class="btn btn-primary" onclick="history.back(-1);">
+  <button class="btn btn-primary" onclick="history.go(-1);">
     <span class="fas fa-fw fa-chevron-left"></span> 返回
   </button>
 </div>
