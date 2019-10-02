@@ -81,7 +81,7 @@ class FoundationController extends Controller {
                 ->join('v3_user_accounts', 'v3_user_accounts.uid', 'v3_foundation_discuss_posts.uid')
                 ->where('v3_foundation_discuss_posts.did', $did)
                 ->where('v3_foundation_discuss_posts.status', 1)
-                ->paginate(2);
+                ->paginate(10);
       $comments->withPath('?did=' . $did);
       $data = [
         'discussion' => $discussion,
