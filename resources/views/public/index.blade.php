@@ -98,10 +98,6 @@
     </div>
     <div class="text-muted">
       <small>&copy; Copyright 2019 Check-in Game Team.</small>
-      <br>
-      <small class="text-small">
-        <a class="text-muted" href="http://www.beian.miit.gov.cn" target="_blank">沪ICP备18039982号-1</a>
-      </small>
     </div>
   </div>
 </footer>
